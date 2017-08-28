@@ -1,0 +1,37 @@
+resource_types:
+  - name: artifactory-resource
+    type: docker-image
+    source: {repository: springio/artifactory-resource, tag: latest}
+
+resources:
+  - name: git-repo
+    type: git
+    source:
+      uri: https://github.com/philwebb/artifactory-resource
+      branch: master
+  - name: artifactory
+    type: artifactory-resource
+    source:
+      uri: {{ARTIFACTORY_URI}}
+      username: {{USERNAME}}
+      password: {{PASSWORD}}
+      build_name: test-build
+
+jobs:
+  - name: build
+    plan:
+      - get: git-repo
+        trigger: true
+      - task: build
+        file: git-repo/samples/simple/tasks/build.yml
+      - put: artifactory
+        params:
+          repo: libs-snapshot-local
+          build_number: ${BUILD_ID}
+          folder: test
+          build_url: http://192.168.100.4:8080/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}
+  - name: test
+    plan:
+      - get: artifactory
+        trigger: true
+        passed: [build]
