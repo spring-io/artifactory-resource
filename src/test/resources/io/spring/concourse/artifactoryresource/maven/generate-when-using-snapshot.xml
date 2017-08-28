@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<groupId>com.example.project</groupId>
+	<artifactId>my-project</artifactId>
+	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<versioning>
+		<snapshotVersions>
+			<snapshotVersion>
+				<extension>jar</extension>
+				<value>1.0.0.BUILD-SNAPSHOT</value>
+			</snapshotVersion>
+			<snapshotVersion>
+				<classifier>sources</classifier>
+				<extension>jar</extension>
+				<value>1.0.0.BUILD-SNAPSHOT</value>
+			</snapshotVersion>
+			<snapshotVersion>
+				<extension>pom</extension>
+				<value>1.0.0.BUILD-SNAPSHOT</value>
+			</snapshotVersion>
+		</snapshotVersions>
+	</versioning>
+</metadata>
+
