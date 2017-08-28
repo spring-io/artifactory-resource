@@ -1,0 +1,4 @@
+#!/bin/sh
+set -euf -o pipefail
+
+java -jar /artifact/artifactory-resource.jar "in" "$@"
