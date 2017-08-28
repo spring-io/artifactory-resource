@@ -1,0 +1,76 @@
+resources:
+- name: git-repo
+  type: git
+  source:
+    uri: https://github.com/spring-io/artifactory-resource
+    username: ((github-username))
+    password: ((github-password))
+    branch: master
+    ignore_paths: ["ci/images/*"]
+- name: ci-images-git-repo
+  type: git
+  source:
+    uri: https://github.com/spring-io/artifactory-resource
+    branch: master
+    paths: ["ci/images/*"]
+- name: artifactory-resource-ci-image
+  type: docker-image
+  source:
+    repository: springci/artifactory-resource-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: master
+- name: artifactory-resource-image
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+jobs:
+- name: build-artifactory-resource-ci-image
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - put: artifactory-resource-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/artifactory-resource-ci-image
+- name: build
+  plan:
+  - get: git-repo
+    trigger: true
+  - task: build
+    file: git-repo/ci/tasks/build.yml
+  - put: artifactory-resource-image
+    params:
+      build: .
+      dockerfile: git-repo/Dockerfile
+      tag: built-artifact/version
+      build_args:
+        root: git-repo
+        jar:  built-artifact/artifactory-resource.jar
+- name: release
+  plan:
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: release
+    file: git-repo/ci/tasks/release.yml
+  - put: git-repo
+    params:
+      repository: release-git-repo
+  - put: artifactory-resource-image
+    params:
+      build: .
+      dockerfile: git-repo/Dockerfile
+      tag: built-artifact/version
+      build_args:
+        root: git-repo
+        jar:  built-artifact/artifactory-resource.jar
+groups:
+- name: "Artifactory Resource"
+  jobs:
+  - build
+  - release
+- name: "CI Images"
+  jobs:
+  - build-artifactory-resource-ci-image
