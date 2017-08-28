@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.system;
 
-import io.spring.concourse.artifactoryresource.system.SystemStreams;
+import java.io.IOException;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.stereotype.Component;
 
 /**
- * Main Application entry point.
+ * Write output to {@link SystemStreams#out()}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
-@SpringBootApplication
-public class Application {
+@Component
+public class SystemOutput {
 
-	@Bean
-	public SystemStreams systemStreams() {
-		return SystemStreams.instance();
+	private final SystemStreams systemStreams;
+
+	private final ObjectMapper objectMapper;
+
+	public SystemOutput(SystemStreams systemStreams, ObjectMapper objectMapper) {
+		this.systemStreams = systemStreams;
+		this.objectMapper = objectMapper;
 	}
 
-	public static void main(String[] args) {
-		SystemStreams.reconfigureSystem();
-		SpringApplication.run(Application.class, args);
+	public <T> void write(T value) throws IOException {
+		this.objectMapper.writeValue(this.systemStreams.out(), value);
 	}
 
 }

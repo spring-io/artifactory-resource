@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource;
+package io.spring.concourse.artifactoryresource.system;
 
-import io.spring.concourse.artifactoryresource.system.SystemStreams;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
- * Main Application entry point.
+ * Tests for {@link SystemOutput}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
-@SpringBootApplication
-public class Application {
+public class SystemOutputTests {
 
-	@Bean
-	public SystemStreams systemStreams() {
-		return SystemStreams.instance();
-	}
-
-	public static void main(String[] args) {
-		SystemStreams.reconfigureSystem();
-		SpringApplication.run(Application.class, args);
+	@Test
+	public void writeShouldSerialize() throws Exception {
+		MockSystemStreams systemStreams = new MockSystemStreams("");
+		SystemOutput output = new SystemOutput(systemStreams, new ObjectMapper());
+		output.write(new String[] { "foo" });
+		String actual = new String(systemStreams.getOutBytes());
+		JSONAssert.assertEquals("[\"foo\"]", actual, false);
 	}
 
 }
