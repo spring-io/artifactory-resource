@@ -1,0 +1,8 @@
+{
+	"source": {
+		"uri": "http://repo.example.com",
+		"username": "admin",
+		"password": "password",
+		"build_name": "my-build"
+	}
+}
