@@ -16,39 +16,48 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
- * A metadata item that can be returned as part of {@link InRequest} or
- * {@link OutResponse}.
+ * Response from the {@code "/opt/resource/out"} script.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class Metadata {
+public class OutResponse {
 
-	private final String name;
+	private final Version version;
 
-	private final Object value;
+	private final List<Metadata> metadata;
 
-	public Metadata(String name, Object value) {
-		Assert.hasText(name, "Name must not be empty");
-		this.name = name;
-		this.value = value;
+	public OutResponse(Version version) {
+		this(version, null);
 	}
 
-	public String getName() {
-		return this.name;
+	public OutResponse(Version version, List<Metadata> metadata) {
+		Assert.notNull(version, "Version must not be null");
+		this.version = version;
+		this.metadata = (metadata == null ? Collections.emptyList()
+				: Collections.unmodifiableList(new ArrayList<>(metadata)));
 	}
 
-	public Object getValue() {
-		return this.value;
+	public Version getVersion() {
+		return this.version;
+	}
+
+	public List<Metadata> getMetadata() {
+		return this.metadata;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", this.name)
-				.append("value", this.value).toString();
+		return new ToStringCreator(this).append("version", this.version)
+				.append("metadata", this.metadata).toString();
 	}
+
 }
