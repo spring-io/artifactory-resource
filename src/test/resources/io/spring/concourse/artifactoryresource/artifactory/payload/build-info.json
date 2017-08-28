@@ -1,0 +1,19 @@
+{
+	"name": "my-build",
+	"number": "5678",
+	"agent": {
+		"name": "Concourse",
+		"version": "3.0.0"
+	},
+	"started": "2014-09-30T12:00:19.893+0000",
+	"url": "http://ci.example.com",
+	"modules": [{
+		"id": "com.example.module:my-module:1.0.0-SNAPSHOT",
+		"artifacts": [{
+			"type": "jar",
+			"sha1": "a9993e364706816aba3e25717850c26c9cd0d89d",
+			"md5": "900150983cd24fb0d6963f7d28e17f72",
+			"name": "foo.jar"
+		}]
+	}]
+}

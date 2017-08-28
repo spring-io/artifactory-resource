@@ -41,4 +41,9 @@ public class HttpArtifactoryServer implements ArtifactoryServer {
 		return new HttpArtifactoryRepository(this.restTemplate, this.uri, repositoryName);
 	}
 
+	@Override
+	public ArtifactoryBuildRuns buildRuns(String buildName) {
+		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri, buildName);
+	}
+
 }

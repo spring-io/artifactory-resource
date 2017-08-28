@@ -31,4 +31,11 @@ public interface ArtifactoryServer {
 	 */
 	ArtifactoryRepository repository(String repositoryName);
 
+	/**
+	 * Access specific builds runs from the server.
+	 * @param buildName the name of the build
+	 * @return the artifactory build runs
+	 */
+	ArtifactoryBuildRuns buildRuns(String buildName);
+
 }
