@@ -24,4 +24,11 @@ package io.spring.concourse.artifactoryresource.artifactory;
  */
 public interface ArtifactoryServer {
 
+	/**
+	 * Access a specific repository from the server.
+	 * @param repositoryName the name of the repository
+	 * @return the artifactory repository
+	 */
+	ArtifactoryRepository repository(String repositoryName);
+
 }

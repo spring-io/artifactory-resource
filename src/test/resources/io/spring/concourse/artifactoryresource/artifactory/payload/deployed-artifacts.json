@@ -1,0 +1,21 @@
+{
+  "results" : [
+    {
+      "repo" : "libs-release-local",
+      "path" : "org/jfrog/artifactory",
+      "name" : "artifactory.war",
+      "type" : "item type",
+      "size" : 75500000,
+      "created" : "2017-06-19T17:17:33.423-07:00",
+      "created-by" : "jfrog",
+      "modified" : "2017-06-19T17:17:34.423-07:00",
+      "modified-by" : "spring",
+      "updated" : "2017-06-19T17:17:35.423-07:00"
+    }
+  ],
+  "range" : {
+    "start_pos" : 0,
+    "end_pos" : 1,
+    "total" : 1
+  }
+}
