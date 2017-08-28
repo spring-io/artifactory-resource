@@ -28,8 +28,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -77,7 +75,7 @@ public class DirectoryScanner {
 
 	private BiPredicate<Path, BasicFileAttributes> getFilter(Directory root,
 			List<String> include, List<String> exclude) {
-		PathMatcher pathMatcher = new AntPathMatcher();
+		PathFilter filter = new PathFilter(include, exclude);
 		String rootPath = StringUtils.cleanPath(root.getFile().getPath());
 		return (path, fileAttributes) -> {
 			if (!path.toFile().isFile()) {
@@ -85,19 +83,8 @@ public class DirectoryScanner {
 			}
 			String relativePath = StringUtils.cleanPath(path.toString())
 					.substring(rootPath.length() + 1);
-			return ((include.isEmpty() || hasMatch(pathMatcher, relativePath, include))
-					&& !hasMatch(pathMatcher, relativePath, exclude));
+			return filter.isMatch(relativePath);
 		};
-	}
-
-	private boolean hasMatch(PathMatcher pathMatcher, String path,
-			List<String> patterns) {
-		for (String pattern : patterns) {
-			if (pathMatcher.match(pattern, path)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

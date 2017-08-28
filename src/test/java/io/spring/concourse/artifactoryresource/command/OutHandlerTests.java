@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
@@ -29,6 +31,7 @@ import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
+import io.spring.concourse.artifactoryresource.command.payload.OutRequest.ArtifactSet;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.io.Directory;
@@ -159,6 +162,25 @@ public class OutHandlerTests {
 	}
 
 	@Test
+	public void handleWhenHasArtifactSetShouldDeployWithAdditionalProperties()
+			throws Exception {
+		List<ArtifactSet> artifactSet = new ArrayList<>();
+		List<String> include = Collections.singletonList("**/foo.jar");
+		List<String> exclude = null;
+		Map<String, String> properties = Collections.singletonMap("foo", "bar");
+		artifactSet.add(new ArtifactSet(include, exclude, properties));
+		OutRequest request = createRequest("1234", null, null, artifactSet);
+		Directory directory = createDirectory();
+		configureMockScanner(directory);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository).deploy(this.artifactsCaptor.capture());
+		List<DeployableArtifact> deployed = this.artifactsCaptor.getValue();
+		assertThat(deployed).hasSize(1);
+		DeployableArtifact artifact = deployed.get(0);
+		assertThat(artifact.getProperties()).containsEntry("foo", "bar");
+	}
+
+	@Test
 	public void handleShouldAddBuildRun() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
@@ -191,11 +213,15 @@ public class OutHandlerTests {
 
 	private OutRequest createRequest(String buildNumber, List<String> include,
 			List<String> exclude) {
-		OutRequest request = new OutRequest(
+		return createRequest(buildNumber, include, exclude, null);
+	}
+
+	private OutRequest createRequest(String buildNumber, List<String> include,
+			List<String> exclude, List<ArtifactSet> artifactSet) {
+		return new OutRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Params(buildNumber, "libs-snapshot-local", "folder", include, exclude,
-						"mock", "http://ci.example.com/1234"));
-		return request;
+						"mock", "http://ci.example.com/1234", artifactSet));
 	}
 
 	private Directory createDirectory() throws IOException {

@@ -30,12 +30,14 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
+import io.spring.concourse.artifactoryresource.command.payload.OutRequest.ArtifactSet;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.OutResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
+import io.spring.concourse.artifactoryresource.io.PathFilter;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -96,19 +98,39 @@ public class OutHandler {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
 				params.getExclude());
-		Map<String, String> properties = getDeployableArtifactProperties(buildNumber,
-				source, params);
-		return files.stream().map(
-				(file) -> new DeployableFileArtifact(root.getFile(), file, properties))
-				.collect(Collectors.toCollection(ArrayList::new));
+		return files.stream().map((file) -> {
+			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
+			Map<String, String> properties = getDeployableArtifactProperties(path,
+					buildNumber, source, params);
+			return new DeployableFileArtifact(root.getFile(), file, properties);
+		}).collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	private Map<String, String> getDeployableArtifactProperties(String buildNumber,
-			Source source, Params params) {
+	private Map<String, String> getDeployableArtifactProperties(String path,
+			String buildNumber, Source source, Params params) {
 		Map<String, String> properties = new LinkedHashMap<>();
+		addArtifactSetProperties(path, params, properties);
+		addBuildProperties(buildNumber, source, properties);
+		return properties;
+	}
+
+	private void addArtifactSetProperties(String path, Params params,
+			Map<String, String> properties) {
+		for (ArtifactSet artifactSet : params.getArtifactSet()) {
+			if (getFilter(artifactSet).isMatch(path)) {
+				properties.putAll(artifactSet.getProperties());
+			}
+		}
+	}
+
+	private PathFilter getFilter(ArtifactSet artifactSet) {
+		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
+	}
+
+	private void addBuildProperties(String buildNumber, Source source,
+			Map<String, String> properties) {
 		properties.put("build.name", source.getBuildName());
 		properties.put("build.number", buildNumber);
-		return properties;
 	}
 
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,

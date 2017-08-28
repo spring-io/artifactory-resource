@@ -17,6 +17,18 @@
 		],
 		"folder": "dist",
 		"module_layout" : "maven",
-		"build_uri": "http://ci.example.com"
+		"build_uri": "http://ci.example.com",
+		"artifact_set": [ {
+			"include": [
+				"**/*.zip"
+			],
+			"exclude": [
+				"**/foo.zip"
+			],
+			"properties": {
+				"zip-type": "docs",
+				"zip-deployed": false
+			}
+		} ]
 	}
 }

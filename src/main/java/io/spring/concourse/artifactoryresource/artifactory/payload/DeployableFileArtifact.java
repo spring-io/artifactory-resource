@@ -54,12 +54,12 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 		return new FileSystemResource(this.file);
 	}
 
-	private static String calculatePath(File root, File file) {
+	public static String calculatePath(File root, File file) {
 		String rootPath = root.getAbsolutePath();
 		String filePath = file.getAbsolutePath();
 		Assert.isTrue(filePath.startsWith(rootPath),
 				"File '" + root + "' is not a parent of '" + file + "'");
-		return filePath.substring(rootPath.length());
+		return filePath.substring(rootPath.length() + 1);
 	}
 
 }

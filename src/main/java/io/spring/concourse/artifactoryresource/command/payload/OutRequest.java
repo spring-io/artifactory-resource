@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -82,13 +83,16 @@ public class OutRequest {
 		@JsonProperty("build_uri")
 		private final String buildUri;
 
+		private final List<ArtifactSet> artifactSet;
+
 		@JsonCreator
 		public Params(@JsonProperty("build_number") String buildNumber,
 				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
 				@JsonProperty("include") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("module_layout") String moduleLayout,
-				@JsonProperty("build_uri") String buildUri) {
+				@JsonProperty("build_uri") String buildUri,
+				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.buildNumber = buildNumber;
@@ -100,6 +104,8 @@ public class OutRequest {
 					: Collections.unmodifiableList(new ArrayList<>(exclude)));
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
+			this.artifactSet = (artifactSet == null ? Collections.emptyList()
+					: Collections.unmodifiableList(new ArrayList<>(artifactSet)));
 		}
 
 		public String getBuildNumber() {
@@ -130,11 +136,58 @@ public class OutRequest {
 			return this.buildUri;
 		}
 
+		public List<ArtifactSet> getArtifactSet() {
+			return this.artifactSet;
+		}
+
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
 					.append("folder", this.folder).append("include", this.include)
 					.append("exclude", this.exclude).append("buildUri", this.buildUri)
+					.append("artifactSet", this.artifactSet).toString();
+		}
+
+	}
+
+	/**
+	 * An artifact set for additional configuration.
+	 */
+	public static class ArtifactSet {
+
+		private final List<String> include;
+
+		private final List<String> exclude;
+
+		private final Map<String, String> properties;
+
+		@JsonCreator
+		public ArtifactSet(@JsonProperty("include") List<String> include,
+				@JsonProperty("exclude") List<String> exclude,
+				@JsonProperty("properties") Map<String, String> properties) {
+			this.include = (include == null ? Collections.emptyList()
+					: Collections.unmodifiableList(new ArrayList<>(include)));
+			this.exclude = (exclude == null ? Collections.emptyList()
+					: Collections.unmodifiableList(new ArrayList<>(exclude)));
+			this.properties = properties;
+		}
+
+		public List<String> getInclude() {
+			return this.include;
+		}
+
+		public List<String> getExclude() {
+			return this.exclude;
+		}
+
+		public Map<String, String> getProperties() {
+			return this.properties;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringCreator(this).append("include", this.include)
+					.append("exclude", this.exclude).append("properties", this.properties)
 					.toString();
 		}
 
