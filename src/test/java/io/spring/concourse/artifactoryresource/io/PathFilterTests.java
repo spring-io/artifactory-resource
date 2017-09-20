@@ -54,34 +54,34 @@ public class PathFilterTests {
 			throws Exception {
 		PathFilter filter = new PathFilter(Collections.emptyList(),
 				Collections.emptyList());
-		assertThat(filter.isMatch("foo")).isTrue();
+		assertThat(filter.isMatch("/foo")).isTrue();
 	}
 
 	@Test
 	public void isMatchWhenIncludeIsEmptyAndExcludeMatchesShouldReturnFalse()
 			throws Exception {
 		PathFilter filter = new PathFilter(Collections.emptyList(),
-				Collections.singletonList("**/foo"));
-		assertThat(filter.isMatch("foo/bar")).isTrue();
-		assertThat(filter.isMatch("bar/foo")).isFalse();
+				Collections.singletonList("/**/foo"));
+		assertThat(filter.isMatch("/foo/bar")).isTrue();
+		assertThat(filter.isMatch("/bar/foo")).isFalse();
 	}
 
 	@Test
 	public void isMatchWhenIncludeMatchesAndExcludeIsEmptyShouldReturnTrue()
 			throws Exception {
-		PathFilter filter = new PathFilter(Collections.singletonList("**/foo"),
+		PathFilter filter = new PathFilter(Collections.singletonList("/**/foo"),
 				Collections.emptyList());
-		assertThat(filter.isMatch("foo/bar")).isFalse();
-		assertThat(filter.isMatch("bar/foo")).isTrue();
+		assertThat(filter.isMatch("/foo/bar")).isFalse();
+		assertThat(filter.isMatch("/bar/foo")).isTrue();
 	}
 
 	@Test
 	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyShouldReturnTrue()
 			throws Exception {
 		PathFilter filter = new PathFilter(
-				Collections.singletonList("**/spring-boot-docs-*.zip"),
+				Collections.singletonList("/**/spring-boot-docs-*.zip"),
 				Collections.emptyList());
-		assertThat(filter.isMatch("org/springframework/boot/spring-boot-docs/"
+		assertThat(filter.isMatch("/org/springframework/boot/spring-boot-docs/"
 				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip"))
 						.isTrue();
 	}
@@ -89,10 +89,10 @@ public class PathFilterTests {
 	@Test
 	public void isMatchWhenIncludeMatchesAndExcludeMatchesShouldReturnFalse()
 			throws Exception {
-		PathFilter filter = new PathFilter(Collections.singletonList("foo/**"),
-				Collections.singletonList("**/bar"));
-		assertThat(filter.isMatch("foo/bar")).isFalse();
-		assertThat(filter.isMatch("foo/baz")).isTrue();
+		PathFilter filter = new PathFilter(Collections.singletonList("/foo/**"),
+				Collections.singletonList("/**/bar"));
+		assertThat(filter.isMatch("/foo/bar")).isFalse();
+		assertThat(filter.isMatch("/foo/baz")).isTrue();
 	}
 
 }

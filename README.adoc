@@ -174,9 +174,9 @@ Here's a typical example:
 params:
   artifact-set:
   - include:
-    - "**/*.zip"
+    - "/**/*.zip"
     exclude:
-    - "**/foo.zip"
+    - "/**/foo.zip"
     properties:
       zip-type: docs
       zip-deployed: false
