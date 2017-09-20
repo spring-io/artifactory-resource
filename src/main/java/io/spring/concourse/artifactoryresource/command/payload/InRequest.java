@@ -70,17 +70,24 @@ public class InRequest {
 	 */
 	public static class Params {
 
+		private final boolean debug;
+
 		private final boolean generateMavenMetadata;
 
 		public Params() {
-			this(null);
+			this(null, null);
 		}
 
 		@JsonCreator
-		public Params(
+		public Params(@JsonProperty("debug") Boolean debug,
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata) {
+			this.debug = (debug == null ? false : debug);
 			this.generateMavenMetadata = (generateMavenMetadata == null ? true
 					: generateMavenMetadata);
+		}
+
+		public boolean isDebug() {
+			return this.debug;
 		}
 
 		public boolean isGenerateMavenMetadata() {

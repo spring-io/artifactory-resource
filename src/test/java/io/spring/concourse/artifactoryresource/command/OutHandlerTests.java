@@ -216,8 +216,8 @@ public class OutHandlerTests {
 			List<String> exclude, List<ArtifactSet> artifactSet) {
 		return new OutRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
-				new Params(buildNumber, "libs-snapshot-local", "folder", include, exclude,
-						"mock", "http://ci.example.com/1234", artifactSet));
+				new Params(false, buildNumber, "libs-snapshot-local", "folder", include,
+						exclude, "mock", "http://ci.example.com/1234", artifactSet));
 	}
 
 	private Directory createDirectory() throws IOException {

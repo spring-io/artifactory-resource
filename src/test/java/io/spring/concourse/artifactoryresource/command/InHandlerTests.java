@@ -130,7 +130,7 @@ public class InHandlerTests {
 	private InRequest createRequest(boolean generateMavenMetadata) {
 		InRequest request = new InRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
-				new Version("1234"), new Params(generateMavenMetadata));
+				new Version("1234"), new Params(false, generateMavenMetadata));
 		return request;
 	}
 

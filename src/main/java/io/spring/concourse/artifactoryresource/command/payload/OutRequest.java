@@ -67,6 +67,8 @@ public class OutRequest {
 	 */
 	public static class Params {
 
+		private final boolean debug;
+
 		@JsonProperty("build_number")
 		private final String buildNumber;
 
@@ -86,7 +88,8 @@ public class OutRequest {
 		private final List<ArtifactSet> artifactSet;
 
 		@JsonCreator
-		public Params(@JsonProperty("build_number") String buildNumber,
+		public Params(@JsonProperty("debug") Boolean debug,
+				@JsonProperty("build_number") String buildNumber,
 				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
 				@JsonProperty("include") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
@@ -95,6 +98,7 @@ public class OutRequest {
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
+			this.debug = (debug == null ? false : debug);
 			this.buildNumber = buildNumber;
 			this.repo = repo;
 			this.folder = folder;
@@ -106,6 +110,10 @@ public class OutRequest {
 			this.buildUri = buildUri;
 			this.artifactSet = (artifactSet == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(artifactSet)));
+		}
+
+		public boolean isDebug() {
+			return this.debug;
 		}
 
 		public String getBuildNumber() {

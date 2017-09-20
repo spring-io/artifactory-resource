@@ -39,6 +39,8 @@ import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -53,7 +55,9 @@ import org.springframework.util.StringUtils;
 @Component
 public class OutHandler {
 
-	private static final ConsoleLogger logger = new ConsoleLogger();
+	private static final Logger logger = LoggerFactory.getLogger(OutHandler.class);
+
+	private static final ConsoleLogger console = new ConsoleLogger();
 
 	private final Artifactory artifactory;
 
@@ -74,19 +78,22 @@ public class OutHandler {
 	public OutResponse handle(OutRequest request, Directory directory) {
 		Source source = request.getSource();
 		Params params = request.getParams();
+		DebugLogging.setEnabled(params.isDebug());
 		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source,
 				params, directory);
 		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
-		logger.info("Deploying {} artifacts to {} as build {}", artifacts.size(),
+		console.log("Deploying {} artifacts to {} as build {}", artifacts.size(),
 				source.getUri(), buildNumber);
 		deployArtifacts(artifactoryServer, params, artifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
+		logger.debug("Done");
 		return new OutResponse(new Version(buildNumber));
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
+		logger.debug("Using artifactory server " + source.getUri());
 		return this.artifactory.server(source.getUri(), source.getUsername(),
 				source.getPassword());
 	}
@@ -95,15 +102,19 @@ public class OutHandler {
 		if (StringUtils.hasLength(params.getBuildNumber())) {
 			return params.getBuildNumber();
 		}
-		return this.buildNumberGenerator.generateBuildNumber();
+		String buildNumber = this.buildNumberGenerator.generateBuildNumber();
+		logger.debug("Generated build number {}", buildNumber);
+		return buildNumber;
 	}
 
 	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber,
 			Source source, Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
+		logger.debug("Getting deployable artifacts from {}", root);
 		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
 				params.getExclude());
 		return files.stream().map((file) -> {
+			logger.debug("Including file {}", file);
 			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
 			Map<String, String> properties = getDeployableArtifactProperties(path,
 					buildNumber, source, params);
@@ -123,12 +134,16 @@ public class OutHandler {
 			Map<String, String> properties) {
 		for (ArtifactSet artifactSet : params.getArtifactSet()) {
 			if (getFilter(artifactSet).isMatch(path)) {
+				logger.debug("Artifact set matched, adding properties {}",
+						artifactSet.getProperties());
 				properties.putAll(artifactSet.getProperties());
 			}
 		}
 	}
 
 	private PathFilter getFilter(ArtifactSet artifactSet) {
+		logger.debug("Creating artifact set filter including {} and excluding {}",
+				artifactSet.getInclude(), artifactSet.getExclude());
 		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
 	}
 
@@ -140,10 +155,11 @@ public class OutHandler {
 
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,
 			List<DeployableArtifact> deployableArtifacts) {
+		logger.debug("Deploying artifacts to {}", params.getRepo());
 		ArtifactoryRepository artifactoryRepository = artifactoryServer
 				.repository(params.getRepo());
 		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			logger.info("Deploying {} {}", deployableArtifact.getPath(),
+			console.log("Deploying {} {}", deployableArtifact.getPath(),
 					deployableArtifact.getProperties());
 			artifactoryRepository.deploy(deployableArtifact);
 		}
@@ -151,6 +167,7 @@ public class OutHandler {
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,
 			Params params, String buildNumber, List<DeployableArtifact> artifacts) {
+		logger.debug("Adding build run {}", buildNumber);
 		List<BuildModule> modules = this.moduleLayouts
 				.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);

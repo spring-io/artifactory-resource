@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.system;
+package io.spring.concourse.artifactoryresource.command;
 
-import org.slf4j.helpers.MessageFormatter;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingSystem;
 
 /**
- * Simple console logger used to output progress messages.
+ * Utility to enable debug logging.
  *
  * @author Phillip Webb
  */
-public class ConsoleLogger {
+final class DebugLogging {
 
-	public void log(String message, Object... args) {
-		System.err.println(MessageFormatter.arrayFormat(message, args).getMessage());
+	private DebugLogging() {
+	}
+
+	public static void setEnabled(boolean enabled) {
+		if (enabled) {
+			LoggingSystem system = LoggingSystem
+					.get(Thread.currentThread().getContextClassLoader());
+			system.setLogLevel("org.springframework", LogLevel.DEBUG);
+			system.setLogLevel("io.spring.concourse.artifactoryresource", LogLevel.DEBUG);
+		}
 	}
 
 }

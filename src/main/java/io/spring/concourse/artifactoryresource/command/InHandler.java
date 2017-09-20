@@ -23,12 +23,15 @@ import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
+import io.spring.concourse.artifactoryresource.command.payload.InRequest.Params;
 import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -43,7 +46,9 @@ import org.springframework.util.MultiValueMap;
 @Component
 public class InHandler {
 
-	private static final ConsoleLogger logger = new ConsoleLogger();
+	private static final Logger logger = LoggerFactory.getLogger(OutHandler.class);
+
+	private static final ConsoleLogger console = new ConsoleLogger();
 
 	private final Artifactory artifactory;
 
@@ -59,19 +64,24 @@ public class InHandler {
 		Source source = request.getSource();
 		Version version = request.getVersion();
 		String buildNumber = version.getBuildNumber();
+		Params params = request.getParams();
+		DebugLogging.setEnabled(params.isDebug());
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
 		List<DeployedArtifact> artifacts = artifactoryServer
 				.buildRuns(source.getBuildName()).getDeployedArtifacts(buildNumber);
-		logger.info("Downloading build {} artifacts from {}", buildNumber,
+		console.log("Downloading build {} artifacts from {}", buildNumber,
 				source.getUri());
 		download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
-		if (request.getParams().isGenerateMavenMetadata()) {
+		if (params.isGenerateMavenMetadata()) {
+			logger.debug("Generating maven metadata");
 			this.mavenMetadataGenerator.generate(directory);
 		}
+		logger.debug("Done");
 		return new InResponse(version);
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
+		logger.debug("Using artifactory server " + source.getUri());
 		return this.artifactory.server(source.getUri(), source.getUsername(),
 				source.getPassword());
 	}
@@ -86,7 +96,7 @@ public class InHandler {
 	private void download(ArtifactoryServer artifactoryServer,
 			MultiValueMap<String, DeployedArtifact> artifactsByRepo, File destination) {
 		artifactsByRepo.forEach((repo, artifacts) -> artifacts.forEach((artifact) -> {
-			logger.info("Downloading {} from {}", artifact.getPath(), repo);
+			console.log("Downloading {} from {}", artifact.getPath(), repo);
 			artifactoryServer.repository(repo).download(artifact, destination);
 		}));
 	}
