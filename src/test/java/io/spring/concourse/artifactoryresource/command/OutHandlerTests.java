@@ -96,7 +96,7 @@ public class OutHandlerTests {
 	private OutHandler handler;
 
 	@Captor
-	private ArgumentCaptor<List<DeployableArtifact>> artifactsCaptor;
+	private ArgumentCaptor<DeployableArtifact> artifactCaptor;
 
 	@Captor
 	private ArgumentCaptor<List<BuildModule>> modulesCaptor;
@@ -152,12 +152,10 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository).deploy(this.artifactsCaptor.capture());
-		List<DeployableArtifact> deployed = this.artifactsCaptor.getValue();
-		assertThat(deployed).hasSize(1);
-		DeployableArtifact artifact = deployed.get(0);
-		assertThat(artifact.getPath()).isEqualTo("/foo.jar");
-		assertThat(artifact.getProperties()).containsEntry("build.name", "my-build")
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
+		DeployableArtifact deployed = this.artifactCaptor.getValue();
+		assertThat(deployed.getPath()).isEqualTo("/foo.jar");
+		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
 				.containsEntry("build.number", "1234");
 	}
 
@@ -173,11 +171,9 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository).deploy(this.artifactsCaptor.capture());
-		List<DeployableArtifact> deployed = this.artifactsCaptor.getValue();
-		assertThat(deployed).hasSize(1);
-		DeployableArtifact artifact = deployed.get(0);
-		assertThat(artifact.getProperties()).containsEntry("foo", "bar");
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
+		DeployableArtifact deployed = this.artifactCaptor.getValue();
+		assertThat(deployed.getProperties()).containsEntry("foo", "bar");
 	}
 
 	@Test

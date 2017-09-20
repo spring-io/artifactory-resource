@@ -38,6 +38,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
+import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -51,6 +52,8 @@ import org.springframework.util.StringUtils;
  */
 @Component
 public class OutHandler {
+
+	private static final ConsoleLogger logger = new ConsoleLogger();
 
 	private final Artifactory artifactory;
 
@@ -76,6 +79,8 @@ public class OutHandler {
 		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source,
 				params, directory);
 		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
+		logger.info("Deploying {} artifacts to {} as build {}", artifacts.size(),
+				source.getUri(), buildNumber);
 		deployArtifacts(artifactoryServer, params, artifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
 		return new OutResponse(new Version(buildNumber));
@@ -137,7 +142,11 @@ public class OutHandler {
 			List<DeployableArtifact> deployableArtifacts) {
 		ArtifactoryRepository artifactoryRepository = artifactoryServer
 				.repository(params.getRepo());
-		artifactoryRepository.deploy(deployableArtifacts);
+		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
+			logger.info("Deploying {} {}", deployableArtifact.getPath(),
+					deployableArtifact.getProperties());
+			artifactoryRepository.deploy(deployableArtifact);
+		}
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,

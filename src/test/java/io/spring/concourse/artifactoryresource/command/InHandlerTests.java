@@ -102,8 +102,10 @@ public class InHandlerTests {
 		InRequest request = createRequest(false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
-		verify(this.artifactoryRepository).download(this.deployedArtifacts,
-				directory.getFile());
+		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
+			verify(this.artifactoryRepository).download(deployedArtifact,
+					directory.getFile());
+		}
 		assertThat(response.getVersion()).isEqualTo(request.getVersion());
 	}
 

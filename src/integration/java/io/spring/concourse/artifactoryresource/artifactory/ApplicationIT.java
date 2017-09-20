@@ -112,7 +112,9 @@ public class ApplicationIT {
 		List<DeployedArtifact> results = artifactoryBuildRuns
 				.getDeployedArtifacts(buildNumber);
 		File folder = this.temporaryFolder.newFolder();
-		artifactoryRepository.download(results, folder);
+		for (DeployedArtifact result : results) {
+			artifactoryRepository.download(result, folder);
+		}
 		assertThat(new File(folder, "foo/bar")).hasContent("foo");
 	}
 

@@ -28,6 +28,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
+import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -41,6 +42,8 @@ import org.springframework.util.MultiValueMap;
  */
 @Component
 public class InHandler {
+
+	private static final ConsoleLogger logger = new ConsoleLogger();
 
 	private final Artifactory artifactory;
 
@@ -59,6 +62,8 @@ public class InHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
 		List<DeployedArtifact> artifacts = artifactoryServer
 				.buildRuns(source.getBuildName()).getDeployedArtifacts(buildNumber);
+		logger.info("Downloading build {} artifacts from {}", buildNumber,
+				source.getUri());
 		download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
 		if (request.getParams().isGenerateMavenMetadata()) {
 			this.mavenMetadataGenerator.generate(directory);
@@ -79,9 +84,11 @@ public class InHandler {
 	}
 
 	private void download(ArtifactoryServer artifactoryServer,
-			MultiValueMap<String, DeployedArtifact> artifacts, File destination) {
-		artifacts.forEach(
-				(k, v) -> artifactoryServer.repository(k).download(v, destination));
+			MultiValueMap<String, DeployedArtifact> artifactsByRepo, File destination) {
+		artifactsByRepo.forEach((repo, artifacts) -> artifacts.forEach((artifact) -> {
+			logger.info("Downloading {} from {}", artifact.getPath(), repo);
+			artifactoryServer.repository(repo).download(artifact, destination);
+		}));
 	}
 
 }
