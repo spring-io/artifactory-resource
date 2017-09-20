@@ -76,6 +76,17 @@ public class PathFilterTests {
 	}
 
 	@Test
+	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyShouldReturnTrue()
+			throws Exception {
+		PathFilter filter = new PathFilter(
+				Collections.singletonList("**/spring-boot-docs-*.zip"),
+				Collections.emptyList());
+		assertThat(filter.isMatch("org/springframework/boot/spring-boot-docs/"
+				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip"))
+						.isTrue();
+	}
+
+	@Test
 	public void isMatchWhenIncludeMatchesAndExcludeMatchesShouldReturnFalse()
 			throws Exception {
 		PathFilter filter = new PathFilter(Collections.singletonList("foo/**"),

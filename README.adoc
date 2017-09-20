@@ -20,11 +20,11 @@ To use the `artifactory-resource` you must declare it in the `resource_types` se
 .Resource configuration
 ----
 resource_types:
-  - name: artifactory-resource
-    type: docker-image
-    source:
-      repository: springio/artifactory-resource
-      tag: latest
+- name: artifactory-resource
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    tag: latest
 ----
 
 
@@ -42,11 +42,11 @@ resource_types:
 resources:
 - name: artifacts
   type: artifactory-resource
-    source:
-      uri: http://repo.example.com
-      username: admin
-      password: secret
-      build_name: my-build
+  source:
+    uri: http://repo.example.com
+    username: admin
+    password: secret
+    build_name: my-build
 ----
 
 
@@ -57,12 +57,12 @@ For example, typically the `build_url` `out` parameter would be built using `${B
 [source,yaml]
 .Environment variable reference
 ----
-  jobs:
-    - name: build
-      plan:
-        - put: artifactory
-          params:
-            build_url: https://my.concourse.url/builds/${BUILD_ID}
+jobs:
+- name: build
+  plan:
+  - put: artifactory
+    params:
+      build_url: https://my.concourse.url/builds/${BUILD_ID}
 ----
 
 
@@ -107,7 +107,7 @@ jobs:
       repo: libs-snapshot-local
       build_number: "${BUILD_ID}"
       folder: test
-      build_url: "{{CONCOURSE_URI}}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
+      build_uri: "{{CONCOURSE_URI}}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
 - name: test
   plan:
   - get: artifactory
