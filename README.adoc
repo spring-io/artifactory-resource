@@ -172,7 +172,7 @@ Here's a typical example:
 .Artifact sets
 ----
 params:
-  artifact-set:
+  artifact_set:
   - include:
     - "/**/*.zip"
     exclude:
