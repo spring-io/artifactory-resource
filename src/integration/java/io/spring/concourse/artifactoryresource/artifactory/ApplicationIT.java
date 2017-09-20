@@ -84,7 +84,7 @@ public class ApplicationIT {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("foo/bar",
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar",
 				"foo".getBytes(), properties);
 		artifactoryRepository.deploy(artifact);
 	}

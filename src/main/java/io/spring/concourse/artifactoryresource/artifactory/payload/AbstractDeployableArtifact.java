@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract {@link DeployableArtifact} implementation.
@@ -40,16 +39,11 @@ public abstract class AbstractDeployableArtifact implements DeployableArtifact {
 	public AbstractDeployableArtifact(String path, Map<String, String> properties,
 			Checksums checksums) {
 		Assert.hasText(path, "Path must not be empty");
-		this.path = cleanPath(path);
+		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
+		this.path = path;
 		this.properties = (properties == null ? Collections.emptyMap()
 				: Collections.unmodifiableMap(new LinkedHashMap<>(properties)));
 		this.checksums = checksums;
-	}
-
-	private String cleanPath(String path) {
-		path = StringUtils.cleanPath(path);
-		path = (path.startsWith("/") ? path : "/" + path);
-		return path;
 	}
 
 	@Override

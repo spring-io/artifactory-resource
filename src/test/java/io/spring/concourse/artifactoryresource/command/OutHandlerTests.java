@@ -163,7 +163,7 @@ public class OutHandlerTests {
 	public void handleWhenHasArtifactSetShouldDeployWithAdditionalProperties()
 			throws Exception {
 		List<ArtifactSet> artifactSet = new ArrayList<>();
-		List<String> include = Collections.singletonList("**/foo.jar");
+		List<String> include = Collections.singletonList("/**/foo.jar");
 		List<String> exclude = null;
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
 		artifactSet.add(new ArtifactSet(include, exclude, properties));

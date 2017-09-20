@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DeployableArtifact} backed by a {@link File}.
@@ -59,7 +60,13 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 		String filePath = file.getAbsolutePath();
 		Assert.isTrue(filePath.startsWith(rootPath),
 				"File '" + root + "' is not a parent of '" + file + "'");
-		return filePath.substring(rootPath.length() + 1);
+		return cleanPath(filePath.substring(rootPath.length() + 1));
+	}
+
+	private static String cleanPath(String path) {
+		path = StringUtils.cleanPath(path);
+		path = (path.startsWith("/") ? path : "/" + path);
+		return path;
 	}
 
 }

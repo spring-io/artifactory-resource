@@ -114,8 +114,8 @@ public class OutHandler {
 		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
 				params.getExclude());
 		return files.stream().map((file) -> {
-			logger.debug("Including file {}", file);
 			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
+			logger.debug("Including file {} with path {}", file, path);
 			Map<String, String> properties = getDeployableArtifactProperties(path,
 					buildNumber, source, params);
 			return new DeployableFileArtifact(root.getFile(), file, properties);

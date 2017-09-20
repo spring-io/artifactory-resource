@@ -38,7 +38,7 @@ public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifact
 	public void createWhenBytesIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Content must not be null");
-		new DeployableByteArrayArtifact("foo", null);
+		new DeployableByteArrayArtifact("/foo", null);
 	}
 
 	@Override

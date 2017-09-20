@@ -38,13 +38,13 @@ public abstract class AbstractDeployableArtifactTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldUseEmptyProperties() throws Exception {
-		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, null);
 		assertThat(artifact.getProperties()).isNotNull().isEmpty();
 	}
 
 	@Test
 	public void createWhenChecksumIsNullShouldCalculateChecksums() throws Exception {
-		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, null);
 		assertThat(artifact.getChecksums().getSha1())
 				.isEqualTo("a9993e364706816aba3e25717850c26c9cd0d89d");
 		assertThat(artifact.getChecksums().getMd5())
@@ -54,7 +54,7 @@ public abstract class AbstractDeployableArtifactTests {
 	@Test
 	public void getPropertiesShouldReturnProperties() throws Exception {
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
-		AbstractDeployableArtifact artifact = create("foo", CONTENT, properties, null);
+		AbstractDeployableArtifact artifact = create("/foo", CONTENT, properties, null);
 		assertThat(artifact.getProperties()).isEqualTo(properties);
 	}
 
@@ -62,19 +62,19 @@ public abstract class AbstractDeployableArtifactTests {
 	public void getChecksumShouldReturnChecksum() throws Exception {
 		Checksums checksums = new Checksums("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 				"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, checksums);
+		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, checksums);
 		assertThat(artifact.getChecksums()).isEqualTo(checksums);
 	}
 
 	@Test
 	public void getPathShouldReturnPath() throws Exception {
-		AbstractDeployableArtifact artifact = create("foo/bar", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("/foo/bar", CONTENT, null, null);
 		assertThat(artifact.getPath()).isEqualTo("/foo/bar");
 	}
 
 	@Test
 	public void getContentShouldReturnContent() throws Exception {
-		AbstractDeployableArtifact artifact = create("foo", CONTENT, null, null);
+		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, null);
 		assertThat(FileCopyUtils.copyToByteArray(artifact.getContent().getInputStream()))
 				.isEqualTo(CONTENT);
 	}
