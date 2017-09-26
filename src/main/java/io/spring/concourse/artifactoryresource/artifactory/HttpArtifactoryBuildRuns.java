@@ -85,6 +85,15 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
+	public String getRawBuildInfo(String buildNumber) {
+		Assert.hasText(buildNumber, "BuildNumber must not be empty");
+		URI uri = UriComponentsBuilder.fromUriString(this.uri)
+				.path("api/build/{buildName}/{buildNumber}")
+				.buildAndExpand(this.buildName, buildNumber).encode().toUri();
+		return this.restTemplate.getForObject(uri, String.class);
+	}
+
+	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql")

@@ -74,16 +74,20 @@ public class InRequest {
 
 		private final boolean generateMavenMetadata;
 
+		private final boolean saveBuildInfo;
+
 		public Params() {
-			this(null, null);
+			this(null, null, null);
 		}
 
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug,
-				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata) {
+				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata,
+				@JsonProperty("save_build_info") Boolean saveBuildInfo) {
 			this.debug = (debug == null ? false : debug);
 			this.generateMavenMetadata = (generateMavenMetadata == null ? true
 					: generateMavenMetadata);
+			this.saveBuildInfo = (saveBuildInfo == null ? false : saveBuildInfo);
 		}
 
 		public boolean isDebug() {
@@ -94,11 +98,15 @@ public class InRequest {
 			return this.generateMavenMetadata;
 		}
 
+		public boolean isSaveBuildInfo() {
+			return this.saveBuildInfo;
+		}
+
 		@Override
 		public String toString() {
 			return new ToStringCreator(this)
 					.append("generateMavenMetadata", this.generateMavenMetadata)
-					.toString();
+					.append("saveBuildInfo", this.saveBuildInfo).toString();
 		}
 
 	}

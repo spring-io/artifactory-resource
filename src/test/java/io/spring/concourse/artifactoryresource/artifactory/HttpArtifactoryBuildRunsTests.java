@@ -130,6 +130,16 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
+	public void getRawBuildInfoShouldReturnBuildInfo() throws Exception {
+		this.server.expect(requestTo("http://repo.example.com/api/build/my-build/5678"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(getResource("payload/build-info.json"),
+						MediaType.APPLICATION_JSON));
+		String buildInfo = this.artifactoryBuildRuns.getRawBuildInfo("5678");
+		assertThat(buildInfo).isNotEmpty().contains("my-build");
+	}
+
+	@Test
 	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo()
 			throws Exception {
 		String url = "http://repo.example.com/api/search/aql";

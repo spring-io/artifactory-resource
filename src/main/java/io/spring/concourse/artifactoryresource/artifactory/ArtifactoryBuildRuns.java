@@ -76,6 +76,13 @@ public interface ArtifactoryBuildRuns {
 	List<BuildRun> getAll();
 
 	/**
+	 * Return a string containing the build-info JSON as stored on the server.
+	 * @param buildNumber the build number
+	 * @return a string containing the build-info JSON
+	 */
+	String getRawBuildInfo(String buildNumber);
+
+	/**
 	 * Return all artifacts that were deployed for the specified build run.
 	 * @param buildRun the build run
 	 * @return the deployed artifacts

@@ -9,6 +9,7 @@
 		"build_number": "5678"
 	},
 	"params": {
-		"generate_maven_metadata": false
+		"generate_maven_metadata": false,
+		"save_build_info": true
 	}
 }

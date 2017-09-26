@@ -16,6 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class InHandlerTests {
 
+	private static final String BUILD_INFO_JSON = "{}";
+
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -85,6 +88,8 @@ public class InHandlerTests {
 				.willReturn(this.artifactoryRepository);
 		given(this.artifactoryBuildRuns.getDeployedArtifacts("1234"))
 				.willReturn(this.deployedArtifacts);
+		given(this.artifactoryBuildRuns.getRawBuildInfo("1234"))
+				.willReturn(BUILD_INFO_JSON);
 		this.handler = new InHandler(this.artifactory, this.mavenMetadataGenerator);
 	}
 
@@ -99,7 +104,7 @@ public class InHandlerTests {
 
 	@Test
 	public void handleShouldDownloadArtifacts() throws Exception {
-		InRequest request = createRequest(false);
+		InRequest request = createRequest(false, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
@@ -112,7 +117,7 @@ public class InHandlerTests {
 	@Test
 	public void handleWhenHasGenerateMavenMetadataParamShouldGenerateMetadata()
 			throws Exception {
-		InRequest request = createRequest(true);
+		InRequest request = createRequest(true, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		verify(this.mavenMetadataGenerator).generate(directory);
@@ -121,16 +126,27 @@ public class InHandlerTests {
 	@Test
 	public void handleWhenHasNoGenerateMavenMetadataParamShouldNotGenerateMetadata()
 			throws Exception {
-		InRequest request = createRequest(false);
+		InRequest request = createRequest(false, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		verifyZeroInteractions(this.mavenMetadataGenerator);
 	}
 
-	private InRequest createRequest(boolean generateMavenMetadata) {
+	@Test
+	public void handleWhenSaveBuildInfoShouldSaveBuildInfo() throws Exception {
+		InRequest request = createRequest(false, true);
+		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		this.handler.handle(request, directory);
+		File buildInfo = new File(directory.getFile(), "build-info.json");
+		assertThat(buildInfo).exists().hasContent(BUILD_INFO_JSON);
+	}
+
+	private InRequest createRequest(boolean generateMavenMetadata,
+			boolean saveBuildInfo) {
 		InRequest request = new InRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
-				new Version("1234"), new Params(false, generateMavenMetadata));
+				new Version("1234"),
+				new Params(false, generateMavenMetadata, saveBuildInfo));
 		return request;
 	}
 

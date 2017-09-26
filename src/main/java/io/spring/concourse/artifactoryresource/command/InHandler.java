@@ -17,9 +17,12 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
+import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
@@ -34,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -67,8 +71,9 @@ public class InHandler {
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
-		List<DeployedArtifact> artifacts = artifactoryServer
-				.buildRuns(source.getBuildName()).getDeployedArtifacts(buildNumber);
+		ArtifactoryBuildRuns buildRuns = artifactoryServer
+				.buildRuns(source.getBuildName());
+		List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
 		console.log("Downloading build {} artifacts from {}", buildNumber,
 				source.getUri());
 		download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
@@ -76,8 +81,21 @@ public class InHandler {
 			logger.debug("Generating maven metadata");
 			this.mavenMetadataGenerator.generate(directory);
 		}
+		if (params.isSaveBuildInfo()) {
+			String buildInfo = buildRuns.getRawBuildInfo(buildNumber);
+			saveBuildInfo(buildInfo, new File(directory.getFile(), "build-info.json"));
+		}
 		logger.debug("Done");
 		return new InResponse(version);
+	}
+
+	private void saveBuildInfo(String buildInfo, File buildInfoFile) {
+		try {
+			FileCopyUtils.copy(buildInfo, new FileWriter(buildInfoFile));
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
