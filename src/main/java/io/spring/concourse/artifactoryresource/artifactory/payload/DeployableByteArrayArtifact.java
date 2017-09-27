@@ -53,4 +53,9 @@ public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 		return new ByteArrayResource(this.content);
 	}
 
+	@Override
+	public long getSize() {
+		return this.content.length;
+	}
+
 }

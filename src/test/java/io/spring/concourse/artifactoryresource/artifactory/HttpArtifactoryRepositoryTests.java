@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
@@ -39,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -56,6 +58,13 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
 public class HttpArtifactoryRepositoryTests {
+
+	private static final byte[] BYTES;
+
+	static {
+		BYTES = new byte[1024 * 11];
+		new Random().nextBytes(BYTES);
+	}
 
 	@Autowired
 	private MockRestServiceServer server;
@@ -87,7 +96,7 @@ public class HttpArtifactoryRepositoryTests {
 	@Test
 	public void deployShouldUploadTheDeployableArtifact() throws IOException {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				"foo".getBytes());
+				BYTES);
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
@@ -104,7 +113,7 @@ public class HttpArtifactoryRepositoryTests {
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				"foo".getBytes(), properties);
+				BYTES, properties);
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123";
 		this.server.expect(requestTo(url)).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
@@ -114,7 +123,7 @@ public class HttpArtifactoryRepositoryTests {
 	@Test
 	public void deployWhenChecksumMatchesShouldNotUpload() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				"foo".getBytes());
+				BYTES);
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
@@ -122,6 +131,22 @@ public class HttpArtifactoryRepositoryTests {
 				.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
+	}
+
+	@Test
+	public void deployWhenSmallFileShouldNotUseChecksum() throws Exception {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				"foo".getBytes());
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
+				.andExpect(noChecksumHeader()).andRespond(withSuccess());
+		this.artifactoryRepository.deploy(artifact);
+		this.server.verify();
+	}
+
+	private RequestMatcher noChecksumHeader() {
+		return (request) -> assertThat(request.getHeaders().keySet())
+				.doesNotContain("X-Checksum-Deploy");
 	}
 
 	@Test

@@ -42,6 +42,12 @@ public interface DeployableArtifact {
 	Resource getContent();
 
 	/**
+	 * Return the size of the contents in bytes.
+	 * @return the size
+	 */
+	long getSize();
+
+	/**
 	 * Return any property meta-data that is attached to the artifact.
 	 * @return the property meta-data
 	 */

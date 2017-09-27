@@ -55,6 +55,11 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 		return new FileSystemResource(this.file);
 	}
 
+	@Override
+	public long getSize() {
+		return this.file.length();
+	}
+
 	public static String calculatePath(File root, File file) {
 		String rootPath = root.getAbsolutePath();
 		String filePath = file.getAbsolutePath();

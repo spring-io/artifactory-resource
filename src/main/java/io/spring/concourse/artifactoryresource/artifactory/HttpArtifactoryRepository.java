@@ -52,6 +52,10 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private static final Object[] NO_VARIABLES = {};
 
+	private static final int KB = 1024;
+
+	private static final long CHECKSUM_THRESHOLD = 10 * KB;
+
 	private final RestTemplate restTemplate;
 
 	private final String uri;
@@ -69,6 +73,10 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void deploy(DeployableArtifact artifact) {
 		try {
 			Assert.notNull(artifact, "Artifact must not be null");
+			if (artifact.getSize() <= CHECKSUM_THRESHOLD) {
+				deployUsingContent(artifact);
+				return;
+			}
 			try {
 				deployUsingChecksum(artifact);
 			}
@@ -81,7 +89,6 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-
 	}
 
 	private void deployUsingChecksum(DeployableArtifact artifact) throws IOException {
