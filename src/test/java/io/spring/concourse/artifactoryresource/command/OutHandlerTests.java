@@ -203,6 +203,25 @@ public class OutHandlerTests {
 		verify(this.directoryScanner).scan(any(), eq(include), eq(exclude));
 	}
 
+	@Test
+	public void handleShouldFilterChecksumFiles() throws Exception {
+		OutRequest request = createRequest("1234");
+		Directory directory = createDirectory();
+		List<File> chechsumFiles = new ArrayList<>();
+		chechsumFiles.add(
+				new File(directory.getSubDirectory("folder").getFile(), "foo.jar.md5"));
+		chechsumFiles.add(
+				new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha1"));
+		configureMockScanner(directory, chechsumFiles);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryBuildRuns).add(eq("1234"),
+				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
+		List<BuildModule> buildModules = this.modulesCaptor.getValue();
+		assertThat(buildModules).hasSize(1);
+		BuildModule buildModule = buildModules.get(0);
+		assertThat(buildModule.getArtifacts()).hasSize(1);
+	}
+
 	private OutRequest createRequest(String buildNumber) {
 		return createRequest(buildNumber, null, null);
 	}
@@ -228,10 +247,16 @@ public class OutHandlerTests {
 	}
 
 	private void configureMockScanner(Directory directory) throws IOException {
+		configureMockScanner(directory, Collections.emptyList());
+	}
+
+	private void configureMockScanner(Directory directory, List<File> extraFiles)
+			throws IOException {
 		List<File> files = new ArrayList<>();
 		File file = new File(directory.getSubDirectory("folder").getFile(), "foo.jar");
 		FileCopyUtils.copy(NO_BYTES, file);
 		files.add(file);
+		files.addAll(extraFiles);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
 	}
 

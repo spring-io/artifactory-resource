@@ -113,7 +113,7 @@ public class OutHandler {
 		logger.debug("Getting deployable artifacts from {}", root);
 		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
 				params.getExclude());
-		return files.stream().map((file) -> {
+		return files.stream().filter((file) -> !isChecksumFile(file)).map((file) -> {
 			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
 			logger.debug("Including file {} with path {}", file, path);
 			Map<String, String> properties = getDeployableArtifactProperties(path,
@@ -165,6 +165,11 @@ public class OutHandler {
 					deployableArtifact.getChecksums().getMd5());
 			artifactoryRepository.deploy(deployableArtifact);
 		}
+	}
+
+	private boolean isChecksumFile(File file) {
+		String name = file.getName().toLowerCase();
+		return (name.endsWith(".md5") || name.endsWith("sha1"));
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,
