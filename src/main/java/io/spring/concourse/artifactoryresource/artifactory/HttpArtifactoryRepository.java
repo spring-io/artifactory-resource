@@ -47,9 +47,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public class HttpArtifactoryRepository implements ArtifactoryRepository {
 
-	private static final MediaType BINARY_OCTET_STREAM = MediaType
-			.parseMediaType("binary/octet-stream");
-
 	private static final Object[] NO_VARIABLES = {};
 
 	private static final int KB = 1024;
@@ -109,7 +106,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				.path(buildMatrixParams(artifact.getProperties()))
 				.buildAndExpand(NO_VARIABLES).encode().toUri();
 		Checksums checksums = artifact.getChecksums();
-		return RequestEntity.put(uri).contentType(BINARY_OCTET_STREAM)
+		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.header("X-Checksum-Sha1", checksums.getSha1())
 				.header("X-Checksum-Md5", checksums.getMd5());
 	}
