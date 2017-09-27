@@ -159,8 +159,10 @@ public class OutHandler {
 		ArtifactoryRepository artifactoryRepository = artifactoryServer
 				.repository(params.getRepo());
 		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			console.log("Deploying {} {}", deployableArtifact.getPath(),
-					deployableArtifact.getProperties());
+			console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(),
+					deployableArtifact.getProperties(),
+					deployableArtifact.getChecksums().getSha1(),
+					deployableArtifact.getChecksums().getMd5());
 			artifactoryRepository.deploy(deployableArtifact);
 		}
 	}
