@@ -155,7 +155,7 @@ Build modules will be also automatically added when dealing with a Maven style d
 
 * `repo`: *Required.* The artifact repository to deploy to (e.g. `libs-snapshot-local`)
 * `build_number`: The build number to save (if not specified, an ID based on the current date/time will be used)
-* `folder`: The folder to save (if not specified the entire source directory is deployed)
+* `folder`: The folder to save
 * `include`: A list of Ant style patterns for the files to include
 * `exclude`: A list of Ant style patterns for the files to exclude
 * `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`)
