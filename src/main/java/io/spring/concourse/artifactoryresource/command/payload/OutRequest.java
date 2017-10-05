@@ -152,7 +152,9 @@ public class OutRequest {
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
 					.append("folder", this.folder).append("include", this.include)
-					.append("exclude", this.exclude).append("buildUri", this.buildUri)
+					.append("exclude", this.exclude)
+					.append("moduleLayout", this.moduleLayout)
+					.append("buildUri", this.buildUri)
 					.append("artifactSet", this.artifactSet).toString();
 		}
 
