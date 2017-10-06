@@ -154,7 +154,7 @@ public class OutHandlerTests {
 		this.handler.handle(request, directory);
 		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
-		assertThat(deployed.getPath()).isEqualTo("/foo.jar");
+		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
 				.containsEntry("build.number", "1234");
 	}
@@ -163,11 +163,11 @@ public class OutHandlerTests {
 	public void handleWhenHasArtifactSetShouldDeployWithAdditionalProperties()
 			throws Exception {
 		List<ArtifactSet> artifactSet = new ArrayList<>();
-		List<String> include = Collections.singletonList("/**/foo.jar");
+		List<String> include = Collections.singletonList("/**/foo-0.0.1.jar");
 		List<String> exclude = null;
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
 		artifactSet.add(new ArtifactSet(include, exclude, properties));
-		OutRequest request = createRequest("1234", null, null, artifactSet);
+		OutRequest request = createRequest("1234", null, null, false, artifactSet);
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
@@ -188,8 +188,9 @@ public class OutHandlerTests {
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
 		assertThat(buildModule.getArtifacts()).hasSize(1);
-		assertThat(buildModule.getArtifacts().get(0).getName()).isEqualTo("/foo.jar");
-		assertThat(buildModule.getId()).isEqualTo("/foo.jar");
+		assertThat(buildModule.getArtifacts().get(0).getName())
+				.isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
+		assertThat(buildModule.getId()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 	}
 
 	@Test
@@ -207,12 +208,12 @@ public class OutHandlerTests {
 	public void handleShouldFilterChecksumFiles() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
-		List<File> chechsumFiles = new ArrayList<>();
-		chechsumFiles.add(
+		List<File> checksumFiles = new ArrayList<>();
+		checksumFiles.add(
 				new File(directory.getSubDirectory("folder").getFile(), "foo.jar.md5"));
-		chechsumFiles.add(
+		checksumFiles.add(
 				new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha1"));
-		configureMockScanner(directory, chechsumFiles);
+		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"),
 				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
@@ -222,21 +223,69 @@ public class OutHandlerTests {
 		assertThat(buildModule.getArtifacts()).hasSize(1);
 	}
 
+	@Test
+	public void handleWhenStripSnapshotTimestampsIsFalseShouldNotFilterMetadataFiles()
+			throws Exception {
+		List<BuildModule> buildModules = testStripSnapshotTimestamptsMetadata(false);
+		assertThat(buildModules).hasSize(2);
+	}
+
+	@Test
+	public void handleWhenStripSnapshotTimestampsIsTrueShouldFilterMetadataFiles()
+			throws Exception {
+		List<BuildModule> buildModules = testStripSnapshotTimestamptsMetadata(true);
+		assertThat(buildModules).hasSize(1);
+	}
+
+	private List<BuildModule> testStripSnapshotTimestamptsMetadata(
+			boolean stripSnapshotTimestamps) throws IOException {
+		OutRequest request = createRequest("1234", null, null, stripSnapshotTimestamps,
+				null);
+		Directory directory = createDirectory();
+		List<File> metadataFiles = new ArrayList<>();
+		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(),
+				"maven-metadata.xml"));
+		configureMockScanner(directory, metadataFiles);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryBuildRuns).add(eq("1234"),
+				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
+		List<BuildModule> buildModules = this.modulesCaptor.getValue();
+		return buildModules;
+	}
+
+	@Test
+	public void handleWhenStripSnapshotTimestampsShouldChangeDeploArtifactPath()
+			throws Exception {
+		OutRequest request = createRequest("1234", null, null, true, null);
+		Directory directory = createDirectory();
+		configureMockScanner(directory, Collections.emptyList(), "1.0.0.BUILD-SNAPSHOT",
+				"1.0.0.BUILD-20171005.194031-1");
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
+		DeployableArtifact deployed = this.artifactCaptor.getValue();
+		assertThat(deployed.getPath()).isEqualTo(
+				"/com/example/foo/1.0.0.BUILD-SNAPSHOT/foo-1.0.0.BUILD-SNAPSHOT.jar");
+		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234");
+	}
+
 	private OutRequest createRequest(String buildNumber) {
 		return createRequest(buildNumber, null, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include,
 			List<String> exclude) {
-		return createRequest(buildNumber, include, exclude, null);
+		return createRequest(buildNumber, include, exclude, false, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include,
-			List<String> exclude, List<ArtifactSet> artifactSet) {
+			List<String> exclude, boolean stripSnapshotTimestamps,
+			List<ArtifactSet> artifactSet) {
 		return new OutRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Params(false, buildNumber, "libs-snapshot-local", "folder", include,
-						exclude, "mock", "http://ci.example.com/1234", artifactSet));
+						exclude, "mock", "http://ci.example.com/1234",
+						stripSnapshotTimestamps, artifactSet));
 	}
 
 	private Directory createDirectory() throws IOException {
@@ -252,12 +301,33 @@ public class OutHandlerTests {
 
 	private void configureMockScanner(Directory directory, List<File> extraFiles)
 			throws IOException {
+		configureMockScanner(directory, extraFiles, "0.0.1", "0.0.1");
+	}
+
+	private void configureMockScanner(Directory directory, List<File> extraFiles,
+			String version, String snapshotVersion) throws IOException {
+		directory = createStructure(directory, "folder", "com", "example", "foo",
+				version);
 		List<File> files = new ArrayList<>();
-		File file = new File(directory.getSubDirectory("folder").getFile(), "foo.jar");
-		FileCopyUtils.copy(NO_BYTES, file);
+		File file = new File(directory.getFile(), "foo-" + snapshotVersion + ".jar");
 		files.add(file);
 		files.addAll(extraFiles);
+		createEmptyFiles(files);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
+	}
+
+	private Directory createStructure(Directory directory, String... paths) {
+		for (String path : paths) {
+			new File(directory.getFile(), path).mkdirs();
+			directory = directory.getSubDirectory(path);
+		}
+		return directory;
+	}
+
+	private void createEmptyFiles(List<File> files) throws IOException {
+		for (File file : files) {
+			FileCopyUtils.copy(NO_BYTES, file);
+		}
 	}
 
 }

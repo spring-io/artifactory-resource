@@ -18,6 +18,7 @@
 		"folder": "dist",
 		"module_layout" : "maven",
 		"build_uri": "http://ci.example.com",
+		"strip_snapshot_timestamps": false,
 		"artifact_set": [ {
 			"include": [
 				"**/*.zip"

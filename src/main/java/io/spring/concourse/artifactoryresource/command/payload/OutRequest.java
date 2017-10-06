@@ -85,6 +85,8 @@ public class OutRequest {
 		@JsonProperty("build_uri")
 		private final String buildUri;
 
+		private final boolean stripSnapshotTimestamps;
+
 		private final List<ArtifactSet> artifactSet;
 
 		@JsonCreator
@@ -95,6 +97,7 @@ public class OutRequest {
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("module_layout") String moduleLayout,
 				@JsonProperty("build_uri") String buildUri,
+				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
@@ -108,6 +111,8 @@ public class OutRequest {
 					: Collections.unmodifiableList(new ArrayList<>(exclude)));
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
+			this.stripSnapshotTimestamps = (stripSnapshotTimestamps == null ? true
+					: stripSnapshotTimestamps);
 			this.artifactSet = (artifactSet == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(artifactSet)));
 		}
@@ -144,6 +149,10 @@ public class OutRequest {
 			return this.buildUri;
 		}
 
+		public boolean isStripSnapshotTimestamps() {
+			return this.stripSnapshotTimestamps;
+		}
+
 		public List<ArtifactSet> getArtifactSet() {
 			return this.artifactSet;
 		}
@@ -155,6 +164,7 @@ public class OutRequest {
 					.append("exclude", this.exclude)
 					.append("moduleLayout", this.moduleLayout)
 					.append("buildUri", this.buildUri)
+					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
 					.append("artifactSet", this.artifactSet).toString();
 		}
 

@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
@@ -38,6 +40,8 @@ import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
+import io.spring.concourse.artifactoryresource.maven.MavenCoordinates;
+import io.spring.concourse.artifactoryresource.maven.MavenVersionType;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,14 +115,19 @@ public class OutHandler {
 			Source source, Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
-		List<File> files = this.directoryScanner.scan(root, params.getInclude(),
-				params.getExclude());
-		return files.stream().filter((file) -> !isChecksumFile(file)).map((file) -> {
+		Stream<File> files = this.directoryScanner
+				.scan(root, params.getInclude(), params.getExclude()).stream();
+		files = files.filter(getChecksumFilter());
+		files = files.filter(getMetadataFilter(params));
+		return files.map((file) -> {
 			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
 			logger.debug("Including file {} with path {}", file, path);
 			Map<String, String> properties = getDeployableArtifactProperties(path,
 					buildNumber, source, params);
-			return new DeployableFileArtifact(root.getFile(), file, properties);
+			if (params.isStripSnapshotTimestamps()) {
+				path = stripSnapshotTimestamp(path);
+			}
+			return new DeployableFileArtifact(path, file, properties, null);
 		}).collect(Collectors.toCollection(ArrayList::new));
 	}
 
@@ -153,6 +162,17 @@ public class OutHandler {
 		properties.put("build.number", buildNumber);
 	}
 
+	private String stripSnapshotTimestamp(String path) {
+		MavenCoordinates coordinates = MavenCoordinates.fromPath(path);
+		if (coordinates.getVersionType() != MavenVersionType.TIMESTAMP_SNAPSHOT) {
+			return path;
+		}
+		String stripped = path.replace(coordinates.getSnapshotVersion(),
+				coordinates.getVersion());
+		logger.debug("Stripped timestamp version {} to {}", path, stripped);
+		return stripped;
+	}
+
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,
 			List<DeployableArtifact> deployableArtifacts) {
 		logger.debug("Deploying artifacts to {}", params.getRepo());
@@ -167,9 +187,18 @@ public class OutHandler {
 		}
 	}
 
-	private boolean isChecksumFile(File file) {
-		String name = file.getName().toLowerCase();
-		return (name.endsWith(".md5") || name.endsWith("sha1"));
+	private Predicate<File> getMetadataFilter(Params params) {
+		if (params.isStripSnapshotTimestamps()) {
+			return (file) -> !file.getName().toLowerCase().equals("maven-metadata.xml");
+		}
+		return (file) -> true;
+	}
+
+	private Predicate<File> getChecksumFilter() {
+		return (file) -> {
+			String name = file.getName().toLowerCase();
+			return (!name.endsWith(".md5") && !name.endsWith("sha1"));
+		};
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,

@@ -47,7 +47,7 @@ public class OutRequestTests {
 			"my-build");
 
 	private OutRequest.Params params = new OutRequest.Params(false, "1234",
-			"libs-snapshot-local", "folder", null, null, null, null, null);
+			"libs-snapshot-local", "folder", null, null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -71,14 +71,15 @@ public class OutRequestTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder must not be empty");
 		new OutRequest.Params(false, "1234", "libs-snapshot-local", "", null, null, null,
-				null, null);
+				null, null, null);
 	}
 
 	@Test
 	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Repo must not be empty");
-		new OutRequest.Params(false, "1234", "", "folder", null, null, null, null, null);
+		new OutRequest.Params(false, "1234", "", "folder", null, null, null, null, null,
+				null);
 	}
 
 	@Test
@@ -94,6 +95,7 @@ public class OutRequestTests {
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
 		assertThat(request.getParams().getModuleLayout()).isEqualTo("maven");
 		assertThat(request.getParams().getBuildUri()).isEqualTo("http://ci.example.com");
+		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		List<ArtifactSet> artifactSet = request.getParams().getArtifactSet();
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");

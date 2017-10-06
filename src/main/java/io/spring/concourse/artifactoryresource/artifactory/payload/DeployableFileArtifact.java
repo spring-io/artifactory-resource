@@ -46,7 +46,15 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 			Checksums checksums) {
 		super(calculatePath(root, file), properties, checksums);
 		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
-		Assert.isTrue(file.isFile(), "Path '" + file + "' does not refer to a file");
+		Assert.isTrue(file.isFile(), "File '" + file + "' does not refer to a file");
+		this.file = file;
+	}
+
+	public DeployableFileArtifact(String path, File file, Map<String, String> properties,
+			Checksums checksums) {
+		super(path, properties, checksums);
+		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
+		Assert.isTrue(file.isFile(), "File '" + file + "' does not refer to a file");
 		this.file = file;
 	}
 
