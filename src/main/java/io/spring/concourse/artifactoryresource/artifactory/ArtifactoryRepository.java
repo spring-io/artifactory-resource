@@ -32,8 +32,9 @@ public interface ArtifactoryRepository {
 	/**
 	 * Deploy the specified artifact to the repository.
 	 * @param artifact the artifact to deploy
+	 * @param options any deploy options
 	 */
-	void deploy(DeployableArtifact artifact);
+	void deploy(DeployableArtifact artifact, DeployOption... options);
 
 	/**
 	 * Download the specified artifact to the given destination.

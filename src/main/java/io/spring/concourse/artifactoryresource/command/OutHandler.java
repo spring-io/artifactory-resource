@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
@@ -58,6 +59,11 @@ import org.springframework.util.StringUtils;
  */
 @Component
 public class OutHandler {
+
+	private static final DeployOption[] NO_DEPLOY_OPTIONS = {};
+
+	private static final DeployOption[] DISABLE_CHECKSUM_UPLOADS = {
+			DeployOption.DISABLE_CHECKSUM_UPLOADS };
 
 	private static final Logger logger = LoggerFactory.getLogger(OutHandler.class);
 
@@ -183,7 +189,9 @@ public class OutHandler {
 					deployableArtifact.getProperties(),
 					deployableArtifact.getChecksums().getSha1(),
 					deployableArtifact.getChecksums().getMd5());
-			artifactoryRepository.deploy(deployableArtifact);
+			artifactoryRepository.deploy(deployableArtifact,
+					params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS
+							: NO_DEPLOY_OPTIONS);
 		}
 	}
 

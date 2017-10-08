@@ -85,7 +85,6 @@ public class HttpArtifactoryRepositoryTests {
 		this.artifactoryRepository = this.artifactory
 				.server("http://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
-
 	}
 
 	@After
@@ -141,6 +140,18 @@ public class HttpArtifactoryRepositoryTests {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(noChecksumHeader()).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
+		this.server.verify();
+	}
+
+	@Test
+	public void deployWhenNoChecksumUploadOptionFileShouldNotUseChecksum()
+			throws Exception {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				BYTES);
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
+				.andExpect(noChecksumHeader()).andRespond(withSuccess());
+		this.artifactoryRepository.deploy(artifact, DeployOption.DISABLE_CHECKSUM_UPLOADS);
 		this.server.verify();
 	}
 

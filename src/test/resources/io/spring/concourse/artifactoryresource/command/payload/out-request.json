@@ -19,6 +19,7 @@
 		"module_layout" : "maven",
 		"build_uri": "http://ci.example.com",
 		"strip_snapshot_timestamps": false,
+		"disable_checksum_uploads": true,
 		"artifact_set": [ {
 			"include": [
 				"**/*.zip"

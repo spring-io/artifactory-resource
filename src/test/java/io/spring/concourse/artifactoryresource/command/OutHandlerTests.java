@@ -28,6 +28,7 @@ import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
@@ -99,6 +100,9 @@ public class OutHandlerTests {
 	private ArgumentCaptor<DeployableArtifact> artifactCaptor;
 
 	@Captor
+	private ArgumentCaptor<DeployOption> optionsCaptor;
+
+	@Captor
 	private ArgumentCaptor<List<BuildModule>> modulesCaptor;
 
 	@Before
@@ -152,11 +156,13 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture(),
+				this.optionsCaptor.capture());
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
 				.containsEntry("build.number", "1234");
+		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
 	}
 
 	@Test
@@ -167,7 +173,7 @@ public class OutHandlerTests {
 		List<String> exclude = null;
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
 		artifactSet.add(new ArtifactSet(include, exclude, properties));
-		OutRequest request = createRequest("1234", null, null, false, artifactSet);
+		OutRequest request = createRequest("1234", null, null, false, false, artifactSet);
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
@@ -240,7 +246,7 @@ public class OutHandlerTests {
 	private List<BuildModule> testStripSnapshotTimestamptsMetadata(
 			boolean stripSnapshotTimestamps) throws IOException {
 		OutRequest request = createRequest("1234", null, null, stripSnapshotTimestamps,
-				null);
+				false, null);
 		Directory directory = createDirectory();
 		List<File> metadataFiles = new ArrayList<>();
 		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(),
@@ -256,7 +262,7 @@ public class OutHandlerTests {
 	@Test
 	public void handleWhenStripSnapshotTimestampsShouldChangeDeploArtifactPath()
 			throws Exception {
-		OutRequest request = createRequest("1234", null, null, true, null);
+		OutRequest request = createRequest("1234", null, null, true, false, null);
 		Directory directory = createDirectory();
 		configureMockScanner(directory, Collections.emptyList(), "1.0.0.BUILD-SNAPSHOT",
 				"1.0.0.BUILD-20171005.194031-1");
@@ -269,23 +275,36 @@ public class OutHandlerTests {
 				.containsEntry("build.number", "1234");
 	}
 
+	@Test
+	public void handleWhenDisableChecksumUploadShouldNotUseChecksumUpload()
+			throws Exception {
+		OutRequest request = createRequest("1234", null, null, false, true, null);
+		Directory directory = createDirectory();
+		configureMockScanner(directory);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture(),
+				this.optionsCaptor.capture());
+		assertThat(this.optionsCaptor.getAllValues())
+				.containsOnly(DeployOption.DISABLE_CHECKSUM_UPLOADS);
+	}
+
 	private OutRequest createRequest(String buildNumber) {
 		return createRequest(buildNumber, null, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include,
 			List<String> exclude) {
-		return createRequest(buildNumber, include, exclude, false, null);
+		return createRequest(buildNumber, include, exclude, false, false, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include,
 			List<String> exclude, boolean stripSnapshotTimestamps,
-			List<ArtifactSet> artifactSet) {
+			boolean disableChecksumUploads, List<ArtifactSet> artifactSet) {
 		return new OutRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Params(false, buildNumber, "libs-snapshot-local", "folder", include,
 						exclude, "mock", "http://ci.example.com/1234",
-						stripSnapshotTimestamps, artifactSet));
+						stripSnapshotTimestamps, disableChecksumUploads, artifactSet));
 	}
 
 	private Directory createDirectory() throws IOException {

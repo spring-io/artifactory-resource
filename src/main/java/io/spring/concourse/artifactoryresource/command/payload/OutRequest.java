@@ -87,6 +87,8 @@ public class OutRequest {
 
 		private final boolean stripSnapshotTimestamps;
 
+		private final boolean disableChecksumUploads;
+
 		private final List<ArtifactSet> artifactSet;
 
 		@JsonCreator
@@ -98,6 +100,7 @@ public class OutRequest {
 				@JsonProperty("module_layout") String moduleLayout,
 				@JsonProperty("build_uri") String buildUri,
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
+				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
@@ -113,6 +116,8 @@ public class OutRequest {
 			this.buildUri = buildUri;
 			this.stripSnapshotTimestamps = (stripSnapshotTimestamps == null ? true
 					: stripSnapshotTimestamps);
+			this.disableChecksumUploads = (disableChecksumUploads == null ? false
+					: disableChecksumUploads);
 			this.artifactSet = (artifactSet == null ? Collections.emptyList()
 					: Collections.unmodifiableList(new ArrayList<>(artifactSet)));
 		}
@@ -151,6 +156,10 @@ public class OutRequest {
 
 		public boolean isStripSnapshotTimestamps() {
 			return this.stripSnapshotTimestamps;
+		}
+
+		public boolean isDisableChecksumUploads() {
+			return this.disableChecksumUploads;
 		}
 
 		public List<ArtifactSet> getArtifactSet() {
