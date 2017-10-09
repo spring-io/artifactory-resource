@@ -54,13 +54,13 @@ public class FileComparatorTests {
 	}
 
 	@Test
-	public void comparePomToNonPomShouldOrderPomFirst() throws Exception {
-		assertThat(compare("foo.pom", "foo.jar")).isLessThan(0);
+	public void comparePomToNonPomShouldOrderPomLast() throws Exception {
+		assertThat(compare("foo.pom", "foo.jar")).isGreaterThan(0);
 	}
 
 	@Test
-	public void compareNonPomToPomShouldOrderPomFirst() throws Exception {
-		assertThat(compare("foo.jar", "foo.pom")).isGreaterThan(0);
+	public void compareNonPomToPomShouldOrderPomLast() throws Exception {
+		assertThat(compare("foo.jar", "foo.pom")).isLessThan(0);
 	}
 
 	@Test
@@ -72,19 +72,29 @@ public class FileComparatorTests {
 	@Test
 	public void compareShouldWorkInSort() throws Exception {
 		List<File> files = new ArrayList<>();
-		files.add(makeFile("foo-sources.jar"));
-		files.add(makeFile("foo.jar"));
-		files.add(makeFile("foo.pom"));
-		files.add(makeFile("foo-javadoc.jar"));
-		Collections.sort(files, FileComparator.INSTANCE);
+		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0-sources.jar"));
+		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0.jar"));
+		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0-sources.jar"));
+		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0.pom"));
+		files.add(makeFile("com/example/project/foo/2.0.0/maven-metadata.xml"));
+		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0.pom"));
+		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0-javadoc.jar"));
+		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0.jar"));
+		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0-javadoc.jar"));
+		files.add(makeFile("com/example/project/bar/2.0.0/maven-metadata.xml"));
+		FileComparator.sort(files);
+		System.out.println(files);
 		List<String> names = files.stream().map(File::getName)
 				.collect(Collectors.toCollection(ArrayList::new));
-		assertThat(names).containsExactly("foo.pom", "foo.jar", "foo-javadoc.jar",
-				"foo-sources.jar");
+		assertThat(names).containsExactly("bar-2.0.0.jar", "bar-2.0.0.pom",
+				"maven-metadata.xml", "bar-2.0.0-javadoc.jar", "bar-2.0.0-sources.jar",
+				"foo-2.0.0.jar", "foo-2.0.0.pom", "maven-metadata.xml",
+				"foo-2.0.0-javadoc.jar", "foo-2.0.0-sources.jar");
 	}
 
 	private int compare(String name1, String name2) throws IOException {
-		return FileComparator.INSTANCE.compare(makeFile(name1), makeFile(name2));
+		return new FileComparator(Collections.emptyMap()).compare(makeFile(name1),
+				makeFile(name2));
 	}
 
 	private File makeFile(String path) {

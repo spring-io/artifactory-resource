@@ -51,7 +51,7 @@ public class DirectoryScannerTests {
 		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
 				Collections.emptyList());
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly(
-				"/bar/bar.pom", "/bar/bar.jar", "/baz/baz.pom", "/baz/baz.jar");
+				"/bar/bar.jar", "/bar/bar.pom", "/baz/baz.jar", "/baz/baz.pom");
 	}
 
 	@Test

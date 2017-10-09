@@ -65,7 +65,7 @@ public class DirectoryScanner {
 			List<File> files = Files
 					.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
 					.map(Path::toFile).collect(Collectors.toCollection(ArrayList::new));
-			Collections.sort(files, FileComparator.INSTANCE);
+			FileComparator.sort(files);
 			return files;
 		}
 		catch (IOException ex) {

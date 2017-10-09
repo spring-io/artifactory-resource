@@ -17,9 +17,14 @@
 package io.spring.concourse.artifactoryresource.io;
 
 import java.io.File;
-import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,43 +32,86 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-final class FileComparator {
+final class FileComparator implements Comparator<File> {
 
-	static Comparator<File> INSTANCE = Comparator.comparing(FileComparator::parentPath)
-			.thenComparing(FileComparator::extension)
-			.thenComparing(FileComparator::fileNameWithoutExtension);
+	private final Map<File, String> roots;
 
-	private FileComparator() {
+	FileComparator(Map<File, String> roots) {
+		this.roots = roots;
 	}
 
-	static Path parentPath(File file) {
-		return file.getParentFile().toPath();
+	@Override
+	public int compare(File file1, File file2) {
+		Comparator<File> comparator = Comparator.comparing(File::getParentFile);
+		comparator = comparator.thenComparingInt(this::byFileType);
+		comparator = comparator.thenComparingInt(this::byPomExtension);
+		comparator = comparator.thenComparing(this::getFileExtension);
+		comparator = comparator.thenComparing(FileComparator::getNameWithoutExtension);
+		return comparator.compare(file1, file2);
 	}
 
-	static int extension(File file1, File file2) {
-		String extension1 = StringUtils.getFilenameExtension(file1.getName());
-		String extension2 = StringUtils.getFilenameExtension(file2.getName());
-		extension1 = (extension1 == null ? "" : extension1);
-		extension2 = (extension1 == null ? "" : extension2);
-		if (extension1.equals(extension2)) {
+	private int byFileType(File file) {
+		if (isRoot(file)) {
 			return 0;
 		}
-		if ("pom".equals(extension1)) {
-			return -1;
-		}
-		if ("pom".equals(extension2)) {
+		if (isMavenMetaData(file)) {
 			return 1;
 		}
-		return extension1.compareTo(extension2);
+		return 2;
 	}
 
-	static String fileNameWithoutExtension(File file) {
+	private int byPomExtension(File file) {
+		return ("pom".equalsIgnoreCase(getFileExtension(file)) ? 1 : 0);
+	}
+
+	private String getFileExtension(File file) {
+		return StringUtils.getFilenameExtension(file.getName());
+	}
+
+	private boolean isRoot(File file) {
+		String root = this.roots.get(file.getParentFile());
+		String name = getNameWithoutExtension(file);
+		return (name != null && name.equals(root));
+	}
+
+	public static void sort(List<File> files) {
+		MultiValueMap<File, File> filesByParent = getFilesByParent(files);
+		Map<File, String> roots = getRoots(filesByParent);
+		Collections.sort(files, new FileComparator(roots));
+	}
+
+	private static MultiValueMap<File, File> getFilesByParent(List<File> files) {
+		MultiValueMap<File, File> filesByParent = new LinkedMultiValueMap<>();
+		files.forEach((file) -> filesByParent.add(file.getParentFile(), file));
+		return filesByParent;
+	}
+
+	private static Map<File, String> getRoots(MultiValueMap<File, File> filesByParent) {
+		Map<File, String> roots = new LinkedHashMap<>();
+		filesByParent.forEach((parent, files) -> {
+			files.stream().filter((file) -> !isMavenMetaData(file))
+					.map(FileComparator::getNameWithoutExtension)
+					.reduce(FileComparator::getShortest)
+					.ifPresent((root) -> roots.put(parent, root));
+		});
+		return roots;
+	}
+
+	private static boolean isMavenMetaData(File file) {
+		return file.getName().equals("maven-metadata.xml");
+	}
+
+	private static String getNameWithoutExtension(File file) {
 		String name = file.getName();
 		String extension = StringUtils.getFilenameExtension(name);
-		if (StringUtils.hasLength(extension)) {
-			return name.substring(0, name.length() - extension.length() - 1);
-		}
-		return name;
+		return (extension == null ? name
+				: name.substring(0, name.length() - extension.length() - 1));
+	}
+
+	private static String getShortest(String name1, String name2) {
+		int len1 = (StringUtils.hasLength(name1) ? name1.length() : Integer.MAX_VALUE);
+		int len2 = (StringUtils.hasLength(name2) ? name2.length() : Integer.MAX_VALUE);
+		return (len1 < len2 ? name1 : name2);
 	}
 
 }
