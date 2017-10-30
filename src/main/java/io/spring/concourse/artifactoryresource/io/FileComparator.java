@@ -89,7 +89,7 @@ final class FileComparator implements Comparator<File> {
 	private static Map<File, String> getRoots(MultiValueMap<File, File> filesByParent) {
 		Map<File, String> roots = new LinkedHashMap<>();
 		filesByParent.forEach((parent, files) -> {
-			files.stream().filter((file) -> !isMavenMetaData(file))
+			files.stream().filter(FileComparator::isRootCandidate)
 					.map(FileComparator::getNameWithoutExtension)
 					.reduce(FileComparator::getShortest)
 					.ifPresent((root) -> roots.put(parent, root));
@@ -97,8 +97,21 @@ final class FileComparator implements Comparator<File> {
 		return roots;
 	}
 
+	private static boolean isRootCandidate(File file) {
+		if (isMavenMetaData(file) || file.isHidden() || file.getName().startsWith(".")
+				|| file.isDirectory() || isChecksumFile(file)) {
+			return false;
+		}
+		return true;
+	}
+
 	private static boolean isMavenMetaData(File file) {
-		return file.getName().equals("maven-metadata.xml");
+		return file.getName().toLowerCase().startsWith("maven-metadata.xml");
+	}
+
+	private static boolean isChecksumFile(File file) {
+		String name = file.getName().toLowerCase();
+		return name.endsWith(".md5") || name.endsWith("sha1");
 	}
 
 	private static String getNameWithoutExtension(File file) {
