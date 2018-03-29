@@ -52,16 +52,12 @@ public class SourceTests {
 	}
 
 	@Test
-	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be empty");
+	public void createWhenUsernameIsEmptyShouldNotThrowException() throws Exception {
 		new Source("http://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
-	public void createWhenPasswordIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Password must not be empty");
+	public void createWhenPasswordIsEmptyShouldNotThrowException() throws Exception {
 		new Source("http://repo.example.com", "username", "", "my-build");
 	}
 

@@ -45,8 +45,6 @@ public class Source {
 			@JsonProperty("password") String password,
 			@JsonProperty("build_name") String buildName) {
 		Assert.hasText(uri, "URI must not be empty");
-		Assert.hasText(username, "Username must not be empty");
-		Assert.hasText(password, "Password must not be empty");
 		Assert.hasText(buildName, "Build Name must not be empty");
 		this.uri = uri;
 		this.username = username;
@@ -73,7 +71,6 @@ public class Source {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("uri", this.uri)
-				.append("username", this.username).append("password", this.password)
 				.append("buildName", this.buildName).toString();
 	}
 

@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * Default {@link Artifactory} implementation communicating over HTTP.
@@ -39,8 +40,8 @@ public class HttpArtifactory implements Artifactory {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		return new HttpArtifactoryServer(uri,
-				this.restTemplateBuilder.basicAuthorization(username, password));
+		RestTemplateBuilder builder = (StringUtils.hasText(username) ? this.restTemplateBuilder.basicAuthorization(username, password) : this.restTemplateBuilder);
+		return new HttpArtifactoryServer(uri, builder);
 	}
 
 }
