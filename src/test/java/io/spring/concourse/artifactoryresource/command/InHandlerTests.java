@@ -103,8 +103,8 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleShouldDownloadArtifacts() throws Exception {
-		InRequest request = createRequest(false, false);
+	public void handleWhenDownloadArtifactsShouldDownloadArtifacts() throws Exception {
+		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
@@ -115,9 +115,19 @@ public class InHandlerTests {
 	}
 
 	@Test
+	public void handleWhenDownloadArtifactsFalseShouldNotDownloadArtifacts() throws Exception {
+		InRequest request = createRequest(false, false, false);
+		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		InResponse response = this.handler.handle(request, directory);
+		verifyZeroInteractions(this.artifactoryRepository);
+		verifyZeroInteractions(this.mavenMetadataGenerator);
+		assertThat(response.getVersion()).isEqualTo(request.getVersion());
+	}
+
+	@Test
 	public void handleWhenHasGenerateMavenMetadataParamShouldGenerateMetadata()
 			throws Exception {
-		InRequest request = createRequest(true, false);
+		InRequest request = createRequest(true, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		verify(this.mavenMetadataGenerator).generate(directory);
@@ -126,7 +136,7 @@ public class InHandlerTests {
 	@Test
 	public void handleWhenHasNoGenerateMavenMetadataParamShouldNotGenerateMetadata()
 			throws Exception {
-		InRequest request = createRequest(false, false);
+		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		verifyZeroInteractions(this.mavenMetadataGenerator);
@@ -134,7 +144,7 @@ public class InHandlerTests {
 
 	@Test
 	public void handleWhenSaveBuildInfoShouldSaveBuildInfo() throws Exception {
-		InRequest request = createRequest(false, true);
+		InRequest request = createRequest(false, true, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		File buildInfo = new File(directory.getFile(), "build-info.json");
@@ -142,11 +152,11 @@ public class InHandlerTests {
 	}
 
 	private InRequest createRequest(boolean generateMavenMetadata,
-			boolean saveBuildInfo) {
+			boolean saveBuildInfo, boolean downloadArtifacts) {
 		InRequest request = new InRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Version("1234"),
-				new Params(false, generateMavenMetadata, saveBuildInfo));
+				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts));
 		return request;
 	}
 

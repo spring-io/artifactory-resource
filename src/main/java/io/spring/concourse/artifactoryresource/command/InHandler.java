@@ -73,13 +73,15 @@ public class InHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
 		ArtifactoryBuildRuns buildRuns = artifactoryServer
 				.buildRuns(source.getBuildName());
-		List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
-		console.log("Downloading build {} artifacts from {}", buildNumber,
-				source.getUri());
-		download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
-		if (params.isGenerateMavenMetadata()) {
-			logger.debug("Generating maven metadata");
-			this.mavenMetadataGenerator.generate(directory);
+		if (params.isDownloadArtifacts()) {
+			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
+			console.log("Downloading build {} artifacts from {}", buildNumber,
+					source.getUri());
+			download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
+			if (params.isGenerateMavenMetadata()) {
+				logger.debug("Generating maven metadata");
+				this.mavenMetadataGenerator.generate(directory);
+			}
 		}
 		if (params.isSaveBuildInfo()) {
 			String buildInfo = buildRuns.getRawBuildInfo(buildNumber);

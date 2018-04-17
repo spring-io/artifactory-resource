@@ -45,7 +45,7 @@ public class InRequestTests {
 
 	private Version version = new Version("1234");
 
-	private InRequest.Params params = new InRequest.Params(false, false, false);
+	private InRequest.Params params = new InRequest.Params(false, false, false, false);
 
 	@Autowired
 	private JacksonTester<InRequest> json;
