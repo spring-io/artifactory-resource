@@ -51,16 +51,6 @@ public class Directory {
 	}
 
 	@Override
-	public String toString() {
-		return StringUtils.cleanPath(this.file.getPath());
-	}
-
-	@Override
-	public int hashCode() {
-		return this.file.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -69,6 +59,16 @@ public class Directory {
 			return false;
 		}
 		return this.file.equals(((Directory) obj).file);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.file.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return StringUtils.cleanPath(this.file.getPath());
 	}
 
 	public Directory getSubDirectory(String path) {
