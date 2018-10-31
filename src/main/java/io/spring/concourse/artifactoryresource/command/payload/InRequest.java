@@ -44,7 +44,7 @@ public class InRequest {
 		Assert.notNull(version, "Version must not be null");
 		this.source = source;
 		this.version = version;
-		this.params = (params == null ? new Params() : params);
+		this.params = (params != null) ? params : new Params();
 	}
 
 	public Source getSource() {
@@ -87,12 +87,12 @@ public class InRequest {
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata,
 				@JsonProperty("save_build_info") Boolean saveBuildInfo,
 				@JsonProperty("download_artifacts") Boolean downloadArtifacts) {
-			this.debug = (debug == null ? false : debug);
-			this.generateMavenMetadata = (generateMavenMetadata == null ? true
-					: generateMavenMetadata);
-			this.saveBuildInfo = (saveBuildInfo == null ? false : saveBuildInfo);
-			this.downloadArtifacts = (downloadArtifacts == null ? false
-					: downloadArtifacts);
+			this.debug = (debug != null) ? debug : false;
+			this.generateMavenMetadata = (generateMavenMetadata != null)
+					? generateMavenMetadata : true;
+			this.saveBuildInfo = (saveBuildInfo != null) ? saveBuildInfo : false;
+			this.downloadArtifacts = (downloadArtifacts != null) ? downloadArtifacts
+					: false;
 		}
 
 		public boolean isDebug() {

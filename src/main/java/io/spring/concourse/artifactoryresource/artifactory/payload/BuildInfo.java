@@ -63,10 +63,11 @@ public class BuildInfo {
 		this.buildName = buildName;
 		this.buildNumber = buildNumber;
 		this.continuousIntegrationAgent = continuousIntegrationAgent;
-		this.started = (started == null ? new Date() : started);
+		this.started = (started != null) ? started : new Date();
 		this.buildUri = buildUri;
-		this.modules = (modules == null ? Collections.emptyList()
-				: Collections.unmodifiableList(new ArrayList<>(modules)));
+		this.modules = (modules != null)
+				? Collections.unmodifiableList(new ArrayList<>(modules))
+				: Collections.emptyList();
 	}
 
 	public String getBuildName() {

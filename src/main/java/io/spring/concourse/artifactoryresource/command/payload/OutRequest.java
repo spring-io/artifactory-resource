@@ -104,22 +104,25 @@ public class OutRequest {
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
-			this.debug = (debug == null ? false : debug);
+			this.debug = (debug != null) ? debug : false;
 			this.buildNumber = buildNumber;
 			this.repo = repo;
 			this.folder = folder;
-			this.include = (include == null ? Collections.emptyList()
-					: Collections.unmodifiableList(new ArrayList<>(include)));
-			this.exclude = (exclude == null ? Collections.emptyList()
-					: Collections.unmodifiableList(new ArrayList<>(exclude)));
+			this.include = (include != null)
+					? Collections.unmodifiableList(new ArrayList<>(include))
+					: Collections.emptyList();
+			this.exclude = (exclude != null)
+					? Collections.unmodifiableList(new ArrayList<>(exclude))
+					: Collections.emptyList();
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
-			this.stripSnapshotTimestamps = (stripSnapshotTimestamps == null ? true
-					: stripSnapshotTimestamps);
-			this.disableChecksumUploads = (disableChecksumUploads == null ? false
-					: disableChecksumUploads);
-			this.artifactSet = (artifactSet == null ? Collections.emptyList()
-					: Collections.unmodifiableList(new ArrayList<>(artifactSet)));
+			this.stripSnapshotTimestamps = (stripSnapshotTimestamps != null)
+					? stripSnapshotTimestamps : true;
+			this.disableChecksumUploads = (disableChecksumUploads != null)
+					? disableChecksumUploads : false;
+			this.artifactSet = (artifactSet != null)
+					? Collections.unmodifiableList(new ArrayList<>(artifactSet))
+					: Collections.emptyList();
 		}
 
 		public boolean isDebug() {
@@ -194,10 +197,12 @@ public class OutRequest {
 		public ArtifactSet(@JsonProperty("include") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("properties") Map<String, String> properties) {
-			this.include = (include == null ? Collections.emptyList()
-					: Collections.unmodifiableList(new ArrayList<>(include)));
-			this.exclude = (exclude == null ? Collections.emptyList()
-					: Collections.unmodifiableList(new ArrayList<>(exclude)));
+			this.include = (include != null)
+					? Collections.unmodifiableList(new ArrayList<>(include))
+					: Collections.emptyList();
+			this.exclude = (exclude != null)
+					? Collections.unmodifiableList(new ArrayList<>(exclude))
+					: Collections.emptyList();
 			this.properties = properties;
 		}
 

@@ -47,8 +47,9 @@ public class InResponse {
 			@JsonProperty("metadata") List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;
-		this.metadata = (metadata == null ? Collections.emptyList()
-				: Collections.unmodifiableList(new ArrayList<>(metadata)));
+		this.metadata = (metadata != null)
+				? Collections.unmodifiableList(new ArrayList<>(metadata))
+				: Collections.emptyList();
 	}
 
 	public Version getVersion() {

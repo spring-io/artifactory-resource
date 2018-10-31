@@ -31,10 +31,12 @@ import org.springframework.util.StringUtils;
  */
 public class Directory {
 
+	private static final File NO_FILE = null;
+
 	private final File file;
 
 	public Directory(String path) {
-		this(path == null ? (File) null : new File(path));
+		this((path != null) ? new File(path) : NO_FILE);
 	}
 
 	public Directory(File file) {

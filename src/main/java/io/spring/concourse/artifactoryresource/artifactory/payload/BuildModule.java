@@ -42,8 +42,9 @@ public class BuildModule {
 			@JsonProperty("artifacts") List<BuildArtifact> artifacts) {
 		Assert.hasText(id, "ID must not be empty");
 		this.id = id;
-		this.artifacts = (artifacts == null ? Collections.emptyList()
-				: Collections.unmodifiableList(new ArrayList<>(artifacts)));
+		this.artifacts = (artifacts != null)
+				? Collections.unmodifiableList(new ArrayList<>(artifacts))
+				: Collections.emptyList();
 	}
 
 	public String getId() {

@@ -117,14 +117,14 @@ final class FileComparator implements Comparator<File> {
 	private static String getNameWithoutExtension(File file) {
 		String name = file.getName();
 		String extension = StringUtils.getFilenameExtension(name);
-		return (extension == null ? name
-				: name.substring(0, name.length() - extension.length() - 1));
+		return (extension != null)
+				? name.substring(0, name.length() - extension.length() - 1) : name;
 	}
 
 	private static String getShortest(String name1, String name2) {
-		int len1 = (StringUtils.hasLength(name1) ? name1.length() : Integer.MAX_VALUE);
-		int len2 = (StringUtils.hasLength(name2) ? name2.length() : Integer.MAX_VALUE);
-		return (len1 < len2 ? name1 : name2);
+		int len1 = (StringUtils.hasLength(name1)) ? name1.length() : Integer.MAX_VALUE;
+		int len2 = (StringUtils.hasLength(name2)) ? name2.length() : Integer.MAX_VALUE;
+		return (len1 < len2) ? name1 : name2;
 	}
 
 }
