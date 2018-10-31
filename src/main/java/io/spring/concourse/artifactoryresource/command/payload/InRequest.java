@@ -85,12 +85,14 @@ public class InRequest {
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug,
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata,
-				@JsonProperty("save_build_info") Boolean saveBuildInfo, @JsonProperty("download_artifacts") Boolean downloadArtifacts) {
+				@JsonProperty("save_build_info") Boolean saveBuildInfo,
+				@JsonProperty("download_artifacts") Boolean downloadArtifacts) {
 			this.debug = (debug == null ? false : debug);
 			this.generateMavenMetadata = (generateMavenMetadata == null ? true
 					: generateMavenMetadata);
 			this.saveBuildInfo = (saveBuildInfo == null ? false : saveBuildInfo);
-			this.downloadArtifacts = (downloadArtifacts == null ? false : downloadArtifacts);
+			this.downloadArtifacts = (downloadArtifacts == null ? false
+					: downloadArtifacts);
 		}
 
 		public boolean isDebug() {

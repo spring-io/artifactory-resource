@@ -74,7 +74,8 @@ public class InHandler {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer
 				.buildRuns(source.getBuildName());
 		if (params.isDownloadArtifacts()) {
-			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
+			List<DeployedArtifact> artifacts = buildRuns
+					.getDeployedArtifacts(buildNumber);
 			console.log("Downloading build {} artifacts from {}", buildNumber,
 					source.getUri());
 			download(artifactoryServer, groupByRepo(artifacts), directory.getFile());

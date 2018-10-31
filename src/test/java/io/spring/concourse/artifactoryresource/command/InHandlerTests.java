@@ -115,7 +115,8 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDownloadArtifactsFalseShouldNotDownloadArtifacts() throws Exception {
+	public void handleWhenDownloadArtifactsFalseShouldNotDownloadArtifacts()
+			throws Exception {
 		InRequest request = createRequest(false, false, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
@@ -151,12 +152,12 @@ public class InHandlerTests {
 		assertThat(buildInfo).exists().hasContent(BUILD_INFO_JSON);
 	}
 
-	private InRequest createRequest(boolean generateMavenMetadata,
-			boolean saveBuildInfo, boolean downloadArtifacts) {
+	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
+			boolean downloadArtifacts) {
 		InRequest request = new InRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
-				new Version("1234"),
-				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts));
+				new Version("1234"), new Params(false, generateMavenMetadata,
+						saveBuildInfo, downloadArtifacts));
 		return request;
 	}
 

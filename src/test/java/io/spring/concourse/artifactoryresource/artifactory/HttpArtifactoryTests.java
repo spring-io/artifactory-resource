@@ -46,17 +46,23 @@ public class HttpArtifactoryTests {
 
 	@Test
 	public void serverWhenNoUsernameShouldReturnServer() {
-		ArtifactoryServer server = this.artifactory.server("http://example.com", null, null);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
-		List interceptors = (List) ReflectionTestUtils.getField(restTemplate, "interceptors");
+		ArtifactoryServer server = this.artifactory.server("http://example.com", null,
+				null);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
+				"restTemplate");
+		List interceptors = (List) ReflectionTestUtils.getField(restTemplate,
+				"interceptors");
 		assertThat(interceptors.size()).isEqualTo(0);
 	}
 
 	@Test
 	public void serverWithCredentialsShouldReturnServerWithCredentials() {
-		ArtifactoryServer server = this.artifactory.server("http://example.com", "admin", "password");
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
-		List interceptors = (List) ReflectionTestUtils.getField(restTemplate, "interceptors");
+		ArtifactoryServer server = this.artifactory.server("http://example.com", "admin",
+				"password");
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
+				"restTemplate");
+		List interceptors = (List) ReflectionTestUtils.getField(restTemplate,
+				"interceptors");
 		assertThat(interceptors.get(0)).isInstanceOf(BasicAuthorizationInterceptor.class);
 	}
 

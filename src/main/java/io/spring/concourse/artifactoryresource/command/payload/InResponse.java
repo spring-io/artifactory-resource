@@ -64,4 +64,5 @@ public class InResponse {
 		return new ToStringCreator(this).append("version", this.version)
 				.append("metadata", this.metadata).toString();
 	}
+
 }

@@ -151,7 +151,8 @@ public class HttpArtifactoryRepositoryTests {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(noChecksumHeader()).andRespond(withSuccess());
-		this.artifactoryRepository.deploy(artifact, DeployOption.DISABLE_CHECKSUM_UPLOADS);
+		this.artifactoryRepository.deploy(artifact,
+				DeployOption.DISABLE_CHECKSUM_UPLOADS);
 		this.server.verify();
 	}
 
