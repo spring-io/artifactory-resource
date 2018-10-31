@@ -48,7 +48,7 @@ public interface ArtifactoryBuildRuns {
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param buildUri the build URL
-	 * @param continuousIntegrationAgent The CI Agent
+	 * @param continuousIntegrationAgent the CI Agent
 	 * @param modules the modules for the build run
 	 */
 	default void add(String buildNumber, String buildUri,
@@ -61,7 +61,7 @@ public interface ArtifactoryBuildRuns {
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param buildUri the build URL
-	 * @param continuousIntegrationAgent The CI Agent
+	 * @param continuousIntegrationAgent the CI Agent
 	 * @param started the date the build was started
 	 * @param modules the modules for the build run
 	 */
