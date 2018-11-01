@@ -110,41 +110,51 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 	}
 
 	public static MavenCoordinates fromPath(String path) {
-		if (path.startsWith("/")) {
-			path = path.substring(1);
+		try {
+			if (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			Matcher folderMatcher = FOLDER_PATTERN.matcher(path);
+			Assert.state(folderMatcher.matches(), "Path does not match folder pattern");
+			String groupId = folderMatcher.group(1).replace('/', '.');
+			String artifactId = folderMatcher.group(2);
+			String version = folderMatcher.group(3);
+			String rootVersion = (version.endsWith(SNAPSHOT_SUFFIX)
+					? version.substring(0, version.length() - SNAPSHOT_SUFFIX.length())
+					: version);
+			String name = folderMatcher.group(4);
+			Assert.state(name.startsWith(artifactId), "Name '" + name
+					+ "' does not start with artifact ID '" + artifactId + "'");
+			String snapshotVersionAndClassifier = name.substring(artifactId.length() + 1);
+			String extension = StringUtils
+					.getFilenameExtension(snapshotVersionAndClassifier);
+			snapshotVersionAndClassifier = snapshotVersionAndClassifier.substring(0,
+					snapshotVersionAndClassifier.length() - extension.length() - 1);
+			String classifier = snapshotVersionAndClassifier;
+			if (classifier.startsWith(rootVersion)) {
+				classifier = classifier.substring(rootVersion.length());
+				classifier = stripDash(classifier);
+			}
+			Matcher versionMatcher = VERSION_FILE_PATTERN.matcher(classifier);
+			if (versionMatcher.matches()) {
+				classifier = versionMatcher.group(3);
+				classifier = stripDash(classifier);
+			}
+			if (classifier.startsWith(SNAPSHOT)) {
+				classifier = classifier.substring(SNAPSHOT.length());
+				classifier = stripDash(classifier);
+			}
+			String snapshotVersion = (classifier.isEmpty() ? snapshotVersionAndClassifier
+					: snapshotVersionAndClassifier.substring(0,
+							snapshotVersionAndClassifier.length() - classifier.length()
+									- 1));
+			return new MavenCoordinates(groupId, artifactId, version, classifier,
+					extension, snapshotVersion);
 		}
-		Matcher folderMatcher = FOLDER_PATTERN.matcher(path);
-		Assert.state(folderMatcher.matches(), "Unable to parse " + path);
-		String groupId = folderMatcher.group(1).replace('/', '.');
-		String artifactId = folderMatcher.group(2);
-		String version = folderMatcher.group(3);
-		String rootVersion = (version.endsWith(SNAPSHOT_SUFFIX)
-				? version.substring(0, version.length() - SNAPSHOT_SUFFIX.length())
-				: version);
-		String name = folderMatcher.group(4);
-		String snapshotVersionAndClassifier = name.substring(artifactId.length() + 1);
-		String extension = StringUtils.getFilenameExtension(snapshotVersionAndClassifier);
-		snapshotVersionAndClassifier = snapshotVersionAndClassifier.substring(0,
-				snapshotVersionAndClassifier.length() - extension.length() - 1);
-		String classifier = snapshotVersionAndClassifier;
-		if (classifier.startsWith(rootVersion)) {
-			classifier = classifier.substring(rootVersion.length());
-			classifier = stripDash(classifier);
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Unable to parse maven coordinates from path '" + path + "'", ex);
 		}
-		Matcher versionMatcher = VERSION_FILE_PATTERN.matcher(classifier);
-		if (versionMatcher.matches()) {
-			classifier = versionMatcher.group(3);
-			classifier = stripDash(classifier);
-		}
-		if (classifier.startsWith(SNAPSHOT)) {
-			classifier = classifier.substring(SNAPSHOT.length());
-			classifier = stripDash(classifier);
-		}
-		String snapshotVersion = (classifier.isEmpty() ? snapshotVersionAndClassifier
-				: snapshotVersionAndClassifier.substring(0,
-						snapshotVersionAndClassifier.length() - classifier.length() - 1));
-		return new MavenCoordinates(groupId, artifactId, version, classifier, extension,
-				snapshotVersion);
 	}
 
 	private static String stripDash(String classifier) {

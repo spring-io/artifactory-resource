@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.maven;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link MavenCoordinates}.
@@ -63,6 +64,18 @@ public class MavenCoordinatesTests {
 		assertThat(coordinates.getVersion()).isEqualTo("1.0.0.RELEASE");
 		assertThat(coordinates.getClassifier()).isEqualTo("sources");
 		assertThat(coordinates.getSnapshotVersion()).isEqualTo("1.0.0.RELEASE");
+	}
+
+	@Test
+	public void fromPathWhenIsBadThrowsNiceException() {
+		// gh-5
+		assertThatExceptionOfType(IllegalStateException.class)
+				.isThrownBy(() -> MavenCoordinates
+						.fromPath("org/springframework/cloud/skipper/acceptance/app/"
+								+ "skipper-server-with-drivers/maven-metadata-local.xml"))
+				.withMessageContaining("Unable to parse maven coordinates from path")
+				.withStackTraceContaining(
+						"Name 'maven-metadata-local.xml' does not start with artifact ID 'app'");
 	}
 
 }
