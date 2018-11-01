@@ -232,25 +232,43 @@ public class OutHandlerTests {
 	@Test
 	public void handleWhenStripSnapshotTimestampsIsFalseShouldNotFilterMetadataFiles()
 			throws Exception {
-		List<BuildModule> buildModules = testStripSnapshotTimestamptsMetadata(false);
+		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false,
+				"maven-metadata.xml");
 		assertThat(buildModules).hasSize(2);
 	}
 
 	@Test
 	public void handleWhenStripSnapshotTimestampsIsTrueShouldFilterMetadataFiles()
 			throws Exception {
-		List<BuildModule> buildModules = testStripSnapshotTimestamptsMetadata(true);
+		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true,
+				"maven-metadata.xml");
 		assertThat(buildModules).hasSize(1);
 	}
 
-	private List<BuildModule> testStripSnapshotTimestamptsMetadata(
-			boolean stripSnapshotTimestamps) throws IOException {
+	@Test
+	public void handleWhenStripSnapshotTimestampsIsFalseShouldNotFilterLocalMetadataFiles()
+			throws Exception {
+		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false,
+				"maven-metadata-local.xml");
+		assertThat(buildModules).hasSize(2);
+	}
+
+	@Test
+	public void handleWhenStripSnapshotTimestampsIsTrueShouldFilterLocalMetadataFiles()
+			throws Exception {
+		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true,
+				"maven-metadata-local.xml");
+		assertThat(buildModules).hasSize(1);
+	}
+
+	private List<BuildModule> testStripSnapshotTimestampMetadata(
+			boolean stripSnapshotTimestamps, String metadataFile) throws IOException {
 		OutRequest request = createRequest("1234", null, null, stripSnapshotTimestamps,
 				false, null);
 		Directory directory = createDirectory();
 		List<File> metadataFiles = new ArrayList<>();
-		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(),
-				"maven-metadata.xml"));
+		metadataFiles.add(
+				new File(directory.getSubDirectory("folder").getFile(), metadataFile));
 		configureMockScanner(directory, metadataFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"),

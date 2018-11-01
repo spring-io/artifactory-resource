@@ -18,9 +18,13 @@ package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,6 +63,10 @@ import org.springframework.util.StringUtils;
  */
 @Component
 public class OutHandler {
+
+	private static final Set<String> METADATA_FILES = Collections
+			.unmodifiableSet(new HashSet<>(
+					Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
 
 	private static final DeployOption[] NO_DEPLOY_OPTIONS = {};
 
@@ -197,7 +205,7 @@ public class OutHandler {
 
 	private Predicate<File> getMetadataFilter(Params params) {
 		if (params.isStripSnapshotTimestamps()) {
-			return (file) -> !file.getName().toLowerCase().equals("maven-metadata.xml");
+			return (file) -> !METADATA_FILES.contains(file.getName().toLowerCase());
 		}
 		return (file) -> true;
 	}
