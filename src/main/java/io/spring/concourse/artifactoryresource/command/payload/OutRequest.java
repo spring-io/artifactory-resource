@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -203,7 +204,9 @@ public class OutRequest {
 			this.exclude = (exclude != null)
 					? Collections.unmodifiableList(new ArrayList<>(exclude))
 					: Collections.emptyList();
-			this.properties = properties;
+			this.properties = (properties != null)
+					? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
+					: Collections.emptyMap();
 		}
 
 		public List<String> getInclude() {

@@ -105,4 +105,12 @@ public class OutRequestTests {
 				.containsEntry("zip-type", "docs").containsEntry("zip-deployed", "false");
 	}
 
+	@Test
+	public void readWhenHasNoArtifactSetPropertiesShouldUseEmptyCollection()
+			throws Exception {
+		OutRequest request = this.json
+				.readObject("out-request-without-artifact-set-properties.json");
+		assertThat(request.getParams().getArtifactSet().get(0).getProperties()).isEmpty();
+	}
+
 }
