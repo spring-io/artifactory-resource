@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -63,7 +63,8 @@ public class HttpArtifactoryTests {
 				"restTemplate");
 		List interceptors = (List) ReflectionTestUtils.getField(restTemplate,
 				"interceptors");
-		assertThat(interceptors.get(0)).isInstanceOf(BasicAuthorizationInterceptor.class);
+		assertThat(interceptors.get(0))
+				.isInstanceOf(BasicAuthenticationInterceptor.class);
 	}
 
 }

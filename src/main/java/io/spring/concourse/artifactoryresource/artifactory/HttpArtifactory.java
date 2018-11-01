@@ -41,7 +41,7 @@ public class HttpArtifactory implements Artifactory {
 			uri += '/';
 		}
 		RestTemplateBuilder builder = (StringUtils.hasText(username)
-				? this.restTemplateBuilder.basicAuthorization(username, password)
+				? this.restTemplateBuilder.basicAuthentication(username, password)
 				: this.restTemplateBuilder);
 		return new HttpArtifactoryServer(uri, builder);
 	}
