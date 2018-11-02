@@ -46,8 +46,8 @@ public class OutRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password",
 			"my-build");
 
-	private OutRequest.Params params = new OutRequest.Params(false, "1234",
-			"libs-snapshot-local", "folder", null, null, null, null, null, null, null);
+	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local",
+			"1234", "folder", null, null, null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -70,7 +70,7 @@ public class OutRequestTests {
 	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder must not be empty");
-		new OutRequest.Params(false, "1234", "libs-snapshot-local", "", null, null, null,
+		new OutRequest.Params(false, "libs-snapshot-local", "1234", "", null, null, null,
 				null, null, null, null);
 	}
 
@@ -78,7 +78,7 @@ public class OutRequestTests {
 	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Repo must not be empty");
-		new OutRequest.Params(false, "1234", "", "folder", null, null, null, null, null,
+		new OutRequest.Params(false, "", "1234", "folder", null, null, null, null, null,
 				null, null);
 	}
 

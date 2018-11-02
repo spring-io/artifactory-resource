@@ -70,10 +70,10 @@ public class OutRequest {
 
 		private final boolean debug;
 
+		private final String repo;
+
 		@JsonProperty("build_number")
 		private final String buildNumber;
-
-		private final String repo;
 
 		private final String folder;
 
@@ -94,8 +94,9 @@ public class OutRequest {
 
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug,
+				@JsonProperty("repo") String repo,
 				@JsonProperty("build_number") String buildNumber,
-				@JsonProperty("repo") String repo, @JsonProperty("folder") String folder,
+				@JsonProperty("folder") String folder,
 				@JsonProperty("include") List<String> include,
 				@JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("module_layout") String moduleLayout,
@@ -130,12 +131,12 @@ public class OutRequest {
 			return this.debug;
 		}
 
-		public String getBuildNumber() {
-			return this.buildNumber;
-		}
-
 		public String getRepo() {
 			return this.repo;
+		}
+
+		public String getBuildNumber() {
+			return this.buildNumber;
 		}
 
 		public String getFolder() {

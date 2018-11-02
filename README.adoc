@@ -140,8 +140,10 @@ If you are querying artifacts that were not deployed with this resource, you sho
 
 #### Parameters
 
+* `debug`: If additional debug output should be logged.
 * `generate_maven_metadata`: If maven meta-data should be generated.
 This is required if you with to use timestamp based SNAPSHOT artifacts with Maven.
+* `save_build_info`: If the `build-info.json` provided by artifactory should be saved.
 * `download_artifacts`: If artifacts should be downloaded or skipped.
  If you only need `build-info.json` you can set this to `false`.
 
@@ -155,16 +157,17 @@ Build modules will be also automatically added when dealing with a Maven style d
 
 #### Params
 
-* `repo`: *Required.* The artifact repository to deploy to (e.g. `libs-snapshot-local`)
-* `build_number`: The build number to save (if not specified, an ID based on the current date/time will be used)
-* `folder`: The folder to save
-* `include`: A list of Ant style patterns for the files to include
-* `exclude`: A list of Ant style patterns for the files to exclude
+* `debug`: If additional debug output should be logged.
+* `repo`: *Required.* The artifact repository to deploy to (e.g. `libs-snapshot-local`).
+* `build_number`: The build number to save (if not specified, an ID based on the current date/time will be used).
+* `folder`: The folder to save.
+* `include`: A list of Ant style patterns for the files to include.
+* `exclude`: A list of Ant style patterns for the files to exclude.
 * `module_layout`: The module layout (`maven` or `none`) used to generate `build-info` module information (defaults to `maven`).
-* `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`)
+* `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`).
 * `strip_snapshot_timestamps`: If snapshot timestamps should be removed to allow artifactory to generate them (defaults to `true`).
-* `disable_checksum_uploads`: If checksum based uploads should be disabled (useful to prevent artifactory from associating the wrong resource with a snapshot version)
-* `artifact_set`: Additional configuration for a subset of the artifacts (see below)
+* `disable_checksum_uploads`: If checksum based uploads should be disabled (useful to prevent artifactory from associating the wrong resource with a snapshot version).
+* `artifact_set`: Additional configuration for a subset of the artifacts (see below).
 
 The `artifact_set` parameter can be used to apply specific additional configuration to a subset of artifacts.
 You create sets based on `include` and `exclude` Ant patterns, then apply any of the following additional configuration:
