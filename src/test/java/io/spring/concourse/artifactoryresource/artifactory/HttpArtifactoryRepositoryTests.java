@@ -164,13 +164,65 @@ public class HttpArtifactoryRepositoryTests {
 	@Test
 	public void downloadShouldFetchArtifactAndWriteToFile() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		expectFileDownload(url);
+		File destination = this.temporaryFolder.newFolder();
+		this.artifactoryRepository.download("foo/bar.jar", destination, false);
+		assertThat(new File(new File(destination, "foo"), "bar.jar")).exists().isFile();
+		this.server.verify();
+	}
+
+	@Test
+	public void downloadShouldFetchChecksumFiles() throws Exception {
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		expectFileDownload(url);
+		expectFileDownload(url + ".md5");
+		expectFileDownload(url + ".sha1");
+		File destination = this.temporaryFolder.newFolder();
+		this.artifactoryRepository.download("foo/bar.jar", destination, true);
+		File folder = new File(destination, "foo");
+		assertThat(new File(folder, "bar.jar")).exists().isFile();
+		assertThat(new File(folder, "bar.jar.md5")).exists().isFile();
+		assertThat(new File(folder, "bar.jar.sha1")).exists().isFile();
+		this.server.verify();
+	}
+
+	@Test
+	public void downloadWhenChecksumFileShouldNotFetchChecksumFiles() throws Exception {
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar.md5";
+		expectFileDownload(url);
+		File destination = this.temporaryFolder.newFolder();
+		this.artifactoryRepository.download("foo/bar.jar.md5", destination, true);
+		File folder = new File(destination, "foo");
+		assertThat(new File(folder, "bar.jar.md5")).exists().isFile();
+		assertThat(new File(folder, "bar.jar.md5.md5")).doesNotExist();
+		assertThat(new File(folder, "bar.jar.md5.sha1")).doesNotExist();
+		this.server.verify();
+	}
+
+	@Test
+	public void downloadShouldIgnoreChecksumFileFailures() throws Exception {
+		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		expectFileDownload(url);
+		expectFile404(url + ".md5");
+		expectFile404(url + ".sha1");
+		File destination = this.temporaryFolder.newFolder();
+		this.artifactoryRepository.download("foo/bar.jar", destination, true);
+		File folder = new File(destination, "foo");
+		assertThat(new File(folder, "bar.jar")).exists().isFile();
+		assertThat(new File(folder, "bar.jar.md5")).doesNotExist();
+		assertThat(new File(folder, "bar.jar.sha1")).doesNotExist();
+		this.server.verify();
+	}
+
+	private void expectFileDownload(String url) {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}),
 						MediaType.APPLICATION_OCTET_STREAM));
-		File destination = this.temporaryFolder.newFolder();
-		this.artifactoryRepository.download("foo/bar.jar", destination);
-		assertThat(new File(new File(destination, "foo"), "bar.jar")).exists().isFile();
-		this.server.verify();
+	}
+
+	private void expectFile404(String url) {
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 	}
 
 }

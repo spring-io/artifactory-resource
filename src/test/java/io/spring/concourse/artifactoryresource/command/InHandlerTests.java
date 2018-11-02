@@ -109,7 +109,20 @@ public class InHandlerTests {
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
 			verify(this.artifactoryRepository).download(deployedArtifact,
-					directory.getFile());
+					directory.getFile(), true);
+		}
+		assertThat(response.getVersion()).isEqualTo(request.getVersion());
+	}
+
+	@Test
+	public void handleWhenDownloadChecksumsFalseShouldDownloadArtifactsWithoutChecksums()
+			throws Exception {
+		InRequest request = createRequest(false, false, true, false);
+		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		InResponse response = this.handler.handle(request, directory);
+		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
+			verify(this.artifactoryRepository).download(deployedArtifact,
+					directory.getFile(), false);
 		}
 		assertThat(response.getVersion()).isEqualTo(request.getVersion());
 	}
@@ -154,10 +167,16 @@ public class InHandlerTests {
 
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
 			boolean downloadArtifacts) {
+		return createRequest(generateMavenMetadata, saveBuildInfo, downloadArtifacts,
+				true);
+	}
+
+	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
+			boolean downloadArtifacts, boolean downloadChecksums) {
 		InRequest request = new InRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Version("1234"), new Params(false, generateMavenMetadata,
-						saveBuildInfo, downloadArtifacts));
+						saveBuildInfo, downloadArtifacts, downloadChecksums));
 		return request;
 	}
 

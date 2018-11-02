@@ -146,6 +146,7 @@ This is required if you with to use timestamp based SNAPSHOT artifacts with Mave
 * `save_build_info`: If the `build-info.json` provided by artifactory should be saved.
 * `download_artifacts`: If artifacts should be downloaded or skipped.
  If you only need `build-info.json` you can set this to `false`.
+* `download_checksums`: If artifact checksum files should be downloaded.
 
 
 ### `out`: Deploy build artifacts

@@ -78,7 +78,8 @@ public class InHandler {
 					.getDeployedArtifacts(buildNumber);
 			console.log("Downloading build {} artifacts from {}", buildNumber,
 					source.getUri());
-			download(artifactoryServer, groupByRepo(artifacts), directory.getFile());
+			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(),
+					params.isDownloadChecksums());
 			if (params.isGenerateMavenMetadata()) {
 				logger.debug("Generating maven metadata");
 				this.mavenMetadataGenerator.generate(directory);
@@ -115,10 +116,12 @@ public class InHandler {
 	}
 
 	private void download(ArtifactoryServer artifactoryServer,
-			MultiValueMap<String, DeployedArtifact> artifactsByRepo, File destination) {
+			MultiValueMap<String, DeployedArtifact> artifactsByRepo, File destination,
+			boolean downloadChecksums) {
 		artifactsByRepo.forEach((repo, artifacts) -> artifacts.forEach((artifact) -> {
 			console.log("Downloading {} from {}", artifact.getPath(), repo);
-			artifactoryServer.repository(repo).download(artifact, destination);
+			artifactoryServer.repository(repo).download(artifact, destination,
+					downloadChecksums);
 		}));
 	}
 

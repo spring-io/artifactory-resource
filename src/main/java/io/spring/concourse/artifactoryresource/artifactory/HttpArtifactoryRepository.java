@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
@@ -53,6 +54,8 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	private static final int KB = 1024;
 
 	private static final long CHECKSUM_THRESHOLD = 10 * KB;
+
+	private static final String[] CHECKSUM_EXTENSIONS = { ".md5", ".sha1" };
 
 	private final RestTemplate restTemplate;
 
@@ -125,17 +128,39 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	@Override
-	public void download(String path, File destination) {
+	public void download(String path, File destination, boolean downloadChecksums) {
 		Assert.hasLength(path, "Path must not be empty");
+		getFile(path, destination);
+		if (downloadChecksums && !isChecksumFile(path)) {
+			Arrays.stream(CHECKSUM_EXTENSIONS).forEach((checksumExtension) -> {
+				try {
+					getFile(path + checksumExtension, destination);
+				}
+				catch (HttpClientErrorException ex) {
+					// Ignore checksum download failures
+				}
+			});
+		}
+	}
+
+	private void getFile(String path, File destination) {
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
 				.path("/" + path).buildAndExpand(NO_VARIABLES).encode().toUri();
-		ResponseExtractor<Void> responseExtractor = (response) -> {
+		this.restTemplate.execute(uri, HttpMethod.GET, null,
+				getResponseExtractor(path, destination));
+	}
+
+	private ResponseExtractor<Void> getResponseExtractor(String path, File destination) {
+		return (response) -> {
 			Path fullPath = destination.toPath().resolve(path);
 			Files.createDirectories(fullPath.getParent());
 			Files.copy(response.getBody(), fullPath);
 			return null;
 		};
-		this.restTemplate.execute(uri, HttpMethod.GET, null, responseExtractor);
+	}
+
+	private boolean isChecksumFile(String path) {
+		return Arrays.stream(CHECKSUM_EXTENSIONS).anyMatch(path.toLowerCase()::endsWith);
 	}
 
 }

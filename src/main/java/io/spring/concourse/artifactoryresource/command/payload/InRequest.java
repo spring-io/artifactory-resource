@@ -78,20 +78,25 @@ public class InRequest {
 
 		private final boolean downloadArtifacts;
 
+		private final boolean downloadChecksums;
+
 		public Params() {
-			this(null, null, null, null);
+			this(null, null, null, null, null);
 		}
 
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug,
 				@JsonProperty("generate_maven_metadata") Boolean generateMavenMetadata,
 				@JsonProperty("save_build_info") Boolean saveBuildInfo,
-				@JsonProperty("download_artifacts") Boolean downloadArtifacts) {
+				@JsonProperty("download_artifacts") Boolean downloadArtifacts,
+				@JsonProperty("download_checksums") Boolean downloadChecksums) {
 			this.debug = (debug != null) ? debug : false;
 			this.generateMavenMetadata = (generateMavenMetadata != null)
 					? generateMavenMetadata : true;
 			this.saveBuildInfo = (saveBuildInfo != null) ? saveBuildInfo : false;
 			this.downloadArtifacts = (downloadArtifacts != null) ? downloadArtifacts
+					: true;
+			this.downloadChecksums = (downloadChecksums != null) ? downloadChecksums
 					: true;
 		}
 
@@ -111,12 +116,17 @@ public class InRequest {
 			return this.downloadArtifacts;
 		}
 
+		public boolean isDownloadChecksums() {
+			return this.downloadChecksums;
+		}
+
 		@Override
 		public String toString() {
 			return new ToStringCreator(this)
 					.append("generateMavenMetadata", this.generateMavenMetadata)
 					.append("saveBuildInfo", this.saveBuildInfo)
-					.append("downloadArtifacts", this.downloadArtifacts).toString();
+					.append("downloadArtifacts", this.downloadArtifacts)
+					.append("downloadChecksums", this.downloadChecksums).toString();
 		}
 
 	}

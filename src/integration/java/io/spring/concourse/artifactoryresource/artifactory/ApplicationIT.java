@@ -17,6 +17,9 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.File;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -113,9 +116,21 @@ public class ApplicationIT {
 				.getDeployedArtifacts(buildNumber);
 		File folder = this.temporaryFolder.newFolder();
 		for (DeployedArtifact result : results) {
-			artifactoryRepository.download(result, folder);
+			artifactoryRepository.download(result, folder, true);
 		}
 		assertThat(new File(folder, "foo/bar")).hasContent("foo");
+		assertThat(new File(folder, "foo/bar.md5"))
+				.hasContent(getChecksum("foo", "MD5", 32));
+		assertThat(new File(folder, "foo/bar.sha1"))
+				.hasContent(getChecksum("foo", "SHA1", 40));
+	}
+
+	private String getChecksum(String content, String algorithm, int length)
+			throws NoSuchAlgorithmException {
+		MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
+		messageDigest.update(content.getBytes());
+		return String.format("%0" + length + "x",
+				new BigInteger(1, messageDigest.digest()));
 	}
 
 	private ArtifactoryServer getServer() {

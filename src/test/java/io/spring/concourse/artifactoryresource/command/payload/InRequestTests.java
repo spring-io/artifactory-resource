@@ -45,7 +45,8 @@ public class InRequestTests {
 
 	private Version version = new Version("1234");
 
-	private InRequest.Params params = new InRequest.Params(false, false, false, false);
+	private InRequest.Params params = new InRequest.Params(false, false, false, false,
+			false);
 
 	@Autowired
 	private JacksonTester<InRequest> json;
@@ -70,6 +71,7 @@ public class InRequestTests {
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 		assertThat(request.getParams().isSaveBuildInfo()).isFalse();
 		assertThat(request.getParams().isDownloadArtifacts()).isTrue();
+		assertThat(request.getParams().isDownloadChecksums()).isTrue();
 	}
 
 	@Test
@@ -82,6 +84,7 @@ public class InRequestTests {
 		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
 		assertThat(request.getParams().isSaveBuildInfo()).isTrue();
 		assertThat(request.getParams().isDownloadArtifacts()).isFalse();
+		assertThat(request.getParams().isDownloadChecksums()).isFalse();
 	}
 
 	@Test
