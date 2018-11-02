@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>com.palantir.docker.compose</groupId>
 			<artifactId>docker-compose-rule-junit4</artifactId>
-			<version>0.31.1</version>
+			<version>0.34.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
