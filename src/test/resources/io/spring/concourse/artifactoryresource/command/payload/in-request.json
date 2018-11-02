@@ -11,7 +11,7 @@
 	"params": {
 		"generate_maven_metadata": false,
 		"save_build_info": true,
-		"download_artifacts": true
+		"download_artifacts": false
 
 	}
 }

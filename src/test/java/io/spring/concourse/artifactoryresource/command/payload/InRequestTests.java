@@ -69,6 +69,7 @@ public class InRequestTests {
 		InRequest request = new InRequest(this.source, this.version, null);
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 		assertThat(request.getParams().isSaveBuildInfo()).isFalse();
+		assertThat(request.getParams().isDownloadArtifacts()).isTrue();
 	}
 
 	@Test
@@ -80,6 +81,7 @@ public class InRequestTests {
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isFalse();
 		assertThat(request.getParams().isSaveBuildInfo()).isTrue();
+		assertThat(request.getParams().isDownloadArtifacts()).isFalse();
 	}
 
 	@Test

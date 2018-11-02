@@ -92,7 +92,7 @@ public class InRequest {
 					? generateMavenMetadata : true;
 			this.saveBuildInfo = (saveBuildInfo != null) ? saveBuildInfo : false;
 			this.downloadArtifacts = (downloadArtifacts != null) ? downloadArtifacts
-					: false;
+					: true;
 		}
 
 		public boolean isDebug() {

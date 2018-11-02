@@ -142,6 +142,8 @@ If you are querying artifacts that were not deployed with this resource, you sho
 
 * `generate_maven_metadata`: If maven meta-data should be generated.
 This is required if you with to use timestamp based SNAPSHOT artifacts with Maven.
+* `download_artifacts`: If artifacts should be downloaded or skipped.
+ If you only need `build-info.json` you can set this to `false`.
 
 
 ### `out`: Deploy build artifacts
