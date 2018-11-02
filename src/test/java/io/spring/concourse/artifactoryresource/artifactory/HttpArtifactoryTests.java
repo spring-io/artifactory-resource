@@ -50,7 +50,7 @@ public class HttpArtifactoryTests {
 				null);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
 				"restTemplate");
-		List interceptors = (List) ReflectionTestUtils.getField(restTemplate,
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate,
 				"interceptors");
 		assertThat(interceptors.size()).isEqualTo(0);
 	}
@@ -61,7 +61,7 @@ public class HttpArtifactoryTests {
 				"password");
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
 				"restTemplate");
-		List interceptors = (List) ReflectionTestUtils.getField(restTemplate,
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate,
 				"interceptors");
 		assertThat(interceptors.get(0))
 				.isInstanceOf(BasicAuthenticationInterceptor.class);

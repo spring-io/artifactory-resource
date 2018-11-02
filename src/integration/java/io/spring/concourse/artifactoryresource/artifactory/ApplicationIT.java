@@ -107,7 +107,7 @@ public class ApplicationIT {
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
 			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber)
-					throws Exception {
+			throws Exception {
 		this.temporaryFolder.create();
 		List<DeployedArtifact> results = artifactoryBuildRuns
 				.getDeployedArtifacts(buildNumber);
