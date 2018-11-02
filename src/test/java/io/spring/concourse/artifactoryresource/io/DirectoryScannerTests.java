@@ -82,6 +82,16 @@ public class DirectoryScannerTests {
 				.containsExactly("/bar/bar.jar");
 	}
 
+	@Test
+	public void scanWhenUsingSlashPrefixShouldFilterFiles() throws IOException {
+		Directory directory = createFiles();
+		List<File> files = this.scanner.scan(directory,
+				Collections.singletonList("/**/*.jar"),
+				Collections.singletonList("/**/baz.*"));
+		assertThat(files).extracting((f) -> relativePath(directory, f))
+				.containsExactly("/bar/bar.jar");
+	}
+
 	private String relativePath(Directory directory, File file) {
 		String root = StringUtils.cleanPath(directory.getFile().getPath());
 		String path = StringUtils.cleanPath(file.getPath());

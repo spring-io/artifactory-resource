@@ -51,11 +51,19 @@ public class PathFilter {
 	private boolean hasMatch(PathMatcher pathMatcher, String path,
 			List<String> patterns) {
 		for (String pattern : patterns) {
+			pattern = cleanPattern(path, pattern);
 			if (pathMatcher.match(pattern, path)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private String cleanPattern(String path, String pattern) {
+		if (path.startsWith("/")) {
+			return !pattern.startsWith("/") ? "/" + pattern : pattern;
+		}
+		return pattern.startsWith("/") ? pattern.substring(1) : pattern;
 	}
 
 }
