@@ -1,13 +1,13 @@
 resource_types:
   - name: artifactory-resource
     type: docker-image
-    source: {repository: springio/artifactory-resource, tag: latest}
+    source: {repository: springio/artifactory-resource, tag: 0.0.4}
 
 resources:
   - name: git-repo
     type: git
     source:
-      uri: https://github.com/philwebb/artifactory-resource
+      uri: https://github.com/spring-io/artifactory-resource
       branch: master
   - name: artifactory
     type: artifactory-resource
