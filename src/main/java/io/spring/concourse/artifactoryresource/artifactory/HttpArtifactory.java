@@ -16,7 +16,15 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.io.IOException;
+import java.net.URI;
+
+import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -41,9 +49,33 @@ public class HttpArtifactory implements Artifactory {
 			uri += '/';
 		}
 		RestTemplateBuilder builder = (StringUtils.hasText(username)
-				? this.restTemplateBuilder.basicAuthentication(username, password)
+				? this.restTemplateBuilder.requestFactory(
+						() -> new BasicAuthClientHttpRequestFactory(username, password))
 				: this.restTemplateBuilder);
 		return new HttpArtifactoryServer(uri, builder);
+	}
+
+	private static class BasicAuthClientHttpRequestFactory
+			extends AbstractClientHttpRequestFactoryWrapper {
+
+		private final String username;
+
+		private final String password;
+
+		protected BasicAuthClientHttpRequestFactory(String username, String password) {
+			super(new ClientHttpRequestFactorySupplier().get());
+			this.username = username;
+			this.password = password;
+		}
+
+		@Override
+		protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
+				ClientHttpRequestFactory requestFactory) throws IOException {
+			ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
+			request.getHeaders().setBasicAuth(this.username, this.password);
+			return request;
+		}
+
 	}
 
 }

@@ -16,13 +16,16 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.net.URI;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -56,15 +59,15 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
-	public void serverWithCredentialsShouldReturnServerWithCredentials() {
+	public void serverWithCredentialsShouldReturnServerWithCredentials()
+			throws Exception {
 		ArtifactoryServer server = this.artifactory.server("http://example.com", "admin",
 				"password");
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
 				"restTemplate");
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate,
-				"interceptors");
-		assertThat(interceptors.get(0))
-				.isInstanceOf(BasicAuthenticationInterceptor.class);
+		ClientHttpRequest request = restTemplate.getRequestFactory()
+				.createRequest(new URI("http://localhost"), HttpMethod.GET);
+		assertThat(request.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
 	}
 
 }
