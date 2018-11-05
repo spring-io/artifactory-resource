@@ -278,6 +278,7 @@
 									<name>artifactory</name>
 									<workingDir>artifactory.zip/artifactory-oss-${artifactory.version}/</workingDir>
 									<healthcheckUrl>http://localhost:8081/artifactory/api/system/ping</healthcheckUrl>
+									<waitAfterLaunch>300</waitAfterLaunch>
 									<arguments>
 										<argument>bin/artifactory.sh</argument>
 										<argument>start</argument>
