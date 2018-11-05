@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM ubuntu:bionic-20181018
 
 ARG root=.
 ARG jar=target/artifactory-resource.jar
@@ -6,8 +6,15 @@ ARG jar=target/artifactory-resource.jar
 COPY ${root}/assets/ /opt/resource/
 COPY ${jar} /artifact/artifactory-resource.jar
 
-# https://github.com/concourse/concourse/issues/2042
-RUN unlink  $JAVA_HOME/jre/lib/security/cacerts && \
-cp /etc/ssl/certs/java/cacerts $JAVA_HOME/jre/lib/security/cacerts
+
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y ca-certificates curl
+RUN rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME /opt/openjdk
+ENV PATH $JAVA_HOME/bin:$PATH
+RUN mkdir -p /opt/openjdk && \
+    cd /opt/openjdk && \
+    curl https://java-buildpack.cloudfoundry.org/openjdk/bionic/x86_64/openjdk-1.8.0_192.tar.gz | tar xz
 
 RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out
