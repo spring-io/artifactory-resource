@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  concourse-db:
+    image: postgres
+    networks: [concourse]
+    environment:
+    - POSTGRES_DB=concourse
+    - POSTGRES_PASSWORD=concourse_pass
+    - POSTGRES_USER=concourse_user
+    - PGDATA=/database
+  concourse:
+    image: concourse/concourse:4.2.1
+    command: quickstart
+    privileged: true
+    depends_on: [concourse-db]
+    networks: [concourse]
+    ports: ["8080:8080"]
+    environment:
+    - CONCOURSE_POSTGRES_HOST=concourse-db
+    - CONCOURSE_POSTGRES_USER=concourse_user
+    - CONCOURSE_POSTGRES_PASSWORD=concourse_pass
+    - CONCOURSE_POSTGRES_DATABASE=concourse
+    - CONCOURSE_EXTERNAL_URL
+    - CONCOURSE_ADD_LOCAL_USER=admin:admin
+    - CONCOURSE_MAIN_TEAM_LOCAL_USER=admin
+  artifactory:
+    image: docker.bintray.io/jfrog/artifactory-oss:6.5.2
+    networks: [concourse]
+    ports: ["8081:8081"]
+    volumes: ["./data/artifactory:/var/opt/jfrog/artifactory"]
+    restart: always
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+networks:
+  concourse:
+    driver: bridge

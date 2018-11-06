@@ -1,0 +1,51 @@
+== Sample Pipeline
+
+To run the sample pipeline using Docker Compose, follow these steps:
+
+=== Install Docker compose
+Follow https://docs.docker.com/compose/install/[these instructions] to install Docker Compose if you've not already done so in the past.
+
+=== Start Concouse CI and Artifactory
+From this directory, run:
+
+----
+$ docker-compose up
+----
+
+This should start containers for Concourse and Artifactory.
+You should find that Concourse is running at http://127.0.0.1:8080[127.0.0.1:8080] and Artifactory at http://127.0.0.1:8081/artifactory[127.0.0.1:8081/artifactory].
+
+=== Deploy the sample pipeline
+To deploy the sample pipeline first http://127.0.0.1:8080[download and install fly] then run the following:
+
+----
+$ fly --target sample login --concourse-url http://127.0.0.1:8080 -u admin -p admin
+$ fly --target sample sync
+----
+
+You should now be able to deploy the pipeline with:
+
+----
+$ fly --target sample set-pipeline -p sample -c simple/pipeline.yml -l params.yml
+----
+
+If you go back to http://127.0.0.1:8080[127.0.0.1:8080] and login with `admin`/`admin` you should see the pipeline.
+
+=== Unpause and trigger the job
+The newly deployed pipeline will be paused, so you'll either need to unpause it from the web UI or run:
+
+----
+$ fly --target sample unpause-pipeline -p sample
+----
+
+When the pipeline is active, you can manually trigger the `build` job.
+
+----
+$ fly --target sample trigger-job -j sample/build
+----
+
+=== Inspect Artifactory
+Once the job has finished you can http://127.0.0.1:8081/artifactory[go back to Artifactory] and login with `admin`/`password`.
+Click on the "builds" tab and you should see the build that just ran.
+You can also browse the `example-repo-local` repository to see the deployed jar file.
+

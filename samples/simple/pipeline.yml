@@ -12,24 +12,23 @@ resources:
   - name: artifactory
     type: artifactory-resource
     source:
-      uri: {{ARTIFACTORY_URI}}
-      username: {{USERNAME}}
-      password: {{PASSWORD}}
+      uri: ((sample-artifactory-uri))
+      username: ((sample-artifactory-username))
+      password: ((sample-artifactory-password))
       build_name: test-build
 
 jobs:
   - name: build
     plan:
       - get: git-repo
-        trigger: true
       - task: build
         file: git-repo/samples/simple/tasks/build.yml
       - put: artifactory
         params:
-          repo: libs-snapshot-local
-          build_number: ${BUILD_ID}
+          repo: example-repo-local
           folder: test
-          build_url: http://192.168.100.4:8080/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}
+          build_uri: "((sample-concourse-uri))/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+          build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
   - name: test
     plan:
       - get: artifactory

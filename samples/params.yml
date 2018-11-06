@@ -1,0 +1,4 @@
+sample-artifactory-uri: http://artifactory:8081/artifactory
+sample-artifactory-username: admin
+sample-artifactory-password: password
+sample-concourse-uri: http://localhost:8080/artifactory
