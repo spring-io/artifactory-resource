@@ -26,6 +26,12 @@ resources:
     repository: springio/artifactory-resource
     username: ((docker-hub-username))
     password: ((docker-hub-password))
+- name: github-release
+  type: github-release
+  source:
+    owner: spring-projects
+    repository: spring-boot
+    access_token: ((github-release-notes-access-token))
 jobs:
 - name: build-artifactory-resource-ci-image
   plan:
@@ -36,9 +42,11 @@ jobs:
       build: ci-images-git-repo/ci/images/artifactory-resource-ci-image
 - name: build
   plan:
+  - get: artifactory-resource-ci-image
   - get: git-repo
     trigger: true
   - task: build
+    image: artifactory-resource-ci-image
     file: git-repo/ci/tasks/build.yml
   - put: artifactory-resource-image
     params:
@@ -50,11 +58,18 @@ jobs:
         jar:  built-artifact/artifactory-resource.jar
 - name: release
   plan:
+  - get: artifactory-resource-ci-image
   - get: git-repo
     passed: [build]
     trigger: false
   - task: release
+    image: artifactory-resource-ci-image
     file: git-repo/ci/tasks/release.yml
+  - task: generate-release-notes
+    file: git-repo/ci/tasks/generate-release-notes.yml
+    params:
+      GITHUB_USERNAME: ((github-username))
+      GITHUB_TOKEN: ((github-release-notes-access-token))
   - put: git-repo
     params:
       repository: release-git-repo
@@ -66,6 +81,11 @@ jobs:
       build_args:
         root: git-repo
         jar:  built-artifact/artifactory-resource.jar
+  - put: github-release
+    params:
+      name: generated-release-notes/tag
+      tag: generated-release-notes/tag
+      body: generated-release-notes/release-notes.md
 groups:
 - name: "Artifactory Resource"
   jobs:
