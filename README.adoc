@@ -1,4 +1,4 @@
-= Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+= Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"]
 
 A http://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 
