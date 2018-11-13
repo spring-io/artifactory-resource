@@ -1,19 +1,19 @@
-# Artifactory Resource
+= Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
 A http://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 
 
-## Overview
+== Overview
 This Concourse resource can be used to check, deploy and retrieve artifacts from a JFrog artifactory server.
 It makes use of the "builds" and "artifact properties" features of Artifactory to link deployed artifacts to their builds.
 
 
 
-## Configuration
+== Configuration
 
 
 
-### Resource Configuration
+=== Resource Configuration
 To use the `artifactory-resource` you must declare it in the `resource_types` section of your `pipeline.yml` file:
 
 [source,yml]
@@ -29,7 +29,7 @@ resource_types:
 
 
 
-### Source Configuration
+=== Source Configuration
 
 * `uri`: *Required.* The URI of the artifactory server
 * `username`: *Required.* The artifactory username
@@ -50,7 +50,7 @@ resources:
 ----
 
 
-## Environment variables
+== Environment variables
 Environment variables can be referenced in any part of the configuration by using `${...}` notation.
 For example, typically the `build_url` `out` parameter would be built using `${BUILD_ID}`
 
@@ -67,7 +67,7 @@ jobs:
 
 
 
-## Example
+== Example
 
 The following example shows a pipeline with two jobs.
 The first job deploys built artifacts and the second job retrieves and runs tests against them.
@@ -116,18 +116,18 @@ jobs:
 ----
 
 
-## Behavior
+== Behavior
 
 
 
-### `check`: Check for new builds
+=== `check`: Check for new builds
 
 Queries the artifactory repository for builds runs for the given `build_name`.
 Returns a list of associated `build_numbers` ordered by date.
 
 
 
-### `in`: Fetches build artifacts
+=== `in`: Fetches build artifacts
 
 Fetches artifacts for the build run to the destination folder.
 The directory structure returned is identical to the one that was originally uploaded.
@@ -138,7 +138,7 @@ Files are fetch by querying for artifacts that have `build.name` and `build.numb
 If you are querying artifacts that were not deployed with this resource, you should ensure such properties exist.
 
 
-#### Parameters
+==== Parameters
 
 * `debug`: If additional debug output should be logged.
 * `generate_maven_metadata`: If maven meta-data should be generated.
@@ -149,14 +149,14 @@ This is required if you with to use timestamp based SNAPSHOT artifacts with Mave
 * `download_checksums`: If artifact checksum files should be downloaded (default `true`).
 
 
-### `out`: Deploy build artifacts
+=== `out`: Deploy build artifacts
 
 Deploy artifacts from the specified folder and create a new artifactory "Build Run".
 Uploaded artifacts will have `build.name` and `build.number` properties associated with them.
 
 Build modules will be also automatically added when dealing with a Maven style directory structure.
 
-#### Params
+==== Params
 
 * `debug`: If additional debug output should be logged.
 * `repo`: *Required.* The artifact repository to deploy to (e.g. `libs-snapshot-local`).

@@ -41,6 +41,7 @@ jobs:
     params:
       build: ci-images-git-repo/ci/images/artifactory-resource-ci-image
 - name: build
+  public: true
   plan:
   - get: artifactory-resource-ci-image
   - get: git-repo
@@ -87,7 +88,7 @@ jobs:
       tag: generated-release-notes/tag
       body: generated-release-notes/release-notes.md
 groups:
-- name: "Artifactory Resource"
+- name: "Build"
   jobs:
   - build
   - release
