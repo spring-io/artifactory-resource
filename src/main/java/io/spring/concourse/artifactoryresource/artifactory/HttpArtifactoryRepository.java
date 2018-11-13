@@ -22,11 +22,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
+import io.spring.concourse.artifactoryresource.io.Checksum;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -54,8 +54,6 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	private static final int KB = 1024;
 
 	private static final long CHECKSUM_THRESHOLD = 10 * KB;
-
-	private static final String[] CHECKSUM_EXTENSIONS = { ".md5", ".sha1" };
 
 	private final RestTemplate restTemplate;
 
@@ -131,8 +129,8 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void download(String path, File destination, boolean downloadChecksums) {
 		Assert.hasLength(path, "Path must not be empty");
 		getFile(path, destination);
-		if (downloadChecksums && !isChecksumFile(path)) {
-			Arrays.stream(CHECKSUM_EXTENSIONS).forEach((checksumExtension) -> {
+		if (downloadChecksums && !Checksum.isChecksumFile(path)) {
+			Checksum.getFileExtensions().forEach((checksumExtension) -> {
 				try {
 					getFile(path + checksumExtension, destination);
 				}
@@ -157,10 +155,6 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			Files.copy(response.getBody(), fullPath);
 			return null;
 		};
-	}
-
-	private boolean isChecksumFile(String path) {
-		return Arrays.stream(CHECKSUM_EXTENSIONS).anyMatch(path.toLowerCase()::endsWith);
 	}
 
 }

@@ -144,7 +144,7 @@ public class InHandlerTests {
 		InRequest request = createRequest(true, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
-		verify(this.mavenMetadataGenerator).generate(directory);
+		verify(this.mavenMetadataGenerator).generate(directory, true);
 	}
 
 	@Test
@@ -154,6 +154,15 @@ public class InHandlerTests {
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
 		verifyZeroInteractions(this.mavenMetadataGenerator);
+	}
+
+	@Test
+	public void handleWhenHasNoDownloadChecksumParamShouldGenerateMetadataButNotChecksums()
+			throws Exception {
+		InRequest request = createRequest(true, false, true, false);
+		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		this.handler.handle(request, directory);
+		verify(this.mavenMetadataGenerator).generate(directory, false);
 	}
 
 	@Test

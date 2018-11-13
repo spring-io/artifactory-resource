@@ -82,7 +82,8 @@ public class InHandler {
 					params.isDownloadChecksums());
 			if (params.isGenerateMavenMetadata()) {
 				logger.debug("Generating maven metadata");
-				this.mavenMetadataGenerator.generate(directory);
+				this.mavenMetadataGenerator.generate(directory,
+						params.isDownloadChecksums());
 			}
 		}
 		if (params.isSaveBuildInfo()) {

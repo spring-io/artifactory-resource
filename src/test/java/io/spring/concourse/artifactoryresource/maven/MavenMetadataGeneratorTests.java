@@ -53,7 +53,7 @@ public class MavenMetadataGeneratorTests {
 	@Test
 	public void generateWhenUsingNonSnapshotShouldNotCreateMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.RELEASE");
-		this.generator.generate(directory);
+		this.generator.generate(directory, false);
 		File file = new File(directory.toString()
 				+ "/com/example/project/my-project/1.0.0.RELEASE/maven-metadata.xml");
 		assertThat(file).doesNotExist();
@@ -62,7 +62,7 @@ public class MavenMetadataGeneratorTests {
 	@Test
 	public void generateWhenUsingSnapshotShouldCreateMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
-		this.generator.generate(directory);
+		this.generator.generate(directory, false);
 		File file = new File(directory.toString()
 				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
 		URL expected = getClass().getResource("generate-when-using-snapshot.xml");
@@ -74,12 +74,22 @@ public class MavenMetadataGeneratorTests {
 			throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT",
 				"1.0.0.BUILD-20170626.200218-328");
-		this.generator.generate(directory);
+		this.generator.generate(directory, false);
 		File file = new File(directory.toString()
 				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
 		URL expected = getClass()
 				.getResource("generate-when-using-snapshot-timestamp.xml");
 		assertThat(file).exists().has(xmlContent(expected));
+	}
+
+	@Test
+	public void generateWhenCreatingChecksumsShouldCreateChecksums() throws Exception {
+		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
+		this.generator.generate(directory, true);
+		File folder = new File(directory.toString()
+				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/");
+		assertThat(new File(folder, "maven-metadata.xml.md5")).exists();
+		assertThat(new File(folder, "maven-metadata.xml.sha1")).exists();
 	}
 
 	private Directory createStructure(String version) throws IOException {

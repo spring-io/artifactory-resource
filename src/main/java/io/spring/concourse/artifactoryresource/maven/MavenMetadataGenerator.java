@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.spring.concourse.artifactoryresource.io.Checksum;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -60,25 +61,26 @@ public class MavenMetadataGenerator {
 		this.scanner = scanner;
 	}
 
-	public void generate(Directory root) {
+	public void generate(Directory root, boolean generateChecksums) {
 		List<File> pomFiles = this.scanner.scan(root, POM_PATTERN);
-		pomFiles.forEach((pomFile) -> generate(root, pomFile));
+		pomFiles.forEach((pomFile) -> generate(root, pomFile, generateChecksums));
 	}
 
-	private void generate(Directory root, File pomFile) {
+	private void generate(Directory root, File pomFile, boolean generateChecksums) {
 		String name = StringUtils.getFilename(pomFile.getName());
 		String extension = StringUtils.getFilenameExtension(pomFile.getName());
 		String prefix = name.substring(0, name.length() - extension.length() - 1);
 		File[] files = pomFile.getParentFile().listFiles((f) -> include(f, prefix));
-		MultiValueMap<File, MavenCoordinates> coordinates = new LinkedMultiValueMap<>();
+		MultiValueMap<File, MavenCoordinates> fileCoordinates = new LinkedMultiValueMap<>();
 		for (File file : files) {
 			String rootPath = StringUtils.cleanPath(root.getFile().getPath());
 			String relativePath = StringUtils.cleanPath(file.getPath())
 					.substring(rootPath.length() + 1);
-			coordinates.add(file.getParentFile(),
+			fileCoordinates.add(file.getParentFile(),
 					MavenCoordinates.fromPath(relativePath));
 		}
-		coordinates.forEach(this::writeMetadata);
+		fileCoordinates.forEach((file, coordinates) -> writeMetadata(file, coordinates,
+				generateChecksums));
 	}
 
 	private boolean include(File file, String prefix) {
@@ -90,7 +92,8 @@ public class MavenMetadataGenerator {
 				&& StringUtils.getFilename(file.getName()).startsWith(prefix);
 	}
 
-	private void writeMetadata(File folder, List<MavenCoordinates> coordinates) {
+	private void writeMetadata(File folder, List<MavenCoordinates> coordinates,
+			boolean generateChecksums) {
 		List<SnapshotVersion> snapshotVersions = getSnapshotVersionMetadata(coordinates);
 		if (!snapshotVersions.isEmpty()) {
 			Metadata metadata = new Metadata();
@@ -100,7 +103,8 @@ public class MavenMetadataGenerator {
 			metadata.setGroupId(coordinates.get(0).getGroupId());
 			metadata.setArtifactId(coordinates.get(0).getArtifactId());
 			metadata.setVersion(coordinates.get(0).getVersion());
-			writeMetadataFile(metadata, new File(folder, "maven-metadata.xml"));
+			writeMetadataFile(metadata, new File(folder, "maven-metadata.xml"),
+					generateChecksums);
 		}
 	}
 
@@ -119,12 +123,14 @@ public class MavenMetadataGenerator {
 		return snapshotVersion;
 	}
 
-	private void writeMetadataFile(Metadata metadata, File file) {
+	private void writeMetadataFile(Metadata metadata, File file,
+			boolean generateChecksums) {
 		try {
 			MetadataXpp3Writer writer = new MetadataXpp3Writer();
 			try (FileOutputStream outputStream = new FileOutputStream(file)) {
 				writer.write(outputStream, metadata);
 			}
+			Checksum.generateChecksumFiles(file);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);

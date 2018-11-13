@@ -16,8 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.ByteArrayInputStream;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -76,14 +74,6 @@ public class ChecksumsTests {
 	@Test
 	public void getMd5ShouldGetMd5() throws Exception {
 		Checksums checksums = new Checksums(SHA1, MD5);
-		assertThat(checksums.getMd5()).isEqualTo(MD5);
-	}
-
-	@Test
-	public void calculateShouldCalculateChecksums() throws Exception {
-		ByteArrayInputStream bytes = new ByteArrayInputStream("abc".getBytes());
-		Checksums checksums = Checksums.calculate(bytes);
-		assertThat(checksums.getSha1()).isEqualTo(SHA1);
 		assertThat(checksums.getMd5()).isEqualTo(MD5);
 	}
 

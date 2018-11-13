@@ -17,9 +17,6 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.File;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +30,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.BuildNumberGenerator;
+import io.spring.concourse.artifactoryresource.io.Checksum;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -119,18 +117,11 @@ public class ApplicationIT {
 			artifactoryRepository.download(result, folder, true);
 		}
 		assertThat(new File(folder, "foo/bar")).hasContent("foo");
+		Map<Checksum, String> checksums = Checksum.calculateAll("foo");
 		assertThat(new File(folder, "foo/bar.md5"))
-				.hasContent(getChecksum("foo", "MD5", 32));
+				.hasContent(checksums.get(Checksum.MD5));
 		assertThat(new File(folder, "foo/bar.sha1"))
-				.hasContent(getChecksum("foo", "SHA1", 40));
-	}
-
-	private String getChecksum(String content, String algorithm, int length)
-			throws NoSuchAlgorithmException {
-		MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
-		messageDigest.update(content.getBytes());
-		return String.format("%0" + length + "x",
-				new BigInteger(1, messageDigest.digest()));
+				.hasContent(checksums.get(Checksum.SHA1));
 	}
 
 	private ArtifactoryServer getServer() {

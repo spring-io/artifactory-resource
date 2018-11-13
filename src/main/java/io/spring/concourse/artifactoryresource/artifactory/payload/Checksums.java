@@ -16,17 +16,12 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
+import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
+import io.spring.concourse.artifactoryresource.io.Checksum;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.style.ToStringCreator;
-import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 
 /**
  * SHA1 and MD5 Checksums supported by artifactory.
@@ -34,23 +29,15 @@ import org.springframework.util.StreamUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public final class Checksums {
-
-	private static final int SHA1_LENGTH = 40;
-
-	private static final int MD5_LENGTH = 32;
+public class Checksums {
 
 	private final String sha1;
 
 	private final String md5;
 
 	public Checksums(String sha1, String md5) {
-		Assert.hasText(sha1, "SHA1 must not be empty");
-		Assert.isTrue(sha1.length() == SHA1_LENGTH,
-				"SHA1 must be " + SHA1_LENGTH + " characters long");
-		Assert.hasText(md5, "MD5 must not be empty");
-		Assert.isTrue(md5.length() == MD5_LENGTH,
-				"MD5 must be " + MD5_LENGTH + " characters long");
+		Checksum.SHA1.validate(sha1);
+		Checksum.MD5.validate(md5);
 		this.sha1 = sha1;
 		this.md5 = md5;
 	}
@@ -70,36 +57,8 @@ public final class Checksums {
 	}
 
 	public static Checksums calculate(Resource content) {
-		try {
-			Assert.notNull(content, "Content must not be null");
-			return calculate(content.getInputStream());
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	public static Checksums calculate(InputStream content) throws IOException {
-		Assert.notNull(content, "Content must not be null");
-		try {
-			DigestInputStream sha1 = new DigestInputStream(content,
-					MessageDigest.getInstance("SHA-1"));
-			DigestInputStream md5 = new DigestInputStream(sha1,
-					MessageDigest.getInstance("MD5"));
-			StreamUtils.drain(md5);
-			return new Checksums(getDigestHex(sha1), getDigestHex(md5));
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		finally {
-			content.close();
-		}
-	}
-
-	private static String getDigestHex(DigestInputStream sha1) {
-		return DatatypeConverter.printHexBinary(sha1.getMessageDigest().digest())
-				.toLowerCase();
+		Map<Checksum, String> all = Checksum.calculateAll(content);
+		return new Checksums(all.get(Checksum.SHA1), all.get(Checksum.MD5));
 	}
 
 }
