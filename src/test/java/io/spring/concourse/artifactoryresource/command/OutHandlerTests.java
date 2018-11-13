@@ -40,7 +40,6 @@ import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -50,6 +49,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -69,9 +69,6 @@ public class OutHandlerTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private Artifactory artifactory;
@@ -124,9 +121,9 @@ public class OutHandlerTests {
 	public void handleWhenNoFilesShouldThrowException() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No artifacts found to deploy");
-		this.handler.handle(request, directory);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.handler.handle(request, directory))
+				.withMessage("No artifacts found to deploy");
 	}
 
 	@Test

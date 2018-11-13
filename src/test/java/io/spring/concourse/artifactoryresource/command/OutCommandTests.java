@@ -27,7 +27,6 @@ import io.spring.concourse.artifactoryresource.system.SystemOutput;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -40,9 +39,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -57,9 +57,6 @@ public class OutCommandTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
 	private SystemInput systemInput;
@@ -99,9 +96,9 @@ public class OutCommandTests {
 	public void runWhenFolderArgIsMissingShouldThrowException() throws Exception {
 		InRequest request = mock(InRequest.class);
 		given(this.systemInput.read(InRequest.class)).willReturn(request);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No directory argument specified");
-		this.command.run(new DefaultApplicationArguments(new String[] {}));
+		assertThatIllegalStateException().isThrownBy(
+				() -> this.command.run(new DefaultApplicationArguments(new String[] {})))
+				.withMessage("No directory argument specified");
 	}
 
 }

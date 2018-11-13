@@ -16,9 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link BuildArtifact}.
@@ -46,38 +45,35 @@ public class BuildArtifactTests {
 
 	private static final String NAME = "foo.jar";
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	public JacksonTester<BuildArtifact> json;
 
 	@Test
 	public void createWhenTypeIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be empty");
-		new BuildArtifact("", SHA1, MD5, NAME);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
+				.withMessage("Type must not be empty");
 	}
 
 	@Test
 	public void createWhenSha1IsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SHA1 must not be empty");
-		new BuildArtifact(TYPE, "", MD5, NAME);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
+				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	public void createWhenMd5IsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MD5 must not be empty");
-		new BuildArtifact(TYPE, SHA1, "", NAME);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
+				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	public void createWhenNameIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be empty");
-		new BuildArtifact(TYPE, SHA1, MD5, "");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
+				.withMessage("Name must not be empty");
 	}
 
 	@Test

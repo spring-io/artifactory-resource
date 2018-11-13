@@ -21,9 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link BuildInfo}.
@@ -63,24 +62,21 @@ public class BuildInfoTests {
 			.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT",
 					Collections.singletonList(ARTIFACT)));
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<BuildInfo> json;
 
 	@Test
 	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("BuildName must not be empty");
-		new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES);
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo("",
+				BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
+				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
 	public void createWhenBuildNumberIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("BuildNumber must not be empty");
-		new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, MODULES);
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo(BUILD_NAME,
+				"", CI_AGENT, STARTED, BUILD_URI, MODULES))
+				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test

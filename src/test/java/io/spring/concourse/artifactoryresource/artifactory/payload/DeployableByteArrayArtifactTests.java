@@ -19,9 +19,9 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 import java.io.IOException;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DeployableByteArrayArtifact}.
@@ -31,14 +31,11 @@ import org.junit.rules.ExpectedException;
  */
 public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifactTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenBytesIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Content must not be null");
-		new DeployableByteArrayArtifact("/foo", null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DeployableByteArrayArtifact("/foo", null))
+				.withMessage("Content must not be null");
 	}
 
 	@Override

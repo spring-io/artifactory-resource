@@ -19,9 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link OutResponse}.
@@ -40,17 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class OutResponseTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<OutResponse> json;
 
 	@Test
 	public void createWhenVersionIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Version must not be null");
-		new InResponse(null, null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new InResponse(null, null))
+				.withMessage("Version must not be null");
 	}
 
 	@Test

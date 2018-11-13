@@ -16,9 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Metadata}.
@@ -37,17 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class MetadataTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<Metadata> json;
 
 	@Test
 	public void createWhenMisstingNameShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be empty");
-		new Metadata("", "value");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Metadata("", "value"))
+				.withMessage("Name must not be empty");
 	}
 
 	@Test

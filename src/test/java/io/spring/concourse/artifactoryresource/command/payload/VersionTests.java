@@ -16,9 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Version}.
@@ -37,17 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class VersionTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<Version> json;
 
 	@Test
 	public void createWhenBuildNumberIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build Number must not be empty");
-		new Version("");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Version(""))
+				.withMessage("Build Number must not be empty");
 	}
 
 	@Test

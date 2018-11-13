@@ -20,7 +20,6 @@ import java.io.File;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.ApplicationArguments;
@@ -28,6 +27,8 @@ import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link Directory}.
@@ -38,40 +39,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DirectoryTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
-	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
 	public void createWhenPathIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new Directory((String) null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Directory((String) null))
+				.withMessage("File must not be null");
 	}
 
 	@Test
 	public void createWhenFileIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
-		new Directory((File) null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((File) null))
+				.withMessage("File must not be null");
 	}
 
 	@Test
 	public void createWhenFileDoesNotExistShouldThrowException() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		file.delete();
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("does not exist");
-		new Directory(file);
+		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
+				.withMessageContaining("does not exist");
 	}
 
 	@Test
 	public void createWhenFileIsNotDirectoryShouldThrowException() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("is not a directory");
-		new Directory(file);
+		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
+				.withMessageContaining("is not a directory");
 	}
 
 	@Test

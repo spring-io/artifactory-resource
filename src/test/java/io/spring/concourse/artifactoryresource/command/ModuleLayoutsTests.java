@@ -18,11 +18,10 @@ package io.spring.concourse.artifactoryresource.command;
 
 import io.spring.concourse.artifactoryresource.artifactory.BuildModulesGenerator;
 import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ModuleLayouts}.
@@ -31,9 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class ModuleLayoutsTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private ModuleLayouts moduleLayouts = new ModuleLayouts();
 
@@ -68,9 +64,9 @@ public class ModuleLayoutsTests {
 	@Test
 	public void getBuildModulesGeneratorWhenLayoutIsUnknownShouldThrowException()
 			throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unknown module layout 'foo'");
-		this.moduleLayouts.getBuildModulesGenerator("foo");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.moduleLayouts.getBuildModulesGenerator("foo"))
+				.withMessage("Unknown module layout 'foo'");
 	}
 
 }

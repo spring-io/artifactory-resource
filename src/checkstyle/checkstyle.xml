@@ -4,4 +4,23 @@
 	<module name="io.spring.javaformat.checkstyle.SpringChecks">
 		<property name="headerCopyrightPattern" value="2017-20\d\d" />
 	</module>
+	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
+			<property name="regexp" value="true" />
+			<property name="illegalPkgs"
+				value="^sun.*, ^org\.apache\.commons\.(?!compress|dbcp2|lang|lang3|pool2).*, ^com\.google\.common.*, ^org\.flywaydb\.core\.internal.*" />
+			<property name="illegalClasses"
+				value="^reactor\.core\.support\.Assert, ^org\.junit\.rules\.ExpectedException" />
+		</module>
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0" />
+			<property name="format"
+				value="assertThatExceptionOfType\((NullPointerException|IllegalArgumentException|IOException|IllegalStateException)\.class\)" />
+			<property name="message"
+				value="Please use specialized AssertJ assertThat*Exception method." />
+			<property name="ignoreComments" value="true" />
+		</module>
+	</module>
 </module>

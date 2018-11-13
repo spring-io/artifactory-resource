@@ -16,9 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Source}.
@@ -38,17 +37,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class SourceTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<Source> json;
 
 	@Test
 	public void createWhenUriIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URI must not be empty");
-		new Source("", "username", "password", "my-build");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Source("", "username", "password", "my-build"))
+				.withMessage("URI must not be empty");
 	}
 
 	@Test
@@ -63,9 +59,9 @@ public class SourceTests {
 
 	@Test
 	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Build Name must not be empty");
-		new Source("http://repo.example.com", "username", "password", "");
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new Source("http://repo.example.com", "username", "password", ""))
+				.withMessage("Build Name must not be empty");
 	}
 
 	@Test

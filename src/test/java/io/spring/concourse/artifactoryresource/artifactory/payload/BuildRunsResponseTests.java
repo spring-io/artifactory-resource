@@ -17,9 +17,7 @@
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @JsonTest
 public class BuildRunsResponseTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
 	private JacksonTester<BuildRunsResponse> json;

@@ -19,14 +19,13 @@ package io.spring.concourse.artifactoryresource.command;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.DefaultApplicationArguments;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,16 +40,13 @@ public class CommandProcessorTests {
 
 	private static final String[] NO_ARGS = {};
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void runWhenNoArgumentShouldThrowException() throws Exception {
 		CommandProcessor processor = new CommandProcessor(
 				Collections.singletonList(mock(Command.class)));
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No command argument specified");
-		processor.run(new DefaultApplicationArguments(NO_ARGS));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
+				.withMessage("No command argument specified");
 	}
 
 	@Test
@@ -61,9 +57,8 @@ public class CommandProcessorTests {
 				Collections.singletonList(fooCommand));
 		DefaultApplicationArguments args = new DefaultApplicationArguments(
 				new String[] { "bar", "go" });
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unknown command 'bar'");
-		processor.run(args);
+		assertThatIllegalStateException().isThrownBy(() -> processor.run(args))
+				.withMessage("Unknown command 'bar'");
 	}
 
 	@Test

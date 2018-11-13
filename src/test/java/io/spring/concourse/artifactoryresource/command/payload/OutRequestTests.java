@@ -19,9 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.ArtifactSet;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link OutRequest}.
@@ -39,9 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @JsonTest
 public class OutRequestTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
 			"my-build");
@@ -54,32 +50,32 @@ public class OutRequestTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		new OutRequest(null, this.params);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OutRequest(null, this.params))
+				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWhenParamsIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Params must not be null");
-		new OutRequest(this.source, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OutRequest(this.source, null))
+				.withMessage("Params must not be null");
 	}
 
 	@Test
 	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder must not be empty");
-		new OutRequest.Params(false, "libs-snapshot-local", "1234", "", null, null, null,
-				null, null, null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
+						"1234", "", null, null, null, null, null, null, null))
+				.withMessage("Folder must not be empty");
 	}
 
 	@Test
 	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Repo must not be empty");
-		new OutRequest.Params(false, "", "1234", "folder", null, null, null, null, null,
-				null, null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
+						null, null, null, null, null, null))
+				.withMessage("Repo must not be empty");
 	}
 
 	@Test

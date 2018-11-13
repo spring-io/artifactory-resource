@@ -16,9 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link InRequest}.
@@ -36,9 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @JsonTest
 public class InRequestTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private Source source = new Source("http://localhost:8181", "username", "password",
 			"my-build");
@@ -53,16 +49,16 @@ public class InRequestTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
-		new InRequest(null, this.version, this.params);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new InRequest(null, this.version, this.params))
+				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWhenVersionIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Version must not be null");
-		new InRequest(this.source, null, this.params);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new InRequest(this.source, null, this.params))
+				.withMessage("Version must not be null");
 	}
 
 	@Test

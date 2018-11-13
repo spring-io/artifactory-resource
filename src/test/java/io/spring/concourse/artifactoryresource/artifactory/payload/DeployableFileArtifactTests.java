@@ -22,10 +22,11 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link DeployableFileArtifact}.
@@ -38,16 +39,13 @@ public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenParentIsNotParentShouldThrowException() throws Exception {
 		File parent = this.temp.newFolder();
 		File file = this.temp.newFile();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("is not a parent of");
-		new DeployableFileArtifact(parent, file);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new DeployableFileArtifact(parent, file))
+				.withMessageContaining("is not a parent of");
 	}
 
 	@Override

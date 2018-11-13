@@ -19,7 +19,7 @@ package io.spring.concourse.artifactoryresource.maven;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link MavenCoordinates}.
@@ -69,7 +69,7 @@ public class MavenCoordinatesTests {
 	@Test
 	public void fromPathWhenIsBadThrowsNiceException() {
 		// gh-5
-		assertThatExceptionOfType(IllegalStateException.class)
+		assertThatIllegalStateException()
 				.isThrownBy(() -> MavenCoordinates
 						.fromPath("org/springframework/cloud/skipper/acceptance/app/"
 								+ "skipper-server-with-drivers/maven-metadata-local.xml"))

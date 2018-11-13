@@ -18,11 +18,10 @@ package io.spring.concourse.artifactoryresource.io;
 
 import java.util.Collections;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PathFilter}.
@@ -32,21 +31,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PathFilterTests {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenIncludeIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Include must not be null");
-		new PathFilter(null, Collections.emptyList());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PathFilter(null, Collections.emptyList()))
+				.withMessage("Include must not be null");
 	}
 
 	@Test
 	public void createWhenExcludeIsNullShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Exclude must not be null");
-		new PathFilter(Collections.emptyList(), null);
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PathFilter(Collections.emptyList(), null))
+				.withMessage("Exclude must not be null");
 	}
 
 	@Test

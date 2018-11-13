@@ -18,13 +18,12 @@ package io.spring.concourse.artifactoryresource.system;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link SystemInput}.
@@ -33,9 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 public class SystemInputTests {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
 
 	private MockEnvironment environment;
 
@@ -48,9 +44,8 @@ public class SystemInputTests {
 	public void readWhenNoDataShouldTimeout() throws Exception {
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""),
 				new ObjectMapper(), 10);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Timeout waiting for input");
-		input.read(String[].class);
+		assertThatIllegalStateException().isThrownBy(() -> input.read(String[].class))
+				.withMessage("Timeout waiting for input");
 	}
 
 	@Test

@@ -18,9 +18,7 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.util.Collections;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +27,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link BuildModule}.
@@ -46,17 +45,13 @@ public class BuildModuleTests {
 			"a9993e364706816aba3e25717850c26c9cd0d89d",
 			"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Autowired
 	private JacksonTester<BuildModule> json;
 
 	@Test
 	public void createWhenIdIsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ID must not be empty");
-		new BuildModule("", null);
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildModule("", null))
+				.withMessage("ID must not be empty");
 	}
 
 	@Test

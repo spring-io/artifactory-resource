@@ -16,11 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link Checksums}.
@@ -34,35 +33,28 @@ public class ChecksumsTests {
 
 	private static final String MD5 = "900150983cd24fb0d6963f7d28e17f72";
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
-
 	@Test
 	public void createWhenSha1IsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SHA1 must not be empty");
-		new Checksums("", MD5);
+		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums("", MD5))
+				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	public void createWhenMd5IsEmptyShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MD5 must not be empty");
-		new Checksums(SHA1, "");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums(SHA1, ""))
+				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	public void createWhenSha1IsIncorrectLengthShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SHA1 must be 40 characters long");
-		new Checksums("0", MD5);
+		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums("0", MD5))
+				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
 	public void createWhenMd5IsIncorrectLengthShouldThrowException() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("MD5 must be 32 characters long");
-		new Checksums(SHA1, "0");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums(SHA1, "0"))
+				.withMessage("MD5 must be 32 characters long");
 	}
 
 	@Test
