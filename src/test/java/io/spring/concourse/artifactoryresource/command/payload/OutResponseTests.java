@@ -43,13 +43,13 @@ public class OutResponseTests {
 	private JacksonTester<OutResponse> json;
 
 	@Test
-	public void createWhenVersionIsNullShouldThrowException() throws Exception {
+	public void createWhenVersionIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InResponse(null, null))
 				.withMessage("Version must not be null");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		List<Metadata> metadata = new ArrayList<>();
 		metadata.add(new Metadata("foo", "bar"));
 		metadata.add(new Metadata("bin", "bag"));
@@ -58,7 +58,7 @@ public class OutResponseTests {
 	}
 
 	@Test
-	public void writeWhenMetadataIsNullShouldSerialize() throws Exception {
+	public void writeWhenMetadataIsNullSerializesJson() throws Exception {
 		OutResponse response = new OutResponse(new Version("1234"), null);
 		assertThat(this.json.write(response))
 				.isEqualToJson("out-response-without-metadata.json");

@@ -32,29 +32,28 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class PathFilterTests {
 
 	@Test
-	public void createWhenIncludeIsNullShouldThrowException() throws Exception {
+	public void createWhenIncludeIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new PathFilter(null, Collections.emptyList()))
 				.withMessage("Include must not be null");
 	}
 
 	@Test
-	public void createWhenExcludeIsNullShouldThrowException() throws Exception {
+	public void createWhenExcludeIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new PathFilter(Collections.emptyList(), null))
 				.withMessage("Exclude must not be null");
 	}
 
 	@Test
-	public void isMatchWhenIncludeIsEmptyAndExcludeIsEmptyShouldReturnTrue()
-			throws Exception {
+	public void isMatchWhenIncludeIsEmptyAndExcludeIsEmptyReturnsTrue() throws Exception {
 		PathFilter filter = new PathFilter(Collections.emptyList(),
 				Collections.emptyList());
 		assertThat(filter.isMatch("/foo")).isTrue();
 	}
 
 	@Test
-	public void isMatchWhenIncludeIsEmptyAndExcludeMatchesShouldReturnFalse()
+	public void isMatchWhenIncludeIsEmptyAndExcludeMatchesReturnsFalse()
 			throws Exception {
 		PathFilter filter = new PathFilter(Collections.emptyList(),
 				Collections.singletonList("/**/foo"));
@@ -63,8 +62,7 @@ public class PathFilterTests {
 	}
 
 	@Test
-	public void isMatchWhenIncludeMatchesAndExcludeIsEmptyShouldReturnTrue()
-			throws Exception {
+	public void isMatchWhenIncludeMatchesAndExcludeIsEmptyReturnsTrue() throws Exception {
 		PathFilter filter = new PathFilter(Collections.singletonList("/**/foo"),
 				Collections.emptyList());
 		assertThat(filter.isMatch("/foo/bar")).isFalse();
@@ -72,7 +70,7 @@ public class PathFilterTests {
 	}
 
 	@Test
-	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyShouldReturnTrue()
+	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyReturnsTrue()
 			throws Exception {
 		PathFilter filter = new PathFilter(
 				Collections.singletonList("/**/spring-boot-docs-*.zip"),
@@ -83,7 +81,7 @@ public class PathFilterTests {
 	}
 
 	@Test
-	public void isMatchWhenIncludeMatchesAndExcludeMatchesShouldReturnFalse()
+	public void isMatchWhenIncludeMatchesAndExcludeMatchesReturnsFalse()
 			throws Exception {
 		PathFilter filter = new PathFilter(Collections.singletonList("/foo/**"),
 				Collections.singletonList("/**/bar"));

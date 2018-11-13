@@ -40,13 +40,13 @@ public class MetadataTests {
 	private JacksonTester<Metadata> json;
 
 	@Test
-	public void createWhenMisstingNameShouldThrowException() throws Exception {
+	public void createWhenMisstingNameThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Metadata("", "value"))
 				.withMessage("Name must not be empty");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		assertThat(this.json.write(new Metadata("foo", "bar")))
 				.isEqualToJson("metadata.json");
 	}

@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SystemStreamsTests {
 
 	@Test
-	public void reconfigureSystemShouldChangeOutToErr() {
+	public void reconfigureSystemChangesOutToErr() {
 		doWithSystemStreams(() -> {
 			ByteArrayOutputStream errBytes = new ByteArrayOutputStream();
 			PrintStream err = new PrintStream(errBytes);
@@ -47,8 +47,7 @@ public class SystemStreamsTests {
 	}
 
 	@Test
-	public void reconfigureSystemShouldProvideAccessToOriginalSystemOut()
-			throws Exception {
+	public void reconfigureSystemProvidesAccessToOriginalSystemOut() throws Exception {
 		doWithSystemStreams(() -> {
 			ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
 			PrintStream out = new PrintStream(outBytes);
@@ -61,8 +60,7 @@ public class SystemStreamsTests {
 	}
 
 	@Test
-	public void reconfigureSystemShouldProvideAccessToOriginalSystemIn()
-			throws Exception {
+	public void reconfigureSystemProvidesAccessToOriginalSystemIn() throws Exception {
 		doWithSystemStreams(() -> {
 			ByteArrayInputStream inBytes = new ByteArrayInputStream("foo".getBytes());
 			System.setIn(inBytes);

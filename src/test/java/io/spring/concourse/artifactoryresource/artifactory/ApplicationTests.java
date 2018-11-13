@@ -36,7 +36,7 @@ public class ApplicationTests {
 	private Application application;
 
 	@Test
-	public void applicationShouldLoad() throws Exception {
+	public void applicationLoads() throws Exception {
 		assertThat(this.application).isNotNull();
 	}
 

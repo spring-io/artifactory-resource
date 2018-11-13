@@ -48,7 +48,7 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
-	public void serverWhenNoUsernameShouldReturnServer() {
+	public void serverWhenNoUsernameReturnsServer() {
 		ArtifactoryServer server = this.artifactory.server("http://example.com", null,
 				null);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
@@ -59,8 +59,7 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
-	public void serverWithCredentialsShouldReturnServerWithCredentials()
-			throws Exception {
+	public void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
 		ArtifactoryServer server = this.artifactory.server("http://example.com", "admin",
 				"password");
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,

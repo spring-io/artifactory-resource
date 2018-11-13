@@ -49,21 +49,21 @@ public class OutRequestTests {
 	private JacksonTester<OutRequest> json;
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() throws Exception {
+	public void createWhenSourceIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new OutRequest(null, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void createWhenParamsIsNullShouldThrowException() throws Exception {
+	public void createWhenParamsIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new OutRequest(this.source, null))
 				.withMessage("Params must not be null");
 	}
 
 	@Test
-	public void createParamsWhenFolderIsEmptyShouldThrowException() throws Exception {
+	public void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
 						"1234", "", null, null, null, null, null, null, null))
@@ -71,7 +71,7 @@ public class OutRequestTests {
 	}
 
 	@Test
-	public void createParamsWhenRepoIsEmptyShouldThrowException() throws Exception {
+	public void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
 						null, null, null, null, null, null))
@@ -79,7 +79,7 @@ public class OutRequestTests {
 	}
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		OutRequest request = this.json.readObject("out-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
@@ -102,8 +102,7 @@ public class OutRequestTests {
 	}
 
 	@Test
-	public void readWhenHasNoArtifactSetPropertiesShouldUseEmptyCollection()
-			throws Exception {
+	public void readWhenHasNoArtifactSetPropertiesUsesEmptyCollection() throws Exception {
 		OutRequest request = this.json
 				.readObject("out-request-without-artifact-set-properties.json");
 		assertThat(request.getParams().getArtifactSet().get(0).getProperties()).isEmpty();

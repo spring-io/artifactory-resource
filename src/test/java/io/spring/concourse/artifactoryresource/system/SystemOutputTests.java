@@ -29,7 +29,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 public class SystemOutputTests {
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		MockSystemStreams systemStreams = new MockSystemStreams("");
 		SystemOutput output = new SystemOutput(systemStreams, new ObjectMapper());
 		output.write(new String[] { "foo" });

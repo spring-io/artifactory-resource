@@ -49,35 +49,35 @@ public class BuildArtifactTests {
 	public JacksonTester<BuildArtifact> json;
 
 	@Test
-	public void createWhenTypeIsEmptyShouldThrowException() throws Exception {
+	public void createWhenTypeIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
 				.withMessage("Type must not be empty");
 	}
 
 	@Test
-	public void createWhenSha1IsEmptyShouldThrowException() throws Exception {
+	public void createWhenSha1IsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
 				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
-	public void createWhenMd5IsEmptyShouldThrowException() throws Exception {
+	public void createWhenMd5IsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
 				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
-	public void createWhenNameIsEmptyShouldThrowException() throws Exception {
+	public void createWhenNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
 				.withMessage("Name must not be empty");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		BuildArtifact artifact = new BuildArtifact(TYPE, SHA1, MD5, NAME);
 		assertThat(this.json.write(artifact)).isEqualToJson("build-artifact.json");
 	}

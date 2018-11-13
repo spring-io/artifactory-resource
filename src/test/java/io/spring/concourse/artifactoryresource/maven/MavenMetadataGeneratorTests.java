@@ -51,7 +51,7 @@ public class MavenMetadataGeneratorTests {
 			new DirectoryScanner());
 
 	@Test
-	public void generateWhenUsingNonSnapshotShouldNotCreateMetadata() throws Exception {
+	public void generateWhenUsingNonSnapshotDoesNotCreateMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.RELEASE");
 		this.generator.generate(directory, false);
 		File file = new File(directory.toString()
@@ -60,7 +60,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenUsingSnapshotShouldCreateMetadata() throws Exception {
+	public void generateWhenUsingSnapshotCreatesMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, false);
 		File file = new File(directory.toString()
@@ -70,8 +70,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenUsingSnapshotTimestampShouldCreateMetadata()
-			throws Exception {
+	public void generateWhenUsingSnapshotTimestampCreatesMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT",
 				"1.0.0.BUILD-20170626.200218-328");
 		this.generator.generate(directory, false);
@@ -83,7 +82,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenCreatingChecksumsShouldCreateChecksums() throws Exception {
+	public void generateWhenCreatingChecksumsCreatesChecksums() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, true);
 		File folder = new File(directory.toString()

@@ -41,7 +41,7 @@ public class CommandProcessorTests {
 	private static final String[] NO_ARGS = {};
 
 	@Test
-	public void runWhenNoArgumentShouldThrowException() throws Exception {
+	public void runWhenNoArgumentThrowsException() throws Exception {
 		CommandProcessor processor = new CommandProcessor(
 				Collections.singletonList(mock(Command.class)));
 		assertThatIllegalStateException()
@@ -50,7 +50,7 @@ public class CommandProcessorTests {
 	}
 
 	@Test
-	public void runWhenUnknownCommandShouldThrowException() throws Exception {
+	public void runWhenUnknownCommandThrowsException() throws Exception {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
 		CommandProcessor processor = new CommandProcessor(
@@ -62,7 +62,7 @@ public class CommandProcessorTests {
 	}
 
 	@Test
-	public void runShouldDelegateToCommand() throws Exception {
+	public void runDelegatesToCommand() throws Exception {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
 		Command barCommand = mock(Command.class);

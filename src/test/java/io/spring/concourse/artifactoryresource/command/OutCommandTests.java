@@ -79,7 +79,7 @@ public class OutCommandTests {
 	}
 
 	@Test
-	public void runShouldCallHandler() throws Exception {
+	public void runCallsHandler() throws Exception {
 		OutRequest request = mock(OutRequest.class);
 		OutResponse response = mock(OutResponse.class);
 		given(this.systemInput.read(OutRequest.class)).willReturn(request);
@@ -93,7 +93,7 @@ public class OutCommandTests {
 	}
 
 	@Test
-	public void runWhenFolderArgIsMissingShouldThrowException() throws Exception {
+	public void runWhenFolderArgIsMissingThrowsException() throws Exception {
 		InRequest request = mock(InRequest.class);
 		given(this.systemInput.read(InRequest.class)).willReturn(request);
 		assertThatIllegalStateException().isThrownBy(

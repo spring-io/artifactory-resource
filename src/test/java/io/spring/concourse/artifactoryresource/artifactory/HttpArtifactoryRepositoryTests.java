@@ -93,7 +93,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployShouldUploadTheDeployableArtifact() throws IOException {
+	public void deployUploadsTheDeployableArtifact() throws IOException {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				BYTES);
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
@@ -107,7 +107,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployShouldUploadTheDeployableArtifactWithMatrixParameters() {
+	public void deployUploadsTheDeployableArtifactWithMatrixParameters() {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
@@ -120,7 +120,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenChecksumMatchesShouldNotUpload() throws Exception {
+	public void deployWhenChecksumMatchesDoesNotUpload() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				BYTES);
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
@@ -133,7 +133,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenSmallFileShouldNotUseChecksum() throws Exception {
+	public void deployWhenSmallFileDoesNotUseChecksum() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				"foo".getBytes());
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
@@ -144,7 +144,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenNoChecksumUploadOptionFileShouldNotUseChecksum()
+	public void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum()
 			throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
 				BYTES);
@@ -162,7 +162,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadShouldFetchArtifactAndWriteToFile() throws Exception {
+	public void downloadFetchsArtifactAndWriteToFile() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
 		File destination = this.temporaryFolder.newFolder();
@@ -172,7 +172,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadShouldFetchChecksumFiles() throws Exception {
+	public void downloadFetchsChecksumFiles() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
 		expectFileDownload(url + ".md5");
@@ -187,7 +187,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadWhenChecksumFileShouldNotFetchChecksumFiles() throws Exception {
+	public void downloadWhenChecksumFileDoesNotFetchChecksumFiles() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar.md5";
 		expectFileDownload(url);
 		File destination = this.temporaryFolder.newFolder();
@@ -200,7 +200,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadShouldIgnoreChecksumFileFailures() throws Exception {
+	public void downloadIgnoresChecksumFileFailures() throws Exception {
 		String url = "http://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
 		expectFile404(url + ".md5");

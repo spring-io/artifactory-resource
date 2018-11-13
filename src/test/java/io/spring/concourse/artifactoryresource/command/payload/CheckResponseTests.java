@@ -43,13 +43,13 @@ public class CheckResponseTests {
 	private JacksonTester<CheckResponse> json;
 
 	@Test
-	public void createWhenVersionsIsNullShouldThrowException() throws Exception {
+	public void createWhenVersionsIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CheckResponse(null))
 				.withMessage("Versions must not be null");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		List<Version> versions = new ArrayList<>();
 		versions.add(new Version("1234"));
 		versions.add(new Version("5678"));

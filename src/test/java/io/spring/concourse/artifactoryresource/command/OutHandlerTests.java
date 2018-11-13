@@ -118,7 +118,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenNoFilesShouldThrowException() throws Exception {
+	public void handleWhenNoFilesThrowsException() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		assertThatIllegalStateException()
@@ -127,8 +127,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenBuildNumberIsMissingShouldGenerateBuildNumber()
-			throws Exception {
+	public void handleWhenBuildNumberIsMissingGeneratesBuildNumber() throws Exception {
 		given(this.buildNumberGenerator.generateBuildNumber()).willReturn("2000");
 		OutRequest request = createRequest(null);
 		Directory directory = createDirectory();
@@ -138,7 +137,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenBuildNumberIsSpecifiedShouldUseBuildNumber() throws Exception {
+	public void handleWhenBuildNumberIsSpecifiedUsesBuildNumber() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -148,7 +147,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleShouldDeployArtifacts() throws Exception {
+	public void handleDeploysArtifacts() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -163,7 +162,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasArtifactSetShouldDeployWithAdditionalProperties()
+	public void handleWhenHasArtifactSetDeploysWithAdditionalProperties()
 			throws Exception {
 		List<ArtifactSet> artifactSet = new ArrayList<>();
 		List<String> include = Collections.singletonList("/**/foo-0.0.1.jar");
@@ -180,7 +179,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleShouldAddBuildRun() throws Exception {
+	public void handleAddsBuildRun() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -197,7 +196,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleShouldUseIncludesAndExcludes() throws Exception {
+	public void handleUsesIncludesAndExcludes() throws Exception {
 		List<String> include = Arrays.asList("foo");
 		List<String> exclude = Arrays.asList("bar");
 		OutRequest request = createRequest("1234", include, exclude);
@@ -208,7 +207,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleShouldFilterChecksumFiles() throws Exception {
+	public void handleFiltersChecksumFiles() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		List<File> checksumFiles = new ArrayList<>();
@@ -227,7 +226,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsFalseShouldNotFilterMetadataFiles()
+	public void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterMetadataFiles()
 			throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false,
 				"maven-metadata.xml");
@@ -235,7 +234,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsTrueShouldFilterMetadataFiles()
+	public void handleWhenStripSnapshotTimestampsIsTrueFiltersMetadataFiles()
 			throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true,
 				"maven-metadata.xml");
@@ -243,7 +242,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsFalseShouldNotFilterLocalMetadataFiles()
+	public void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterLocalMetadataFiles()
 			throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false,
 				"maven-metadata-local.xml");
@@ -251,7 +250,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsTrueShouldFilterLocalMetadataFiles()
+	public void handleWhenStripSnapshotTimestampsIsTrueFiltersLocalMetadataFiles()
 			throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true,
 				"maven-metadata-local.xml");
@@ -275,7 +274,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsShouldChangeDeploArtifactPath()
+	public void handleWhenStripSnapshotTimestampsChangesDeployArtifactPath()
 			throws Exception {
 		OutRequest request = createRequest("1234", null, null, true, false, null);
 		Directory directory = createDirectory();
@@ -291,7 +290,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDisableChecksumUploadShouldNotUseChecksumUpload()
+	public void handleWhenDisableChecksumUploadDoesNotUseChecksumUpload()
 			throws Exception {
 		OutRequest request = createRequest("1234", null, null, false, true, null);
 		Directory directory = createDirectory();

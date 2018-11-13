@@ -54,34 +54,34 @@ public class ChecksumTests {
 	}
 
 	@Test
-	public void validateWhenNullShouldThrowException() {
+	public void validateWhenNullThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> Checksum.SHA1.validate(null))
 				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
-	public void validateWhenEmptyShouldThrowException() {
+	public void validateWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.MD5.validate(""))
 				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
-	public void validateWhenTooLongShouldThrowException() {
+	public void validateWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
-	public void validateWhenTooShortShouldThrowException() {
+	public void validateWhenTooShortThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
-	public void generateChecksumFilesShouldGenerateChecksumFiles() throws Exception {
+	public void generateChecksumFilesGeneratesChecksumFiles() throws Exception {
 		File file = this.temp.newFile();
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
@@ -92,7 +92,7 @@ public class ChecksumTests {
 	}
 
 	@Test
-	public void generateChecksumFileWhenChecksumFileShouldNotGenerate() throws Exception {
+	public void generateChecksumFileWhenChecksumFileDoesNotGenerate() throws Exception {
 		File file = this.temp.newFile("test.md5");
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
@@ -103,14 +103,14 @@ public class ChecksumTests {
 	}
 
 	@Test
-	public void isChecksumFileWhenChecksumFileShouldReturnTrue() {
+	public void isChecksumFileWhenChecksumFileReturnsTrue() {
 		assertThat(Checksum.isChecksumFile("foo.md5")).isTrue();
 		assertThat(Checksum.isChecksumFile("foo/bar.MD5")).isTrue();
 		assertThat(Checksum.isChecksumFile("foo.sha1")).isTrue();
 	}
 
 	@Test
-	public void isChecksumFileWhenNotChecksumFileShouldReturnFalse() {
+	public void isChecksumFileWhenNotChecksumFileReturnsFalse() {
 		assertThat(Checksum.isChecksumFile("foo.xml")).isFalse();
 	}
 

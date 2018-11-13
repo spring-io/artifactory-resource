@@ -40,19 +40,19 @@ public class VersionTests {
 	private JacksonTester<Version> json;
 
 	@Test
-	public void createWhenBuildNumberIsEmptyShouldThrowException() {
+	public void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Version(""))
 				.withMessage("Build Number must not be empty");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		Version version = new Version("5678");
 		assertThat(this.json.write(version)).isEqualTo("version.json");
 	}
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		Version version = this.json.readObject("version.json");
 		assertThat(version.getBuildNumber()).isEqualTo("5678");
 	}

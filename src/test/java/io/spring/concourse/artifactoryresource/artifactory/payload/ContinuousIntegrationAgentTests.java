@@ -41,14 +41,14 @@ public class ContinuousIntegrationAgentTests {
 	private JacksonTester<ContinuousIntegrationAgent> json;
 
 	@Test
-	public void createWhenNameIsEmptyShouldThrowException() throws Exception {
+	public void createWhenNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ContinuousIntegrationAgent("", null))
 				.withMessage("Name must not be empty");
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
 				"3.0.0");
 		assertThat(this.json.write(agent))

@@ -40,7 +40,7 @@ public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	public void createWhenParentIsNotParentShouldThrowException() throws Exception {
+	public void createWhenParentIsNotParentThrowsException() throws Exception {
 		File parent = this.temp.newFolder();
 		File file = this.temp.newFile();
 		assertThatIllegalArgumentException()

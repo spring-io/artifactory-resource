@@ -41,31 +41,31 @@ public class SourceTests {
 	private JacksonTester<Source> json;
 
 	@Test
-	public void createWhenUriIsEmptyShouldThrowException() throws Exception {
+	public void createWhenUriIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new Source("", "username", "password", "my-build"))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
-	public void createWhenUsernameIsEmptyShouldNotThrowException() throws Exception {
+	public void createWhenUsernameIsEmptyDoesNotThrowException() throws Exception {
 		new Source("http://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
-	public void createWhenPasswordIsEmptyShouldNotThrowException() throws Exception {
+	public void createWhenPasswordIsEmptyDoesNotThrowException() throws Exception {
 		new Source("http://repo.example.com", "username", "", "my-build");
 	}
 
 	@Test
-	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
+	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new Source("http://repo.example.com", "username", "password", ""))
 				.withMessage("Build Name must not be empty");
 	}
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		Source source = this.json.readObject("source.json");
 		assertThat(source.getUri()).isEqualTo("http://repo.example.com");
 		assertThat(source.getUsername()).isEqualTo("admin");

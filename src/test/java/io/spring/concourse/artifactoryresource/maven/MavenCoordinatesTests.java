@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 public class MavenCoordinatesTests {
 
 	@Test
-	public void fromPathShouldReturnCoordinates() throws Exception {
+	public void fromPathReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath(
 				"/com/example/project/" + "my-project/" + "1.0.0.BUILD-SNAPSHOT/"
 						+ "my-project-1.0.0.BUILD-20171005.194031-1.jar");
@@ -42,7 +42,7 @@ public class MavenCoordinatesTests {
 	}
 
 	@Test
-	public void fromPathWhenHasClassifierShouldReturnCoordinates() throws Exception {
+	public void fromPathWhenHasClassifierReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath(
 				"/com/example/project/" + "my-project/" + "1.0.0.BUILD-SNAPSHOT/"
 						+ "my-project-1.0.0.BUILD-20171005.194031-1-sources.jar");
@@ -55,7 +55,7 @@ public class MavenCoordinatesTests {
 	}
 
 	@Test
-	public void fromPathWhenReleaseShouldReturnCoordinates() throws Exception {
+	public void fromPathWhenReleaseReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates
 				.fromPath("/com/example/project/" + "my-project/" + "1.0.0.RELEASE/"
 						+ "my-project-1.0.0.RELEASE-sources.jar");

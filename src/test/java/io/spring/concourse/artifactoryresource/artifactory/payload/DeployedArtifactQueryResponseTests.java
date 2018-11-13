@@ -41,7 +41,7 @@ public class DeployedArtifactQueryResponseTests {
 	private JacksonTester<DeployedArtifactQueryResponse> json;
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		DeployedArtifactQueryResponse response = this.json
 				.readObject("deployed-artifacts.json");
 		assertThat(response.getResults()).hasSize(1);

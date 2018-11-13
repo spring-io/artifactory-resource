@@ -42,20 +42,20 @@ public class DirectoryTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
-	public void createWhenPathIsNullShouldThrowException() throws Exception {
+	public void createWhenPathIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new Directory((String) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	public void createWhenFileIsNullShouldThrowException() throws Exception {
+	public void createWhenFileIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((File) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	public void createWhenFileDoesNotExistShouldThrowException() throws Exception {
+	public void createWhenFileDoesNotExistThrowsException() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		file.delete();
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
@@ -63,21 +63,21 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void createWhenFileIsNotDirectoryShouldThrowException() throws Exception {
+	public void createWhenFileIsNotDirectoryThrowsException() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
 				.withMessageContaining("is not a directory");
 	}
 
 	@Test
-	public void getFileShouldReturnFile() throws Exception {
+	public void getFileReturnsFile() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
 		assertThat(directory.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	public void toStringShouldReturnFilePath() throws Exception {
+	public void toStringReturnsFilePath() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
 		String expected = StringUtils.cleanPath(file.getPath());
@@ -85,7 +85,7 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void getSubDirectoryWhenPathIsNullShouldReturnThis() throws Exception {
+	public void getSubDirectoryWhenPathIsNullReturnsThis() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory(null);
@@ -93,7 +93,7 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void getSubDirectoryWhenPathIsEmptyShouldReturnThis() throws Exception {
+	public void getSubDirectoryWhenPathIsEmptyReturnsThis() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory("");
@@ -101,7 +101,7 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void getSubDirectoryShouldGetSubDirectory() throws Exception {
+	public void getSubDirectoryGetsSubDirectory() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
 		File nested = new File(file, "nested");
@@ -111,7 +111,7 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void createFromArgsShouldUseArgument() throws Exception {
+	public void createFromArgsUsesArgument() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		String path = StringUtils.cleanPath(file.getPath());
 		ApplicationArguments args = new DefaultApplicationArguments(

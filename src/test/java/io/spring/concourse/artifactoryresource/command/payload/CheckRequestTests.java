@@ -40,14 +40,14 @@ public class CheckRequestTests {
 	private JacksonTester<CheckRequest> json;
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() throws Exception {
+	public void createWhenSourceIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new CheckRequest(null, new Version("1234")))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void readWhenMissingVersionShouldDeserialize() throws Exception {
+	public void readWhenMissingVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
@@ -56,7 +56,7 @@ public class CheckRequestTests {
 	}
 
 	@Test
-	public void readWhenHasVersionShouldDeserialize() throws Exception {
+	public void readWhenHasVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request-with-version.json");
 		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");

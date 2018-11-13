@@ -58,7 +58,7 @@ public class CheckCommandTests {
 	}
 
 	@Test
-	public void runShouldCallHandler() throws Exception {
+	public void runCallsHandler() throws Exception {
 		CheckRequest request = mock(CheckRequest.class);
 		CheckResponse response = mock(CheckResponse.class);
 		given(this.systemInput.read(CheckRequest.class)).willReturn(request);

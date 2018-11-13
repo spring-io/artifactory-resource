@@ -41,7 +41,7 @@ public class SystemInputTests {
 	}
 
 	@Test
-	public void readWhenNoDataShouldTimeout() throws Exception {
+	public void readWhenNoDataTimesout() throws Exception {
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""),
 				new ObjectMapper(), 10);
 		assertThatIllegalStateException().isThrownBy(() -> input.read(String[].class))
@@ -49,7 +49,7 @@ public class SystemInputTests {
 	}
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		SystemInput input = new SystemInput(this.environment,
 				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper());
 		String[] result = input.read(String[].class);
@@ -57,7 +57,7 @@ public class SystemInputTests {
 	}
 
 	@Test
-	public void readShouldResolvePlaceholders() throws Exception {
+	public void readResolvesPlaceholders() throws Exception {
 		this.environment.setProperty("bar", "hello-world");
 		SystemInput input = new SystemInput(this.environment,
 				new MockSystemStreams("[\"foo\",\"${bar}\"]"), new ObjectMapper());

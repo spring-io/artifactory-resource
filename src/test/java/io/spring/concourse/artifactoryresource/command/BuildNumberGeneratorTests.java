@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BuildNumberGeneratorTests {
 
 	@Test
-	public void generateBuildNumberShouldUseFormattedInstant() throws Exception {
+	public void generateBuildNumberUsesFormattedInstant() throws Exception {
 		Instant fixedInstant = LocalDateTime
 				.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
 				.toInstant(ZoneOffset.UTC);
@@ -45,7 +45,7 @@ public class BuildNumberGeneratorTests {
 	}
 
 	@Test
-	public void generateBuildNumberShouldWorkWithRealClock() throws Exception {
+	public void generateBuildNumberWorksWithRealClock() throws Exception {
 		String buildNumber = new BuildNumberGenerator().generateBuildNumber();
 		assertThat(buildNumber).isNotNull().hasSize(23);
 	}

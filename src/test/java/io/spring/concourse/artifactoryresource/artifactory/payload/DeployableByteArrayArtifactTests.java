@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifactTests {
 
 	@Test
-	public void createWhenBytesIsNullShouldThrowException() throws Exception {
+	public void createWhenBytesIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new DeployableByteArrayArtifact("/foo", null))
 				.withMessage("Content must not be null");

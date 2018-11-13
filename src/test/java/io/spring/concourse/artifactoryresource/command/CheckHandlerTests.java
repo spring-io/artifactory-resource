@@ -87,7 +87,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsMissingShouldRespondWithLatest() throws Exception {
+	public void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				null);
@@ -98,8 +98,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsPresentShouldRespondWithListOfVersions()
-			throws Exception {
+	public void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
 		CheckRequest request = new CheckRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Version("2"));
@@ -110,7 +109,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsPresentAndLatestShouldRespondWithListOfVersions()
+	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions()
 			throws Exception {
 		CheckRequest request = new CheckRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
@@ -122,7 +121,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenNoVersionsFoundShouldRespondWithLatest() throws Exception {
+	public void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(
 				new Source("http://ci.example.com", "admin", "password", "my-build"),
 				new Version("5"));

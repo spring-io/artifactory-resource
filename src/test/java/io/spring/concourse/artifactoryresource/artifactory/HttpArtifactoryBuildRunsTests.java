@@ -97,7 +97,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void addShouldAddBuildInfo() throws Exception {
+	public void addAddsBuildInfo() throws Exception {
 		this.server.expect(requestTo("http://repo.example.com/api/build"))
 				.andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -118,7 +118,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void getAllShouldReturnBuildRuns() throws Exception {
+	public void getAllReturnsBuildRuns() throws Exception {
 		this.server.expect(requestTo("http://repo.example.com/api/build/my-build"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"),
@@ -130,7 +130,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void getRawBuildInfoShouldReturnBuildInfo() throws Exception {
+	public void getRawBuildInfoReturnsBuildInfo() throws Exception {
 		this.server.expect(requestTo("http://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"),
@@ -140,8 +140,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void fetchAllShouldFetchArtifactsCorrespondingToBuildAndRepo()
-			throws Exception {
+	public void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
 		String url = "http://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))

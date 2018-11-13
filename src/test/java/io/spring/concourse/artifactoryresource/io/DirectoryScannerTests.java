@@ -46,7 +46,7 @@ public class DirectoryScannerTests {
 	private DirectoryScanner scanner = new DirectoryScanner();
 
 	@Test
-	public void scanWhenNoIncludeExcludeShouldReturnAllFiles() throws Exception {
+	public void scanWhenNoIncludeExcludeReturnsAllFiles() throws Exception {
 		Directory directory = createFiles();
 		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
 				Collections.emptyList());
@@ -55,7 +55,7 @@ public class DirectoryScannerTests {
 	}
 
 	@Test
-	public void scanWhenUsingIncludesShouldFilterFiles() throws Exception {
+	public void scanWhenUsingIncludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
 		List<File> files = this.scanner.scan(directory,
 				Collections.singletonList("**/*.jar"), Collections.emptyList());
@@ -64,7 +64,7 @@ public class DirectoryScannerTests {
 	}
 
 	@Test
-	public void scanWhenUsingExcludesShouldFilterFiles() throws Exception {
+	public void scanWhenUsingExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
 		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
 				Collections.singletonList("**/*.jar"));
@@ -73,7 +73,7 @@ public class DirectoryScannerTests {
 	}
 
 	@Test
-	public void scanWhenUsingIncludesAndExcludesShouldFilterFiles() throws Exception {
+	public void scanWhenUsingIncludesAndExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
 		List<File> files = this.scanner.scan(directory,
 				Collections.singletonList("**/*.jar"),
@@ -83,7 +83,7 @@ public class DirectoryScannerTests {
 	}
 
 	@Test
-	public void scanWhenUsingSlashPrefixShouldFilterFiles() throws IOException {
+	public void scanWhenUsingSlashPrefixFiltersFiles() throws IOException {
 		Directory directory = createFiles();
 		List<File> files = this.scanner.scan(directory,
 				Collections.singletonList("/**/*.jar"),

@@ -66,28 +66,28 @@ public class BuildInfoTests {
 	private JacksonTester<BuildInfo> json;
 
 	@Test
-	public void createWhenBuildNameIsEmptyShouldThrowException() throws Exception {
+	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo("",
 				BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
-	public void createWhenBuildNumberIsEmptyShouldThrowException() throws Exception {
+	public void createWhenBuildNumberIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo(BUILD_NAME,
 				"", CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test
-	public void createWhenModulesIsNullShouldUseEmptyList() throws Exception {
+	public void createWhenModulesIsNullUsesEmptyList() throws Exception {
 		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED,
 				BUILD_URI, null);
 		assertThat(buildInfo.getModules()).isNotNull().isEmpty();
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED,
 				BUILD_URI, MODULES);
 		assertThat(this.json.write(buildInfo)).isEqualToJson("build-info.json");

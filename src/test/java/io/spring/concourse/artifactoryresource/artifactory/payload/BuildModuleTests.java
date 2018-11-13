@@ -49,19 +49,19 @@ public class BuildModuleTests {
 	private JacksonTester<BuildModule> json;
 
 	@Test
-	public void createWhenIdIsEmptyShouldThrowException() throws Exception {
+	public void createWhenIdIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildModule("", null))
 				.withMessage("ID must not be empty");
 	}
 
 	@Test
-	public void createWhenArtifactsIsEmptyShouldUseEmptyList() throws Exception {
+	public void createWhenArtifactsIsEmptyUsesEmptyList() throws Exception {
 		BuildModule module = new BuildModule(ID, null);
 		assertThat(module.getArtifacts()).isNotNull().isEmpty();
 	}
 
 	@Test
-	public void writeShouldSerialize() throws Exception {
+	public void writeSerializesJson() throws Exception {
 		BuildModule module = new BuildModule(ID,
 				Collections.singletonList(BUILD_ARTIFACT));
 		assertThat(this.json.write(module)).isEqualToJson("build-module.json");

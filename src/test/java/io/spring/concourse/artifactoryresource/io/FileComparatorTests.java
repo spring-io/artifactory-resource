@@ -45,35 +45,35 @@ public class FileComparatorTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
-	public void compareShouldOrderOnParentPath() throws Exception {
+	public void compareOrdersOnParentPath() throws Exception {
 		assertThat(compare("bar/bar.jar", "foo/bar.jar")).isLessThan(0);
 		assertThat(compare("foo/bar.jar", "bar/bar.jar")).isGreaterThan(0);
 	}
 
 	@Test
-	public void compareWhenIdenticalPathShouldOrderOnExtension() throws Exception {
+	public void compareWhenIdenticalPathOrdersOnExtension() throws Exception {
 		assertThat(compare("foo/bar.jar", "foo/bar.war")).isLessThan(0);
 		assertThat(compare("foo/bar.war", "foo/bar.jar")).isGreaterThan(0);
 	}
 
 	@Test
-	public void comparePomToNonPomShouldOrderPomLast() throws Exception {
+	public void comparePomToNonPomOrdersPomLast() throws Exception {
 		assertThat(compare("foo.pom", "foo.jar")).isGreaterThan(0);
 	}
 
 	@Test
-	public void compareNonPomToPomShouldOrderPomLast() throws Exception {
+	public void compareNonPomToPomOrdersPomLast() throws Exception {
 		assertThat(compare("foo.jar", "foo.pom")).isLessThan(0);
 	}
 
 	@Test
-	public void compareWhenIdenticalPathAndExceptionShouldOrderOnName() throws Exception {
+	public void compareWhenIdenticalPathAndExceptionOrdersOnName() throws Exception {
 		assertThat(compare("foo/bar.jar", "foo/zar.jar")).isLessThan(0);
 		assertThat(compare("foo/zar.jar", "foo/bar.jar")).isGreaterThan(0);
 	}
 
 	@Test
-	public void compareShouldWorkInSort() throws Exception {
+	public void compareWorksInSort() throws Exception {
 		List<File> files = new ArrayList<>();
 		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0-sources.jar"));
 		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0.jar"));
@@ -95,7 +95,7 @@ public class FileComparatorTests {
 	}
 
 	@Test
-	public void compareWhenHasShorterHiddenFileShouldWorkInSort() throws Exception {
+	public void compareWhenHasShorterHiddenFileWorksInSort() throws Exception {
 		List<File> files = new ArrayList<>();
 		files.add(makeFile(
 				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
@@ -123,7 +123,7 @@ public class FileComparatorTests {
 	}
 
 	@Test
-	public void compareWhenUsingTypicalOutputShouldWorkInSort() throws Exception {
+	public void compareWhenUsingTypicalOutputWorksInSort() throws Exception {
 		// gh-4
 		List<File> files = makeFiles(getClass().getResourceAsStream("typical.txt"));
 		FileComparator.sort(files);

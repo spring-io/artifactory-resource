@@ -41,7 +41,7 @@ public class BuildRunsResponseTests {
 	private JacksonTester<BuildRunsResponse> json;
 
 	@Test
-	public void readShouldDeserialize() throws Exception {
+	public void readDeserializesJson() throws Exception {
 		BuildRunsResponse response = this.json.readObject("build-runs-response.json");
 		assertThat(response.getUri())
 				.isEqualTo("http://localhost:8081/artifactory/api/build/my-build");
