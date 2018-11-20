@@ -84,14 +84,14 @@ public class FileComparatorTests {
 		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0-javadoc.jar"));
 		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0.jar"));
 		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0-javadoc.jar"));
-		files.add(makeFile("com/example/project/bar/2.0.0/maven-metadata.xml"));
+		files.add(makeFile("com/example/project/bar/2.0.0/maven-metadata-local.xml"));
 		FileComparator.sort(files);
 		List<String> names = files.stream().map(File::getName)
 				.collect(Collectors.toCollection(ArrayList::new));
 		assertThat(names).containsExactly("bar-2.0.0.jar", "bar-2.0.0.pom",
-				"maven-metadata.xml", "bar-2.0.0-javadoc.jar", "bar-2.0.0-sources.jar",
-				"foo-2.0.0.jar", "foo-2.0.0.pom", "maven-metadata.xml",
-				"foo-2.0.0-javadoc.jar", "foo-2.0.0-sources.jar");
+				"maven-metadata-local.xml", "bar-2.0.0-javadoc.jar",
+				"bar-2.0.0-sources.jar", "foo-2.0.0.jar", "foo-2.0.0.pom",
+				"maven-metadata.xml", "foo-2.0.0-javadoc.jar", "foo-2.0.0-sources.jar");
 	}
 
 	@Test

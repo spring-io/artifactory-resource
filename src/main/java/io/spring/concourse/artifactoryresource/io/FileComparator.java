@@ -106,7 +106,8 @@ final class FileComparator implements Comparator<File> {
 	}
 
 	private static boolean isMavenMetaData(File file) {
-		return file.getName().toLowerCase().startsWith("maven-metadata.xml");
+		return file.getName().toLowerCase().startsWith("maven-metadata.xml")
+				|| file.getName().toLowerCase().startsWith("maven-metadata-local.xml");
 	}
 
 	private static boolean isChecksumFile(File file) {
