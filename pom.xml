@@ -13,7 +13,7 @@
 	<artifactId>artifactory-resource</artifactId>
 	<version>${revision}</version>
 	<properties>
-		<revision>0.0.7-SNAPSHOT</revision>
+		<revision>0.0.8-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 		<artifactory.version>6.5.2</artifactory.version>
 		<spring-javaformat.version>0.0.6</spring-javaformat.version>
