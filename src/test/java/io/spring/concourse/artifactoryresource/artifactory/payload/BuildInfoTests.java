@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ public class BuildInfoTests {
 	private static final Date STARTED = ArtifactoryDateFormat
 			.parse("2014-09-30T12:00:19.893+0000");
 
-	private static final String BUILD_URI = "http://ci.example.com";
+	private static final String BUILD_URI = "https://ci.example.com";
 
 	private static final BuildArtifact ARTIFACT = new BuildArtifact("jar",
 			"a9993e364706816aba3e25717850c26c9cd0d89d",

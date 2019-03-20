@@ -1,6 +1,6 @@
 = Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"]
 
-A http://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
+A https://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 
 
 == Overview
@@ -43,7 +43,7 @@ resources:
 - name: artifacts
   type: artifactory-resource
   source:
-    uri: http://repo.example.com
+    uri: https://repo.example.com
     username: admin
     password: secret
     build_name: my-build

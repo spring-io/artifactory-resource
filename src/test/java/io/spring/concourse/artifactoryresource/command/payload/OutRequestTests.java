@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,7 +81,7 @@ public class OutRequestTests {
 	@Test
 	public void readDeserializesJson() throws Exception {
 		OutRequest request = this.json.readObject("out-request.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
@@ -90,7 +90,7 @@ public class OutRequestTests {
 		assertThat(request.getParams().getInclude()).containsExactly("**");
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
 		assertThat(request.getParams().getModuleLayout()).isEqualTo("maven");
-		assertThat(request.getParams().getBuildUri()).isEqualTo("http://ci.example.com");
+		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
 		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		assertThat(request.getParams().isDisableChecksumUploads()).isEqualTo(true);
 		List<ArtifactSet> artifactSet = request.getParams().getArtifactSet();

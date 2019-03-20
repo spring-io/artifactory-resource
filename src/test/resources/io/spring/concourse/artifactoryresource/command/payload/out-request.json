@@ -1,6 +1,6 @@
 {
 	"source": {
-		"uri": "http://repo.example.com",
+		"uri": "https://repo.example.com",
 		"username": "admin",
 		"password": "password",
 		"build_name": "my-build"
@@ -17,7 +17,7 @@
 		],
 		"folder": "dist",
 		"module_layout" : "maven",
-		"build_uri": "http://ci.example.com",
+		"build_uri": "https://ci.example.com",
 		"strip_snapshot_timestamps": false,
 		"disable_checksum_uploads": true,
 		"artifact_set": [ {

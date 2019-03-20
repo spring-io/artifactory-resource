@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,7 @@ public class OutHandlerTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.artifactory.server("http://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local"))
 				.willReturn(this.artifactoryRepository);
@@ -185,7 +185,7 @@ public class OutHandlerTests {
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"),
-				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
+				eq("https://ci.example.com/1234"), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -218,7 +218,7 @@ public class OutHandlerTests {
 		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"),
-				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
+				eq("https://ci.example.com/1234"), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -268,7 +268,7 @@ public class OutHandlerTests {
 		configureMockScanner(directory, metadataFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"),
-				eq("http://ci.example.com/1234"), this.modulesCaptor.capture());
+				eq("https://ci.example.com/1234"), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		return buildModules;
 	}
@@ -315,9 +315,9 @@ public class OutHandlerTests {
 			List<String> exclude, boolean stripSnapshotTimestamps,
 			boolean disableChecksumUploads, List<ArtifactSet> artifactSet) {
 		return new OutRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include,
-						exclude, "mock", "http://ci.example.com/1234",
+						exclude, "mock", "https://ci.example.com/1234",
 						stripSnapshotTimestamps, disableChecksumUploads, artifactSet));
 	}
 

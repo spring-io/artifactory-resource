@@ -6,7 +6,7 @@
 		"version": "3.0.0"
 	},
 	"started": "2014-09-30T12:00:19.893+0000",
-	"url": "http://ci.example.com",
+	"url": "https://ci.example.com",
 	"modules": [{
 		"id": "com.example.module:my-module:1.0.0-SNAPSHOT",
 		"artifacts": [{

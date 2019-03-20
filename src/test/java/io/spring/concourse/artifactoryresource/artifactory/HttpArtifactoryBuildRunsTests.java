@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,7 +87,7 @@ public class HttpArtifactoryBuildRunsTests {
 	@Before
 	public void setup() {
 		this.artifactoryBuildRuns = this.artifactory
-				.server("http://repo.example.com", "admin", "password")
+				.server("https://repo.example.com", "admin", "password")
 				.buildRuns("my-build");
 	}
 
@@ -98,7 +98,7 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	public void addAddsBuildInfo() throws Exception {
-		this.server.expect(requestTo("http://repo.example.com/api/build"))
+		this.server.expect(requestTo("https://repo.example.com/api/build"))
 				.andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json")))
@@ -112,14 +112,14 @@ public class HttpArtifactoryBuildRunsTests {
 		List<BuildModule> modules = Collections.singletonList(new BuildModule(
 				"com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
-		this.artifactoryBuildRuns.add("5678", "http://ci.example.com", agent, started,
+		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", agent, started,
 				modules);
 		this.server.verify();
 	}
 
 	@Test
 	public void getAllReturnsBuildRuns() throws Exception {
-		this.server.expect(requestTo("http://repo.example.com/api/build/my-build"))
+		this.server.expect(requestTo("https://repo.example.com/api/build/my-build"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"),
 						MediaType.APPLICATION_JSON));
@@ -131,7 +131,7 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	public void getRawBuildInfoReturnsBuildInfo() throws Exception {
-		this.server.expect(requestTo("http://repo.example.com/api/build/my-build/5678"))
+		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"),
 						MediaType.APPLICATION_JSON));
@@ -141,7 +141,7 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	public void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
-		String url = "http://repo.example.com/api/search/aql";
+		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(aqlContent("my-build", "1234"))

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ public class CheckRequestTests {
 	@Test
 	public void readWhenMissingVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getVersion()).isNull();
@@ -58,7 +58,7 @@ public class CheckRequestTests {
 	@Test
 	public void readWhenHasVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request-with-version.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("1234");
