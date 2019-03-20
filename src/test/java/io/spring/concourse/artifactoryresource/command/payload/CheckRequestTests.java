@@ -49,7 +49,7 @@ public class CheckRequestTests {
 	@Test
 	public void readWhenMissingVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getVersion()).isNull();
@@ -58,7 +58,7 @@ public class CheckRequestTests {
 	@Test
 	public void readWhenHasVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request-with-version.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("1234");

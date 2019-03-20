@@ -73,7 +73,7 @@ public class InRequestTests {
 	@Test
 	public void readDeserializesJson() throws Exception {
 		InRequest request = this.json.readObject("in-request.json");
-		assertThat(request.getSource().getUri()).isEqualTo("http://repo.example.com");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");

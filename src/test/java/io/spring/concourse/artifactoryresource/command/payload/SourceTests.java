@@ -49,25 +49,25 @@ public class SourceTests {
 
 	@Test
 	public void createWhenUsernameIsEmptyDoesNotThrowException() throws Exception {
-		new Source("http://repo.example.com", "", "password", "my-build");
+		new Source("https://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
 	public void createWhenPasswordIsEmptyDoesNotThrowException() throws Exception {
-		new Source("http://repo.example.com", "username", "", "my-build");
+		new Source("https://repo.example.com", "username", "", "my-build");
 	}
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(
-				() -> new Source("http://repo.example.com", "username", "password", ""))
+				() -> new Source("https://repo.example.com", "username", "password", ""))
 				.withMessage("Build Name must not be empty");
 	}
 
 	@Test
 	public void readDeserializesJson() throws Exception {
 		Source source = this.json.readObject("source.json");
-		assertThat(source.getUri()).isEqualTo("http://repo.example.com");
+		assertThat(source.getUri()).isEqualTo("https://repo.example.com");
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
 		assertThat(source.getBuildName()).isEqualTo("my-build");

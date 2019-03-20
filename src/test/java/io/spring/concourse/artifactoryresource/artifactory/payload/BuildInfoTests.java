@@ -52,7 +52,7 @@ public class BuildInfoTests {
 	private static final Date STARTED = ArtifactoryDateFormat
 			.parse("2014-09-30T12:00:19.893+0000");
 
-	private static final String BUILD_URI = "http://ci.example.com";
+	private static final String BUILD_URI = "https://ci.example.com";
 
 	private static final BuildArtifact ARTIFACT = new BuildArtifact("jar",
 			"a9993e364706816aba3e25717850c26c9cd0d89d",

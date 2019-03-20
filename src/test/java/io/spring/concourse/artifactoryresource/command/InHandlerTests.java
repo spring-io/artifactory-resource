@@ -80,7 +80,7 @@ public class InHandlerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.deployedArtifacts = createDeployedArtifacts();
-		given(this.artifactory.server("http://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build"))
 				.willReturn(this.artifactoryBuildRuns);
@@ -183,7 +183,7 @@ public class InHandlerTests {
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
 			boolean downloadArtifacts, boolean downloadChecksums) {
 		InRequest request = new InRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("1234"), new Params(false, generateMavenMetadata,
 						saveBuildInfo, downloadArtifacts, downloadChecksums));
 		return request;

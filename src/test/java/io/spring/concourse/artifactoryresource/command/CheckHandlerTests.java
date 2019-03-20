@@ -64,7 +64,7 @@ public class CheckHandlerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		List<BuildRun> runs = createBuildRuns();
-		given(this.artifactory.server("http://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build"))
 				.willReturn(this.artifactoryBuildRuns);
@@ -89,7 +89,7 @@ public class CheckHandlerTests {
 	@Test
 	public void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				null);
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
@@ -100,7 +100,7 @@ public class CheckHandlerTests {
 	@Test
 	public void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
 		CheckRequest request = new CheckRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("2"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
@@ -112,7 +112,7 @@ public class CheckHandlerTests {
 	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions()
 			throws Exception {
 		CheckRequest request = new CheckRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("4"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
@@ -123,7 +123,7 @@ public class CheckHandlerTests {
 	@Test
 	public void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(
-				new Source("http://ci.example.com", "admin", "password", "my-build"),
+				new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("5"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream()
