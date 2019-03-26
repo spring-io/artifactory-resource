@@ -84,7 +84,7 @@ To run with a locally downloaded artifactory use the `run-local-artifactory` pro
 
 
 === Importing into eclipse
-You can import the Spring Boot code into any Eclipse Neon based distribution.
+You can import the Spring Boot code into any Eclipse based distribution.
 
 
 
