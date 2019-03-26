@@ -26,6 +26,8 @@ sed -i 's/\(\:artifactory-resource-release-version\:\ \).*/\1${releaseVersion}/'
 sed -i 's/\(\:artifactory-resource-snapshot-version\:\ \).*/\1${nextVersion}/' README.adoc > /dev/null
 
 git add pom.xml > /dev/null
+git add README.adoc > /dev/null
+git add samples/simple/pipeline.yml > /dev/null
 git commit -m"Next development version (v$nextVersion)" > /dev/null
 popd > /dev/null
 
