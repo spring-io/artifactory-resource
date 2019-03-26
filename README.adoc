@@ -1,4 +1,6 @@
 = Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"]
+:artifactory-resource-release-version: 0.0.7
+:artifactory-resource-snapshot-version: 0.0.8-SNAPSHOT
 
 A https://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 
@@ -16,7 +18,7 @@ It makes use of the "builds" and "artifact properties" features of Artifactory t
 === Resource Configuration
 To use the `artifactory-resource` you must declare it in the `resource_types` section of your `pipeline.yml` file:
 
-[source,yml]
+[source,yml,subs="verbatim,attributes"]
 .Resource configuration
 ----
 resource_types:
@@ -24,7 +26,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag: latest
+    tag: {artifactory-resource-release-version}
 ----
 
 
@@ -73,13 +75,13 @@ The following example shows a pipeline with two jobs.
 The first job deploys built artifacts and the second job retrieves and runs tests against them.
 
 
-[source,yaml]
+[source,yml,subs="verbatim,attributes"]
 .Example pipeline
 ----
 resource_types:
 - name: artifactory-resource
   type: docker-image
-  source: {repository: springio/artifactory-resource, tag: latest}
+  source: {repository: springio/artifactory-resource, tag: {artifactory-resource-release-version}}
 
 resources:
 - name: git-repo

@@ -22,6 +22,9 @@ echo "Setting next development version (v$nextVersion)"
 git reset --hard HEAD^ > /dev/null
 set_revision_to_pom "$nextVersion"
 sed -i 's/\(artifactory-resource.*tag\:\ \).*\(\}\)/\1${nextVersion}\2/' samples/simple/pipeline.yml > /dev/null
+sed -i 's/\(\:artifactory-resource-release-version\:\ \).*/\1${releaseVersion}/' README.adoc > /dev/null
+sed -i 's/\(\:artifactory-resource-snapshot-version\:\ \).*/\1${nextVersion}/' README.adoc > /dev/null
+
 git add pom.xml > /dev/null
 git commit -m"Next development version (v$nextVersion)" > /dev/null
 popd > /dev/null
