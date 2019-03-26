@@ -258,7 +258,7 @@
 									<url>https://dl.bintray.com/jfrog/artifactory/jfrog-artifactory-oss-${artifactory.version}.zip</url>
 									<unpack>true</unpack>
 									<outputDirectory>${project.build.directory}/artifactory.zip</outputDirectory>
-									<sha1>b7faabcfb16bcb7ad6c2c0bc59f80cc439d80c54</sha1>
+									<sha1>ac953c65ffa4cc76707557f4b8a8039f3e851044</sha1>
 									<unpack>true</unpack>
 								</configuration>
 							</execution>
