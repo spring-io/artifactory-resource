@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 public class BuildNumberGenerator {
 
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter
-			.ofPattern("yyyyMMddHHmmssnnnnnnnnn").withZone(ZoneOffset.UTC);
+			.ofPattern("yyyy-MM-dd.HHmmssnnnnnnnnn").withZone(ZoneOffset.UTC);
 
 	private final Clock clock;
 
@@ -45,7 +45,7 @@ public class BuildNumberGenerator {
 	}
 
 	public String generateBuildNumber() {
-		return "AR-" + FORMATTER.format(this.clock.instant());
+		return FORMATTER.format(this.clock.instant());
 	}
 
 }

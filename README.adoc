@@ -107,7 +107,7 @@ jobs:
   - put: artifactory
     params:
       repo: libs-snapshot-local
-      build_number: "${BUILD_ID}"
+      build_number: "example-${BUILD_ID}"
       folder: test
       build_uri: "{{CONCOURSE_URI}}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
 - name: test
