@@ -118,6 +118,15 @@ public class OutHandlerTests {
 	}
 
 	@Test
+	public void handleWhenEmptyThrowsException() throws Exception {
+		OutRequest request = createRequest("1234");
+		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.handler.handle(request, directory))
+				.withMessage("No artifacts found in empty directory");
+	}
+
+	@Test
 	public void handleWhenNoFilesThrowsException() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();

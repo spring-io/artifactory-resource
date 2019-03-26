@@ -97,6 +97,7 @@ public class OutHandler {
 		Source source = request.getSource();
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
+		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
 		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source,

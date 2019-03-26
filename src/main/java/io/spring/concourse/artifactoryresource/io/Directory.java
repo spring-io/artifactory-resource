@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -48,6 +49,10 @@ public class Directory {
 
 	public File getFile() {
 		return this.file;
+	}
+
+	public boolean isEmpty() {
+		return ObjectUtils.isEmpty(this.file.list());
 	}
 
 	@Override

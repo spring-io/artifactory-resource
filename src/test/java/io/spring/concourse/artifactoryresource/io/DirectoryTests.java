@@ -70,6 +70,21 @@ public class DirectoryTests {
 	}
 
 	@Test
+	public void isEmptyWhenEmptyReturnsTrue() throws Exception {
+		File file = this.temporaryFolder.newFolder();
+		Directory directory = new Directory(file);
+		assertThat(directory.isEmpty()).isTrue();
+	}
+
+	@Test
+	public void isEmptyWhenNotEmptyReturnsFalse() throws Exception {
+		File file = this.temporaryFolder.newFolder();
+		new File(file, "nested").mkdirs();
+		Directory directory = new Directory(file);
+		assertThat(directory.isEmpty()).isFalse();
+	}
+
+	@Test
 	public void getFileReturnsFile() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		Directory directory = new Directory(file);
