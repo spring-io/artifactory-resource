@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,9 +64,8 @@ public class MavenBuildModulesGenerator implements BuildModulesGenerator {
 	public List<BuildModule> getBuildModules(
 			List<DeployableArtifact> deployableArtifacts) {
 		List<BuildModule> buildModules = new ArrayList<>();
-		getBuildArtifactsById(deployableArtifacts).forEach((id, artifacts) -> {
-			buildModules.add(new BuildModule(id, artifacts));
-		});
+		getBuildArtifactsById(deployableArtifacts).forEach(
+				(id, artifacts) -> buildModules.add(new BuildModule(id, artifacts)));
 		return buildModules;
 	}
 

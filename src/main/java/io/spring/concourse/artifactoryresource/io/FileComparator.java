@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,12 +88,11 @@ final class FileComparator implements Comparator<File> {
 
 	private static Map<File, String> getRoots(MultiValueMap<File, File> filesByParent) {
 		Map<File, String> roots = new LinkedHashMap<>();
-		filesByParent.forEach((parent, files) -> {
-			files.stream().filter(FileComparator::isRootCandidate)
-					.map(FileComparator::getNameWithoutExtension)
-					.reduce(FileComparator::getShortest)
-					.ifPresent((root) -> roots.put(parent, root));
-		});
+		filesByParent.forEach(
+				(parent, files) -> files.stream().filter(FileComparator::isRootCandidate)
+						.map(FileComparator::getNameWithoutExtension)
+						.reduce(FileComparator::getShortest)
+						.ifPresent((root) -> roots.put(parent, root)));
 		return roots;
 	}
 
