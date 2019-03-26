@@ -73,6 +73,12 @@ public class FileComparatorTests {
 	}
 
 	@Test
+	public void compareWhenNoFileExtensionOrdersOnName() throws Exception {
+		assertThat(compare("foo/bar", "foo/bar.jar")).isLessThan(0);
+		assertThat(compare("foo/bar.jar", "foo/bar")).isGreaterThan(0);
+	}
+
+	@Test
 	public void compareWorksInSort() throws Exception {
 		List<File> files = new ArrayList<>();
 		files.add(makeFile("com/example/project/foo/2.0.0/foo-2.0.0-sources.jar"));

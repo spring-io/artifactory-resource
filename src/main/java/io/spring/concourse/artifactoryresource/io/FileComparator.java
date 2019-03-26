@@ -65,7 +65,8 @@ final class FileComparator implements Comparator<File> {
 	}
 
 	private String getFileExtension(File file) {
-		return StringUtils.getFilenameExtension(file.getName());
+		String extension = StringUtils.getFilenameExtension(file.getName());
+		return (extension != null) ? extension : "";
 	}
 
 	private boolean isRoot(File file) {
