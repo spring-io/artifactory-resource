@@ -45,7 +45,7 @@ public class BuildNumberGenerator {
 	}
 
 	public String generateBuildNumber() {
-		return FORMATTER.format(this.clock.instant());
+		return "AR-" + FORMATTER.format(this.clock.instant());
 	}
 
 }
