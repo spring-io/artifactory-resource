@@ -102,6 +102,7 @@ public class HttpArtifactoryRepositoryTests {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andExpect(header("content-length", String.valueOf(artifact.getSize())))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.server.expect(requestTo(url)).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);

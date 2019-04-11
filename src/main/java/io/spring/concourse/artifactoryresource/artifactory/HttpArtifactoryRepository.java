@@ -111,6 +111,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				.buildAndExpand(NO_VARIABLES).encode().toUri();
 		Checksums checksums = artifact.getChecksums();
 		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.contentLength(artifact.getSize())
 				.header("X-Checksum-Sha1", checksums.getSha1())
 				.header("X-Checksum-Md5", checksums.getMd5());
 	}
