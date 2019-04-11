@@ -17,17 +17,21 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.BuildNumberGenerator;
 import io.spring.concourse.artifactoryresource.io.Checksum;
@@ -39,8 +43,10 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,13 +73,13 @@ public class ApplicationIT {
 	@Test
 	public void integrationTest() throws Exception {
 		String buildNumber = generateBuildNumber();
-		ArtifactoryRepository artifactoryRepository = getServer()
-				.repository("example-repo-local");
-		ArtifactoryBuildRuns artifactoryBuildRuns = getServer().buildRuns("my-build");
-		deployArtifact(artifactoryRepository, buildNumber);
-		addBuildRun(artifactoryBuildRuns, buildNumber);
-		getBuildRuns(artifactoryBuildRuns, buildNumber);
-		downloadUsingBuildRun(artifactoryRepository, artifactoryBuildRuns, buildNumber);
+		File file = createLargeFile();
+		ArtifactoryRepository repository = getServer().repository("example-repo-local");
+		ArtifactoryBuildRuns buildRuns = getServer().buildRuns("my-build");
+		deployArtifact(repository, buildNumber, file);
+		addBuildRun(buildRuns, buildNumber);
+		getBuildRuns(buildRuns, buildNumber);
+		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
 	}
 
 	private String generateBuildNumber() {
@@ -81,13 +87,28 @@ public class ApplicationIT {
 	}
 
 	private void deployArtifact(ArtifactoryRepository artifactoryRepository,
-			String buildNumber) throws Exception {
+			String buildNumber, File file) throws Exception {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar",
-				"foo".getBytes(), properties);
+		DeployableArtifact artifact = new DeployableFileArtifact("/foo/bar", file,
+				properties, null);
 		artifactoryRepository.deploy(artifact);
+	}
+
+	private File createLargeFile() throws IOException, FileNotFoundException {
+		File file = this.temporaryFolder.newFile();
+		FileOutputStream stream = new FileOutputStream(file);
+		int size = 0;
+		Random random = new Random();
+		byte[] bytes = new byte[1024];
+		while (size < 10 * 1024 * 1024) {
+			random.nextBytes(bytes);
+			StreamUtils.copy(bytes, stream);
+			size += bytes.length;
+		}
+		stream.close();
+		return file;
 	}
 
 	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns,
@@ -107,8 +128,8 @@ public class ApplicationIT {
 	}
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
-			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber)
-			throws Exception {
+			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber,
+			File expectedContent) throws Exception {
 		this.temporaryFolder.create();
 		List<DeployedArtifact> results = artifactoryBuildRuns
 				.getDeployedArtifacts(buildNumber);
@@ -116,8 +137,9 @@ public class ApplicationIT {
 		for (DeployedArtifact result : results) {
 			artifactoryRepository.download(result, folder, true);
 		}
-		assertThat(new File(folder, "foo/bar")).hasContent("foo");
-		Map<Checksum, String> checksums = Checksum.calculateAll("foo");
+		assertThat(new File(folder, "foo/bar")).hasSameClassAs(expectedContent);
+		Map<Checksum, String> checksums = Checksum
+				.calculateAll(new FileSystemResource(expectedContent));
 		assertThat(new File(folder, "foo/bar.md5"))
 				.hasContent(checksums.get(Checksum.MD5));
 		assertThat(new File(folder, "foo/bar.sha1"))
