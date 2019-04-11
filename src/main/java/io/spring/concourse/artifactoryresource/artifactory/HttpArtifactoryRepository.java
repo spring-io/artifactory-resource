@@ -81,9 +81,10 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				deployUsingChecksum(artifact);
 			}
 			catch (HttpClientErrorException ex) {
-				if (ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-					deployUsingContent(artifact);
+				if (!ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+					throw ex;
 				}
+				deployUsingContent(artifact);
 			}
 		}
 		catch (IOException ex) {

@@ -41,8 +41,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -130,6 +132,20 @@ public class HttpArtifactoryRepositoryTests {
 				.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
+	}
+
+	@Test
+	public void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionThrows()
+			throws Exception {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
+				BYTES);
+		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andRespond(withStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE));
+		assertThatExceptionOfType(HttpClientErrorException.class)
+				.isThrownBy(() -> this.artifactoryRepository.deploy(artifact));
 	}
 
 	@Test
