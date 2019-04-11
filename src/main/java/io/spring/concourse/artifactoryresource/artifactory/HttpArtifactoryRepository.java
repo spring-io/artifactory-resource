@@ -30,7 +30,6 @@ import io.spring.concourse.artifactoryresource.io.Checksum;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.BodyBuilder;
@@ -81,9 +80,6 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				deployUsingChecksum(artifact);
 			}
 			catch (HttpClientErrorException ex) {
-				if (!ex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-					throw ex;
-				}
 				deployUsingContent(artifact);
 			}
 		}
