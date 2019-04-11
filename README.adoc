@@ -1,6 +1,6 @@
 = Artifactory Resource image:https://ci.spring.io/api/v1/teams/artifactory-resource/pipelines/artifactory-resource/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/artifactory-resource/pipelines/artifactory-resource?groups=Build"]
-:artifactory-resource-release-version: 0.0.8
-:artifactory-resource-snapshot-version: 0.0.9-SNAPSHOT
+:artifactory-resource-release-version: ${releaseVersion}
+:artifactory-resource-snapshot-version: ${nextVersion}
 
 A https://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 

@@ -1,7 +1,7 @@
 resource_types:
   - name: artifactory-resource
     type: docker-image
-    source: {repository: springio/artifactory-resource, tag: 0.0.9-SNAPSHOT}
+    source: {repository: springio/artifactory-resource, tag: ${nextVersion}}
 
 resources:
   - name: git-repo
