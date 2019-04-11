@@ -26,6 +26,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -67,6 +68,21 @@ public class HttpArtifactoryTests {
 		ClientHttpRequest request = restTemplate.getRequestFactory()
 				.createRequest(new URI("http://localhost"), HttpMethod.GET);
 		assertThat(request.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
+	}
+
+	@Test
+	public void serverDoesNotBuffer() {
+		// gh-50
+		ArtifactoryServer server = this.artifactory.server("https://example.com", null,
+				null);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
+				"restTemplate");
+		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
+				.getRequestFactory();
+		assertThat(ReflectionTestUtils.getField(requestFactory, "bufferRequestBody"))
+				.isEqualTo(Boolean.FALSE);
+		assertThat(ReflectionTestUtils.getField(requestFactory, "outputStreaming"))
+				.isEqualTo(Boolean.TRUE);
 	}
 
 }

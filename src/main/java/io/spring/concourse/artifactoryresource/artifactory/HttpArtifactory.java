@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.function.Supplier;
 
 import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -25,6 +26,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -48,32 +51,66 @@ public class HttpArtifactory implements Artifactory {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		RestTemplateBuilder builder = (StringUtils.hasText(username)
-				? this.restTemplateBuilder.requestFactory(
-						() -> new BasicAuthClientHttpRequestFactory(username, password))
-				: this.restTemplateBuilder);
-		return new HttpArtifactoryServer(uri, builder);
+		return new HttpArtifactoryServer(uri, this.restTemplateBuilder
+				.requestFactory(getRequestFactorySupplier(username, password)));
 	}
 
-	private static class BasicAuthClientHttpRequestFactory
-			extends AbstractClientHttpRequestFactoryWrapper {
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username,
+			String password) {
+		Supplier<ClientHttpRequestFactory> requestFactorySupplier = this::getNonBufferingClientHttpRequestFactory;
+		if (StringUtils.hasText(username)) {
+			requestFactorySupplier = new BasicAuthClientHttpRequestFactorySupplier(
+					requestFactorySupplier, username, password);
+		}
+		return requestFactorySupplier;
+	}
+
+	private ClientHttpRequestFactory getNonBufferingClientHttpRequestFactory() {
+		ClientHttpRequestFactory factory = new ClientHttpRequestFactorySupplier().get();
+		if (factory instanceof SimpleClientHttpRequestFactory) {
+			((SimpleClientHttpRequestFactory) factory).setBufferRequestBody(false);
+		}
+		if (factory instanceof HttpComponentsClientHttpRequestFactory) {
+			((HttpComponentsClientHttpRequestFactory) factory)
+					.setBufferRequestBody(false);
+		}
+		return factory;
+	}
+
+	private static class BasicAuthClientHttpRequestFactorySupplier
+			implements Supplier<ClientHttpRequestFactory> {
+
+		private final Supplier<ClientHttpRequestFactory> requestFactorySupplier;
 
 		private final String username;
 
 		private final String password;
 
-		protected BasicAuthClientHttpRequestFactory(String username, String password) {
-			super(new ClientHttpRequestFactorySupplier().get());
+		BasicAuthClientHttpRequestFactorySupplier(
+				Supplier<ClientHttpRequestFactory> requestFactorySupplier,
+				String username, String password) {
+			this.requestFactorySupplier = requestFactorySupplier;
 			this.username = username;
 			this.password = password;
 		}
 
 		@Override
-		protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
-				ClientHttpRequestFactory requestFactory) throws IOException {
-			ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-			request.getHeaders().setBasicAuth(this.username, this.password);
-			return request;
+		public ClientHttpRequestFactory get() {
+			ClientHttpRequestFactory requestFactory = this.requestFactorySupplier.get();
+			return new AbstractClientHttpRequestFactoryWrapper(requestFactory) {
+
+				@Override
+				protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
+						ClientHttpRequestFactory requestFactory) throws IOException {
+					ClientHttpRequest request = requestFactory.createRequest(uri,
+							httpMethod);
+					request.getHeaders().setBasicAuth(
+							BasicAuthClientHttpRequestFactorySupplier.this.username,
+							BasicAuthClientHttpRequestFactorySupplier.this.password);
+					return request;
+				}
+
+			};
 		}
 
 	}
