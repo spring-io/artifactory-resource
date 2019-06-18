@@ -31,7 +31,7 @@ resources:
   source:
     owner: spring-io
     repository: artifactory-resource
-    access_token: ((github-release-notes-access-token))
+    access_token: ((github-ci-release-token))
 jobs:
 - name: build-artifactory-resource-ci-image
   plan:
@@ -70,7 +70,7 @@ jobs:
     file: git-repo/ci/tasks/generate-release-notes.yml
     params:
       GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-release-notes-access-token))
+      GITHUB_TOKEN: ((github-ci-release-token))
   - put: git-repo
     params:
       repository: release-git-repo
