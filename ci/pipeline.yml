@@ -39,7 +39,8 @@ jobs:
     trigger: true
   - put: artifactory-resource-ci-image
     params:
-      build: ci-images-git-repo/ci/images/artifactory-resource-ci-image
+      build: ci-images-git-repo/ci/images
+      dockerfile: ci-images-git-repo/ci/images/artifactory-resource-ci-image/Dockerfile
 - name: build
   public: true
   plan:
