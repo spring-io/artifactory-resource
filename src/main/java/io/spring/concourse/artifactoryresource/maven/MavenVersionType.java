@@ -44,13 +44,12 @@ public enum MavenVersionType {
 
 	private static final String SNAPSHOT_VERSION = "SNAPSHOT";
 
-	private static final Pattern VERSION_FILE_PATTERN = Pattern
-			.compile("^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$");
+	private static final Pattern VERSION_FILE_PATTERN = Pattern.compile("^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$");
 
 	public static MavenVersionType fromVersion(String version) {
 		Assert.hasLength(version, "Version must not be empty");
-		if (version.regionMatches(true, version.length() - SNAPSHOT_VERSION.length(),
-				SNAPSHOT_VERSION, 0, SNAPSHOT_VERSION.length())) {
+		if (version.regionMatches(true, version.length() - SNAPSHOT_VERSION.length(), SNAPSHOT_VERSION, 0,
+				SNAPSHOT_VERSION.length())) {
 			return SNAPSHOT;
 		}
 		if (VERSION_FILE_PATTERN.matcher(version).matches()) {

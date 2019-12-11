@@ -75,7 +75,7 @@ final class FileComparator implements Comparator<File> {
 		return (name != null && name.equals(root));
 	}
 
-	public static void sort(List<File> files) {
+	static void sort(List<File> files) {
 		MultiValueMap<File, File> filesByParent = getFilesByParent(files);
 		Map<File, String> roots = getRoots(filesByParent);
 		Collections.sort(files, new FileComparator(roots));
@@ -89,17 +89,15 @@ final class FileComparator implements Comparator<File> {
 
 	private static Map<File, String> getRoots(MultiValueMap<File, File> filesByParent) {
 		Map<File, String> roots = new LinkedHashMap<>();
-		filesByParent.forEach(
-				(parent, files) -> files.stream().filter(FileComparator::isRootCandidate)
-						.map(FileComparator::getNameWithoutExtension)
-						.reduce(FileComparator::getShortest)
-						.ifPresent((root) -> roots.put(parent, root)));
+		filesByParent.forEach((parent, files) -> files.stream().filter(FileComparator::isRootCandidate)
+				.map(FileComparator::getNameWithoutExtension).reduce(FileComparator::getShortest)
+				.ifPresent((root) -> roots.put(parent, root)));
 		return roots;
 	}
 
 	private static boolean isRootCandidate(File file) {
-		if (isMavenMetaData(file) || file.isHidden() || file.getName().startsWith(".")
-				|| file.isDirectory() || isChecksumFile(file)) {
+		if (isMavenMetaData(file) || file.isHidden() || file.getName().startsWith(".") || file.isDirectory()
+				|| isChecksumFile(file)) {
 			return false;
 		}
 		return true;
@@ -118,8 +116,7 @@ final class FileComparator implements Comparator<File> {
 	private static String getNameWithoutExtension(File file) {
 		String name = file.getName();
 		String extension = StringUtils.getFilenameExtension(name);
-		return (extension != null)
-				? name.substring(0, name.length() - extension.length() - 1) : name;
+		return (extension != null) ? name.substring(0, name.length() - extension.length() - 1) : name;
 	}
 
 	private static String getShortest(String name1, String name2) {

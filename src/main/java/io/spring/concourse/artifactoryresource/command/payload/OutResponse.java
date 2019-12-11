@@ -42,8 +42,7 @@ public class OutResponse {
 	public OutResponse(Version version, List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;
-		this.metadata = (metadata != null)
-				? Collections.unmodifiableList(new ArrayList<>(metadata))
+		this.metadata = (metadata != null) ? Collections.unmodifiableList(new ArrayList<>(metadata))
 				: Collections.emptyList();
 	}
 
@@ -57,8 +56,7 @@ public class OutResponse {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("version", this.version)
-				.append("metadata", this.metadata).toString();
+		return new ToStringCreator(this).append("version", this.version).append("metadata", this.metadata).toString();
 	}
 
 }

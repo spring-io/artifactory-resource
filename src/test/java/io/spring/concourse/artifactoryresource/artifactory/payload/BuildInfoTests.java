@@ -46,50 +46,44 @@ public class BuildInfoTests {
 
 	private static final String BUILD_NUMBER = "5678";
 
-	private static final ContinuousIntegrationAgent CI_AGENT = new ContinuousIntegrationAgent(
-			"Concourse", "3.0.0");
+	private static final ContinuousIntegrationAgent CI_AGENT = new ContinuousIntegrationAgent("Concourse", "3.0.0");
 
-	private static final Date STARTED = ArtifactoryDateFormat
-			.parse("2014-09-30T12:00:19.893+0000");
+	private static final Date STARTED = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
 
 	private static final String BUILD_URI = "https://ci.example.com";
 
-	private static final BuildArtifact ARTIFACT = new BuildArtifact("jar",
-			"a9993e364706816aba3e25717850c26c9cd0d89d",
+	private static final BuildArtifact ARTIFACT = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
 			"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 
-	private static final List<BuildModule> MODULES = Collections
-			.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT",
-					Collections.singletonList(ARTIFACT)));
+	private static final List<BuildModule> MODULES = Collections.singletonList(
+			new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", Collections.singletonList(ARTIFACT)));
 
 	@Autowired
 	private JacksonTester<BuildInfo> json;
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo("",
-				BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
 	public void createWhenBuildNumberIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new BuildInfo(BUILD_NAME,
-				"", CI_AGENT, STARTED, BUILD_URI, MODULES))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test
 	public void createWhenModulesIsNullUsesEmptyList() throws Exception {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED,
-				BUILD_URI, null);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, null);
 		assertThat(buildInfo.getModules()).isNotNull().isEmpty();
 	}
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED,
-				BUILD_URI, MODULES);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES);
 		assertThat(this.json.write(buildInfo)).isEqualToJson("build-info.json");
 	}
 

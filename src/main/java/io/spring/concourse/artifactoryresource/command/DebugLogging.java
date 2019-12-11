@@ -29,10 +29,9 @@ final class DebugLogging {
 	private DebugLogging() {
 	}
 
-	public static void setEnabled(boolean enabled) {
+	static void setEnabled(boolean enabled) {
 		if (enabled) {
-			LoggingSystem system = LoggingSystem
-					.get(Thread.currentThread().getContextClassLoader());
+			LoggingSystem system = LoggingSystem.get(Thread.currentThread().getContextClassLoader());
 			system.setLogLevel("org.springframework", LogLevel.DEBUG);
 			system.setLogLevel("io.spring.concourse.artifactoryresource", LogLevel.DEBUG);
 		}

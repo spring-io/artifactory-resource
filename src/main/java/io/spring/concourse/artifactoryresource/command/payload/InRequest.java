@@ -37,8 +37,7 @@ public class InRequest {
 	private final Params params;
 
 	@JsonCreator
-	public InRequest(@JsonProperty("source") Source source,
-			@JsonProperty("version") Version version,
+	public InRequest(@JsonProperty("source") Source source, @JsonProperty("version") Version version,
 			@JsonProperty("params") Params params) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(version, "Version must not be null");
@@ -61,8 +60,8 @@ public class InRequest {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("source", this.source)
-				.append("version", this.version).append("params", this.params).toString();
+		return new ToStringCreator(this).append("source", this.source).append("version", this.version)
+				.append("params", this.params).toString();
 	}
 
 	/**
@@ -91,13 +90,10 @@ public class InRequest {
 				@JsonProperty("download_artifacts") Boolean downloadArtifacts,
 				@JsonProperty("download_checksums") Boolean downloadChecksums) {
 			this.debug = (debug != null) ? debug : false;
-			this.generateMavenMetadata = (generateMavenMetadata != null)
-					? generateMavenMetadata : true;
+			this.generateMavenMetadata = (generateMavenMetadata != null) ? generateMavenMetadata : true;
 			this.saveBuildInfo = (saveBuildInfo != null) ? saveBuildInfo : false;
-			this.downloadArtifacts = (downloadArtifacts != null) ? downloadArtifacts
-					: true;
-			this.downloadChecksums = (downloadChecksums != null) ? downloadChecksums
-					: true;
+			this.downloadArtifacts = (downloadArtifacts != null) ? downloadArtifacts : true;
+			this.downloadChecksums = (downloadChecksums != null) ? downloadChecksums : true;
 		}
 
 		public boolean isDebug() {
@@ -122,10 +118,8 @@ public class InRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this)
-					.append("generateMavenMetadata", this.generateMavenMetadata)
-					.append("saveBuildInfo", this.saveBuildInfo)
-					.append("downloadArtifacts", this.downloadArtifacts)
+			return new ToStringCreator(this).append("generateMavenMetadata", this.generateMavenMetadata)
+					.append("saveBuildInfo", this.saveBuildInfo).append("downloadArtifacts", this.downloadArtifacts)
 					.append("downloadChecksums", this.downloadChecksums).toString();
 		}
 

@@ -92,37 +92,28 @@ public class FileComparatorTests {
 		files.add(makeFile("com/example/project/bar/2.0.0/bar-2.0.0-javadoc.jar"));
 		files.add(makeFile("com/example/project/bar/2.0.0/maven-metadata-local.xml"));
 		FileComparator.sort(files);
-		List<String> names = files.stream().map(File::getName)
-				.collect(Collectors.toCollection(ArrayList::new));
-		assertThat(names).containsExactly("bar-2.0.0.jar", "bar-2.0.0.pom",
-				"maven-metadata-local.xml", "bar-2.0.0-javadoc.jar",
-				"bar-2.0.0-sources.jar", "foo-2.0.0.jar", "foo-2.0.0.pom",
+		List<String> names = files.stream().map(File::getName).collect(Collectors.toCollection(ArrayList::new));
+		assertThat(names).containsExactly("bar-2.0.0.jar", "bar-2.0.0.pom", "maven-metadata-local.xml",
+				"bar-2.0.0-javadoc.jar", "bar-2.0.0-sources.jar", "foo-2.0.0.jar", "foo-2.0.0.pom",
 				"maven-metadata.xml", "foo-2.0.0-javadoc.jar", "foo-2.0.0-sources.jar");
 	}
 
 	@Test
 	public void compareWhenHasShorterHiddenFileWorksInSort() throws Exception {
 		List<File> files = new ArrayList<>();
-		files.add(makeFile(
-				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
-						+ ".foo.bar"));
-		files.add(makeFile(
-				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
-						+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.jar"));
-		files.add(makeFile(
-				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
-						+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-javadoc.jar"));
-		files.add(makeFile(
-				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
-						+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-sources.jar"));
-		files.add(makeFile(
-				"com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
-						+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.pom"));
+		files.add(
+				makeFile("com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/" + ".foo.bar"));
+		files.add(makeFile("com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
+				+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.jar"));
+		files.add(makeFile("com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
+				+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-javadoc.jar"));
+		files.add(makeFile("com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
+				+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-sources.jar"));
+		files.add(makeFile("com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/"
+				+ "spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.pom"));
 		FileComparator.sort(files);
-		List<String> names = files.stream().map(File::getName)
-				.collect(Collectors.toCollection(ArrayList::new));
-		assertThat(names).containsExactly(
-				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.jar",
+		List<String> names = files.stream().map(File::getName).collect(Collectors.toCollection(ArrayList::new));
+		assertThat(names).containsExactly("spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.jar",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT.pom", ".foo.bar",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-javadoc.jar",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-SNAPSHOT-sources.jar");
@@ -135,8 +126,7 @@ public class FileComparatorTests {
 		FileComparator.sort(files);
 		List<String> names = files.stream().filter(this::filter).map(File::getName)
 				.collect(Collectors.toCollection(ArrayList::new));
-		assertThat(names).containsExactly(
-				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.jar",
+		assertThat(names).containsExactly("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.jar",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.pom",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-javadoc.jar",
 				"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-sources.jar",
@@ -151,13 +141,11 @@ public class FileComparatorTests {
 
 	private boolean filter(File file) {
 		String name = file.getName().toLowerCase();
-		return (!name.endsWith(".md5") && !name.endsWith("sha1")
-				&& !name.equalsIgnoreCase("maven-metadata.xml"));
+		return (!name.endsWith(".md5") && !name.endsWith("sha1") && !name.equalsIgnoreCase("maven-metadata.xml"));
 	}
 
 	private int compare(String name1, String name2) throws IOException {
-		return new FileComparator(Collections.emptyMap()).compare(makeFile(name1),
-				makeFile(name2));
+		return new FileComparator(Collections.emptyMap()).compare(makeFile(name1), makeFile(name2));
 	}
 
 	private List<File> makeFiles(InputStream inputStream) throws IOException {
@@ -173,8 +161,7 @@ public class FileComparatorTests {
 
 	private File makeFile(String path) {
 		String tempPath = this.temporaryFolder.getRoot().getAbsolutePath();
-		return new File(
-				StringUtils.cleanPath(tempPath) + "/" + StringUtils.cleanPath(path));
+		return new File(StringUtils.cleanPath(tempPath) + "/" + StringUtils.cleanPath(path));
 	}
 
 }

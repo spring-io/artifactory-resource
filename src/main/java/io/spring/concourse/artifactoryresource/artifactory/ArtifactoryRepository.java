@@ -42,10 +42,8 @@ public interface ArtifactoryRepository {
 	 * @param destination the destination folder.
 	 * @param downloadChecksums if checksum files should also be downloaded
 	 */
-	default void download(DeployedArtifact artifact, File destination,
-			boolean downloadChecksums) {
-		download(artifact.getPath() + "/" + artifact.getName(), destination,
-				downloadChecksums);
+	default void download(DeployedArtifact artifact, File destination, boolean downloadChecksums) {
+		download(artifact.getPath() + "/" + artifact.getName(), destination, downloadChecksums);
 	}
 
 	/**

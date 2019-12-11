@@ -43,12 +43,10 @@ public class InResponse {
 	}
 
 	@JsonCreator
-	public InResponse(@JsonProperty("version") Version version,
-			@JsonProperty("metadata") List<Metadata> metadata) {
+	public InResponse(@JsonProperty("version") Version version, @JsonProperty("metadata") List<Metadata> metadata) {
 		Assert.notNull(version, "Version must not be null");
 		this.version = version;
-		this.metadata = (metadata != null)
-				? Collections.unmodifiableList(new ArrayList<>(metadata))
+		this.metadata = (metadata != null) ? Collections.unmodifiableList(new ArrayList<>(metadata))
 				: Collections.emptyList();
 	}
 
@@ -62,8 +60,7 @@ public class InResponse {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("version", this.version)
-				.append("metadata", this.metadata).toString();
+		return new ToStringCreator(this).append("version", this.version).append("metadata", this.metadata).toString();
 	}
 
 }

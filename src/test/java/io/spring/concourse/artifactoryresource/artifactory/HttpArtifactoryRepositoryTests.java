@@ -82,8 +82,7 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Before
 	public void setup() {
-		this.artifactoryRepository = this.artifactory
-				.server("https://repo.example.com", "admin", "password")
+		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 	}
 
@@ -94,8 +93,7 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Test
 	public void deployUploadsTheDeployableArtifact() throws IOException {
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				BYTES);
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
@@ -112,8 +110,7 @@ public class HttpArtifactoryRepositoryTests {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				BYTES, properties);
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES, properties);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar;buildNumber=1;revision=123";
 		this.server.expect(requestTo(url)).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
@@ -122,61 +119,51 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Test
 	public void deployWhenChecksumMatchesDoesNotUpload() throws Exception {
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				BYTES);
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andRespond(withSuccess());
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1())).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
-	public void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionUploads()
-			throws Exception {
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				BYTES);
+	public void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionUploads() throws Exception {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 				.andRespond(withStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE));
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andRespond(withSuccess());
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1())).andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
 	public void deployWhenSmallFileDoesNotUseChecksum() throws Exception {
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				"foo".getBytes());
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(noChecksumHeader()).andRespond(withSuccess());
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
+				.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
 
 	@Test
-	public void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum()
-			throws Exception {
-		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar",
-				BYTES);
+	public void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum() throws Exception {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(noChecksumHeader()).andRespond(withSuccess());
-		this.artifactoryRepository.deploy(artifact,
-				DeployOption.DISABLE_CHECKSUM_UPLOADS);
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
+				.andRespond(withSuccess());
+		this.artifactoryRepository.deploy(artifact, DeployOption.DISABLE_CHECKSUM_UPLOADS);
 		this.server.verify();
 	}
 
 	private RequestMatcher noChecksumHeader() {
-		return (request) -> assertThat(request.getHeaders().keySet())
-				.doesNotContain("X-Checksum-Deploy");
+		return (request) -> assertThat(request.getHeaders().keySet()).doesNotContain("X-Checksum-Deploy");
 	}
 
 	@Test
@@ -234,8 +221,7 @@ public class HttpArtifactoryRepositoryTests {
 
 	private void expectFileDownload(String url) {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}),
-						MediaType.APPLICATION_OCTET_STREAM));
+				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}), MediaType.APPLICATION_OCTET_STREAM));
 	}
 
 	private void expectFile404(String url) {

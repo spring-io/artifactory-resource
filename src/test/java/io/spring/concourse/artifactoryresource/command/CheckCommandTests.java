@@ -53,8 +53,7 @@ public class CheckCommandTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.command = new CheckCommand(this.systemInput, this.systemOutput,
-				this.handler);
+		this.command = new CheckCommand(this.systemInput, this.systemOutput, this.handler);
 	}
 
 	@Test

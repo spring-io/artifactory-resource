@@ -41,8 +41,7 @@ public class CheckRequestTests {
 
 	@Test
 	public void createWhenSourceIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new CheckRequest(null, new Version("1234")))
+		assertThatIllegalArgumentException().isThrownBy(() -> new CheckRequest(null, new Version("1234")))
 				.withMessage("Source must not be null");
 	}
 

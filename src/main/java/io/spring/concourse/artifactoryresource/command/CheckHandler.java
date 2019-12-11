@@ -49,18 +49,15 @@ public class CheckHandler {
 
 	public CheckResponse handle(CheckRequest request) {
 		Source source = request.getSource();
-		List<BuildRun> runs = getArtifactoryServer(source)
-				.buildRuns(source.getBuildName()).getAll();
-		if (request.getVersion() == null
-				|| StringUtils.isEmpty(request.getVersion().getBuildNumber())) {
+		List<BuildRun> runs = getArtifactoryServer(source).buildRuns(source.getBuildName()).getAll();
+		if (request.getVersion() == null || StringUtils.isEmpty(request.getVersion().getBuildNumber())) {
 			return getLatest(runs);
 		}
 		return getAfter(runs, request.getVersion());
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
-		return this.artifactory.server(source.getUri(), source.getUsername(),
-				source.getPassword());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
 	}
 
 	private CheckResponse getAfter(List<BuildRun> runs, Version version) {
@@ -68,24 +65,21 @@ public class CheckHandler {
 		if (versionRun == null) {
 			return getLatest(runs);
 		}
-		ArrayList<BuildRun> runsSince = runs.stream()
-				.filter((run) -> run.compareTo(versionRun) >= 0)
+		ArrayList<BuildRun> runsSince = runs.stream().filter((run) -> run.compareTo(versionRun) >= 0)
 				.collect(Collectors.toCollection(ArrayList::new));
 		Collections.sort(runsSince);
-		return new CheckResponse(runsSince.stream().map(this::asVersion)
-				.collect(Collectors.toCollection(ArrayList::new)));
+		return new CheckResponse(
+				runsSince.stream().map(this::asVersion).collect(Collectors.toCollection(ArrayList::new)));
 	}
 
 	private BuildRun findBuildRun(List<BuildRun> runs, Version version) {
-		return runs.stream()
-				.filter((run) -> run.getBuildNumber().equals(version.getBuildNumber()))
-				.findFirst().orElse(null);
+		return runs.stream().filter((run) -> run.getBuildNumber().equals(version.getBuildNumber())).findFirst()
+				.orElse(null);
 	}
 
 	private CheckResponse getLatest(List<BuildRun> runs) {
-		return new CheckResponse(runs.stream().max(BuildRun::compareTo)
-				.map(this::asVersion).map(Collections::singletonList)
-				.orElseGet(Collections::emptyList));
+		return new CheckResponse(runs.stream().max(BuildRun::compareTo).map(this::asVersion)
+				.map(Collections::singletonList).orElseGet(Collections::emptyList));
 	}
 
 	private Version asVersion(BuildRun run) {

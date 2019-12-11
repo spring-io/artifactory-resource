@@ -48,8 +48,7 @@ public class PathFilter {
 				&& !hasMatch(pathMatcher, path, this.exclude));
 	}
 
-	private boolean hasMatch(PathMatcher pathMatcher, String path,
-			List<String> patterns) {
+	private boolean hasMatch(PathMatcher pathMatcher, String path, List<String> patterns) {
 		for (String pattern : patterns) {
 			pattern = cleanPattern(path, pattern);
 			if (pathMatcher.match(pattern, path)) {

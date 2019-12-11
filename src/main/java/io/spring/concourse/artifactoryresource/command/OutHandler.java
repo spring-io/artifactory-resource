@@ -65,13 +65,11 @@ import org.springframework.util.StringUtils;
 public class OutHandler {
 
 	private static final Set<String> METADATA_FILES = Collections
-			.unmodifiableSet(new HashSet<>(
-					Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
+			.unmodifiableSet(new HashSet<>(Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
 
 	private static final DeployOption[] NO_DEPLOY_OPTIONS = {};
 
-	private static final DeployOption[] DISABLE_CHECKSUM_UPLOADS = {
-			DeployOption.DISABLE_CHECKSUM_UPLOADS };
+	private static final DeployOption[] DISABLE_CHECKSUM_UPLOADS = { DeployOption.DISABLE_CHECKSUM_UPLOADS };
 
 	private static final Logger logger = LoggerFactory.getLogger(OutHandler.class);
 
@@ -85,8 +83,8 @@ public class OutHandler {
 
 	private final DirectoryScanner directoryScanner;
 
-	public OutHandler(Artifactory artifactory, BuildNumberGenerator buildNumberGenerator,
-			ModuleLayouts moduleLayouts, DirectoryScanner directoryScanner) {
+	public OutHandler(Artifactory artifactory, BuildNumberGenerator buildNumberGenerator, ModuleLayouts moduleLayouts,
+			DirectoryScanner directoryScanner) {
 		this.artifactory = artifactory;
 		this.buildNumberGenerator = buildNumberGenerator;
 		this.moduleLayouts = moduleLayouts;
@@ -100,11 +98,9 @@ public class OutHandler {
 		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
 		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
-		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source,
-				params, directory);
+		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source, params, directory);
 		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
-		console.log("Deploying {} artifacts to {} as build {}", artifacts.size(),
-				source.getUri(), buildNumber);
+		console.log("Deploying {} artifacts to {} as build {}", artifacts.size(), source.getUri(), buildNumber);
 		deployArtifacts(artifactoryServer, params, artifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
 		logger.debug("Done");
@@ -113,8 +109,7 @@ public class OutHandler {
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
 		logger.debug("Using artifactory server " + source.getUri());
-		return this.artifactory.server(source.getUri(), source.getUsername(),
-				source.getPassword());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
 	}
 
 	private String getOrGenerateBuildNumber(Params params) {
@@ -126,19 +121,17 @@ public class OutHandler {
 		return buildNumber;
 	}
 
-	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber,
-			Source source, Params params, Directory directory) {
+	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber, Source source, Params params,
+			Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
-		Stream<File> files = this.directoryScanner
-				.scan(root, params.getInclude(), params.getExclude()).stream();
+		Stream<File> files = this.directoryScanner.scan(root, params.getInclude(), params.getExclude()).stream();
 		files = files.filter(getChecksumFilter());
 		files = files.filter(getMetadataFilter(params));
 		return files.map((file) -> {
 			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
 			logger.debug("Including file {} with path {}", file, path);
-			Map<String, String> properties = getDeployableArtifactProperties(path,
-					buildNumber, source, params);
+			Map<String, String> properties = getDeployableArtifactProperties(path, buildNumber, source, params);
 			if (params.isStripSnapshotTimestamps()) {
 				path = stripSnapshotTimestamp(path);
 			}
@@ -146,33 +139,30 @@ public class OutHandler {
 		}).collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	private Map<String, String> getDeployableArtifactProperties(String path,
-			String buildNumber, Source source, Params params) {
+	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Source source,
+			Params params) {
 		Map<String, String> properties = new LinkedHashMap<>();
 		addArtifactSetProperties(path, params, properties);
 		addBuildProperties(buildNumber, source, properties);
 		return properties;
 	}
 
-	private void addArtifactSetProperties(String path, Params params,
-			Map<String, String> properties) {
+	private void addArtifactSetProperties(String path, Params params, Map<String, String> properties) {
 		for (ArtifactSet artifactSet : params.getArtifactSet()) {
 			if (getFilter(artifactSet).isMatch(path)) {
-				logger.debug("Artifact set matched, adding properties {}",
-						artifactSet.getProperties());
+				logger.debug("Artifact set matched, adding properties {}", artifactSet.getProperties());
 				properties.putAll(artifactSet.getProperties());
 			}
 		}
 	}
 
 	private PathFilter getFilter(ArtifactSet artifactSet) {
-		logger.debug("Creating artifact set filter including {} and excluding {}",
-				artifactSet.getInclude(), artifactSet.getExclude());
+		logger.debug("Creating artifact set filter including {} and excluding {}", artifactSet.getInclude(),
+				artifactSet.getExclude());
 		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
 	}
 
-	private void addBuildProperties(String buildNumber, Source source,
-			Map<String, String> properties) {
+	private void addBuildProperties(String buildNumber, Source source, Map<String, String> properties) {
 		properties.put("build.name", source.getBuildName());
 		properties.put("build.number", buildNumber);
 	}
@@ -182,8 +172,7 @@ public class OutHandler {
 		if (coordinates.getVersionType() != MavenVersionType.TIMESTAMP_SNAPSHOT) {
 			return path;
 		}
-		String stripped = path.replace(coordinates.getSnapshotVersion(),
-				coordinates.getVersion());
+		String stripped = path.replace(coordinates.getSnapshotVersion(), coordinates.getVersion());
 		logger.debug("Stripped timestamp version {} to {}", path, stripped);
 		return stripped;
 	}
@@ -191,16 +180,12 @@ public class OutHandler {
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,
 			List<DeployableArtifact> deployableArtifacts) {
 		logger.debug("Deploying artifacts to {}", params.getRepo());
-		ArtifactoryRepository artifactoryRepository = artifactoryServer
-				.repository(params.getRepo());
+		ArtifactoryRepository artifactoryRepository = artifactoryServer.repository(params.getRepo());
 		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(),
-					deployableArtifact.getProperties(),
-					deployableArtifact.getChecksums().getSha1(),
-					deployableArtifact.getChecksums().getMd5());
+			console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(), deployableArtifact.getProperties(),
+					deployableArtifact.getChecksums().getSha1(), deployableArtifact.getChecksums().getMd5());
 			artifactoryRepository.deploy(deployableArtifact,
-					params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS
-							: NO_DEPLOY_OPTIONS);
+					params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS : NO_DEPLOY_OPTIONS);
 		}
 	}
 
@@ -218,14 +203,12 @@ public class OutHandler {
 		};
 	}
 
-	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source,
-			Params params, String buildNumber, List<DeployableArtifact> artifacts) {
+	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, String buildNumber,
+			List<DeployableArtifact> artifacts) {
 		logger.debug("Adding build run {}", buildNumber);
-		List<BuildModule> modules = this.moduleLayouts
-				.getBuildModulesGenerator(params.getModuleLayout())
+		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);
-		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber,
-				params.getBuildUri(), modules);
+		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, params.getBuildUri(), modules);
 	}
 
 }

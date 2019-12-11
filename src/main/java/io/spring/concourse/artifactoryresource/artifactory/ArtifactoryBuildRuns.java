@@ -51,8 +51,7 @@ public interface ArtifactoryBuildRuns {
 	 * @param continuousIntegrationAgent the CI Agent
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, String buildUri,
-			ContinuousIntegrationAgent continuousIntegrationAgent,
+	default void add(String buildNumber, String buildUri, ContinuousIntegrationAgent continuousIntegrationAgent,
 			List<BuildModule> modules) {
 		add(buildNumber, buildUri, continuousIntegrationAgent, new Date(), modules);
 	}
@@ -65,8 +64,7 @@ public interface ArtifactoryBuildRuns {
 	 * @param started the date the build was started
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, String buildUri,
-			ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
+	void add(String buildNumber, String buildUri, ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
 			List<BuildModule> modules);
 
 	/**

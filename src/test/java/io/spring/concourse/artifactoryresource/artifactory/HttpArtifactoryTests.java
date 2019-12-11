@@ -50,39 +50,30 @@ public class HttpArtifactoryTests {
 
 	@Test
 	public void serverWhenNoUsernameReturnsServer() {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null,
-				null);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
-				"restTemplate");
-		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate,
-				"interceptors");
+		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
+		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate, "interceptors");
 		assertThat(interceptors.size()).isEqualTo(0);
 	}
 
 	@Test
 	public void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin",
-				"password");
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
-				"restTemplate");
-		ClientHttpRequest request = restTemplate.getRequestFactory()
-				.createRequest(new URI("http://localhost"), HttpMethod.GET);
+		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password");
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
+		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
+				HttpMethod.GET);
 		assertThat(request.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
 	}
 
 	@Test
 	public void serverDoesNotBuffer() {
 		// gh-50
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null,
-				null);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server,
-				"restTemplate");
+		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
 				.getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "bufferRequestBody"))
-				.isEqualTo(Boolean.FALSE);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "outputStreaming"))
-				.isEqualTo(Boolean.TRUE);
+		assertThat(ReflectionTestUtils.getField(requestFactory, "bufferRequestBody")).isEqualTo(Boolean.FALSE);
+		assertThat(ReflectionTestUtils.getField(requestFactory, "outputStreaming")).isEqualTo(Boolean.TRUE);
 	}
 
 }

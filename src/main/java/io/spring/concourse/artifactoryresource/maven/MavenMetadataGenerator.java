@@ -49,8 +49,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class MavenMetadataGenerator {
 
-	private static final List<String> POM_PATTERN = Collections
-			.unmodifiableList(Collections.singletonList("**/*.pom"));
+	private static final List<String> POM_PATTERN = Collections.unmodifiableList(Collections.singletonList("**/*.pom"));
 
 	private static final Set<String> IGNORED_EXTENSIONS = Collections
 			.unmodifiableSet(new LinkedHashSet<>(Arrays.asList("asc", "sha", "md5")));
@@ -74,13 +73,10 @@ public class MavenMetadataGenerator {
 		MultiValueMap<File, MavenCoordinates> fileCoordinates = new LinkedMultiValueMap<>();
 		for (File file : files) {
 			String rootPath = StringUtils.cleanPath(root.getFile().getPath());
-			String relativePath = StringUtils.cleanPath(file.getPath())
-					.substring(rootPath.length() + 1);
-			fileCoordinates.add(file.getParentFile(),
-					MavenCoordinates.fromPath(relativePath));
+			String relativePath = StringUtils.cleanPath(file.getPath()).substring(rootPath.length() + 1);
+			fileCoordinates.add(file.getParentFile(), MavenCoordinates.fromPath(relativePath));
 		}
-		fileCoordinates.forEach((file, coordinates) -> writeMetadata(file, coordinates,
-				generateChecksums));
+		fileCoordinates.forEach((file, coordinates) -> writeMetadata(file, coordinates, generateChecksums));
 	}
 
 	private boolean include(File file, String prefix) {
@@ -88,12 +84,10 @@ public class MavenMetadataGenerator {
 		if (IGNORED_EXTENSIONS.contains(extension.toLowerCase())) {
 			return false;
 		}
-		return file.exists() && file.isFile()
-				&& StringUtils.getFilename(file.getName()).startsWith(prefix);
+		return file.exists() && file.isFile() && StringUtils.getFilename(file.getName()).startsWith(prefix);
 	}
 
-	private void writeMetadata(File folder, List<MavenCoordinates> coordinates,
-			boolean generateChecksums) {
+	private void writeMetadata(File folder, List<MavenCoordinates> coordinates, boolean generateChecksums) {
 		List<SnapshotVersion> snapshotVersions = getSnapshotVersionMetadata(coordinates);
 		if (!snapshotVersions.isEmpty()) {
 			Metadata metadata = new Metadata();
@@ -103,16 +97,13 @@ public class MavenMetadataGenerator {
 			metadata.setGroupId(coordinates.get(0).getGroupId());
 			metadata.setArtifactId(coordinates.get(0).getArtifactId());
 			metadata.setVersion(coordinates.get(0).getVersion());
-			writeMetadataFile(metadata, new File(folder, "maven-metadata.xml"),
-					generateChecksums);
+			writeMetadataFile(metadata, new File(folder, "maven-metadata.xml"), generateChecksums);
 		}
 	}
 
-	private List<SnapshotVersion> getSnapshotVersionMetadata(
-			List<MavenCoordinates> coordinates) {
+	private List<SnapshotVersion> getSnapshotVersionMetadata(List<MavenCoordinates> coordinates) {
 		return coordinates.stream().filter(MavenCoordinates::isSnapshotVersion).sorted()
-				.map(this::asSnapshotVersionMetadata)
-				.collect(Collectors.toCollection(ArrayList::new));
+				.map(this::asSnapshotVersionMetadata).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	private SnapshotVersion asSnapshotVersionMetadata(MavenCoordinates coordinates) {
@@ -123,8 +114,7 @@ public class MavenMetadataGenerator {
 		return snapshotVersion;
 	}
 
-	private void writeMetadataFile(Metadata metadata, File file,
-			boolean generateChecksums) {
+	private void writeMetadataFile(Metadata metadata, File file, boolean generateChecksums) {
 		try {
 			MetadataXpp3Writer writer = new MetadataXpp3Writer();
 			try (FileOutputStream outputStream = new FileOutputStream(file)) {

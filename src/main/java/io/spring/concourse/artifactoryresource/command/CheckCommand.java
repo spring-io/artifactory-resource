@@ -39,8 +39,7 @@ public class CheckCommand implements Command {
 
 	private final CheckHandler handler;
 
-	public CheckCommand(SystemInput systemInput, SystemOutput systemOutput,
-			CheckHandler handler) {
+	public CheckCommand(SystemInput systemInput, SystemOutput systemOutput, CheckHandler handler) {
 		this.systemInput = systemInput;
 		this.systemOutput = systemOutput;
 		this.handler = handler;

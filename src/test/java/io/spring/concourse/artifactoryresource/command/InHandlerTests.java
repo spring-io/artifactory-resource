@@ -82,23 +82,17 @@ public class InHandlerTests {
 		this.deployedArtifacts = createDeployedArtifacts();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
-		given(this.artifactoryServer.buildRuns("my-build"))
-				.willReturn(this.artifactoryBuildRuns);
-		given(this.artifactoryServer.repository("libs-snapshot-local"))
-				.willReturn(this.artifactoryRepository);
-		given(this.artifactoryBuildRuns.getDeployedArtifacts("1234"))
-				.willReturn(this.deployedArtifacts);
-		given(this.artifactoryBuildRuns.getRawBuildInfo("1234"))
-				.willReturn(BUILD_INFO_JSON);
+		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
+		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
+		given(this.artifactoryBuildRuns.getDeployedArtifacts("1234")).willReturn(this.deployedArtifacts);
+		given(this.artifactoryBuildRuns.getRawBuildInfo("1234")).willReturn(BUILD_INFO_JSON);
 		this.handler = new InHandler(this.artifactory, this.mavenMetadataGenerator);
 	}
 
 	private List<DeployedArtifact> createDeployedArtifacts() {
 		List<DeployedArtifact> deployedArtifacts = new ArrayList<>();
-		deployedArtifacts.add(
-				new DeployedArtifact("libs-snapshot-local", "foo.jar", "com/example"));
-		deployedArtifacts.add(
-				new DeployedArtifact("libs-snapshot-local", "bar.jar", "com/example"));
+		deployedArtifacts.add(new DeployedArtifact("libs-snapshot-local", "foo.jar", "com/example"));
+		deployedArtifacts.add(new DeployedArtifact("libs-snapshot-local", "bar.jar", "com/example"));
 		return deployedArtifacts;
 	}
 
@@ -108,28 +102,24 @@ public class InHandlerTests {
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
-			verify(this.artifactoryRepository).download(deployedArtifact,
-					directory.getFile(), true);
+			verify(this.artifactoryRepository).download(deployedArtifact, directory.getFile(), true);
 		}
 		assertThat(response.getVersion()).isEqualTo(request.getVersion());
 	}
 
 	@Test
-	public void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums()
-			throws Exception {
+	public void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums() throws Exception {
 		InRequest request = createRequest(false, false, true, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
-			verify(this.artifactoryRepository).download(deployedArtifact,
-					directory.getFile(), false);
+			verify(this.artifactoryRepository).download(deployedArtifact, directory.getFile(), false);
 		}
 		assertThat(response.getVersion()).isEqualTo(request.getVersion());
 	}
 
 	@Test
-	public void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts()
-			throws Exception {
+	public void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() throws Exception {
 		InRequest request = createRequest(false, false, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		InResponse response = this.handler.handle(request, directory);
@@ -139,8 +129,7 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata()
-			throws Exception {
+	public void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata() throws Exception {
 		InRequest request = createRequest(true, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
@@ -148,8 +137,7 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata()
-			throws Exception {
+	public void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata() throws Exception {
 		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
@@ -157,8 +145,7 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums()
-			throws Exception {
+	public void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums() throws Exception {
 		InRequest request = createRequest(true, false, true, false);
 		Directory directory = new Directory(this.temporaryFolder.newFolder());
 		this.handler.handle(request, directory);
@@ -174,18 +161,15 @@ public class InHandlerTests {
 		assertThat(buildInfo).exists().hasContent(BUILD_INFO_JSON);
 	}
 
-	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
-			boolean downloadArtifacts) {
-		return createRequest(generateMavenMetadata, saveBuildInfo, downloadArtifacts,
-				true);
+	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts) {
+		return createRequest(generateMavenMetadata, saveBuildInfo, downloadArtifacts, true);
 	}
 
-	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo,
-			boolean downloadArtifacts, boolean downloadChecksums) {
-		InRequest request = new InRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build"),
-				new Version("1234"), new Params(false, generateMavenMetadata,
-						saveBuildInfo, downloadArtifacts, downloadChecksums));
+	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
+			boolean downloadChecksums) {
+		InRequest request = new InRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
+				new Version("1234"),
+				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums));
 		return request;
 	}
 

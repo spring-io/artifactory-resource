@@ -43,17 +43,15 @@ public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests
 	public void createWhenParentIsNotParentThrowsException() throws Exception {
 		File parent = this.temp.newFolder();
 		File file = this.temp.newFile();
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DeployableFileArtifact(parent, file))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DeployableFileArtifact(parent, file))
 				.withMessageContaining("is not a parent of");
 	}
 
 	@Override
-	protected AbstractDeployableArtifact create(String path, byte[] content,
-			Map<String, String> properties, Checksums checksums) throws IOException {
+	protected AbstractDeployableArtifact create(String path, byte[] content, Map<String, String> properties,
+			Checksums checksums) throws IOException {
 		File parent = this.temp.newFolder();
-		File file = new File(parent.getAbsolutePath() + File.separatorChar
-				+ path.replace("/", File.separator));
+		File file = new File(parent.getAbsolutePath() + File.separatorChar + path.replace("/", File.separator));
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy(content, file);
 		return new DeployableFileArtifact(parent, file, properties, checksums);

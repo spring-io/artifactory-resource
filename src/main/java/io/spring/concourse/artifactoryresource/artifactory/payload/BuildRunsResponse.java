@@ -39,8 +39,7 @@ public class BuildRunsResponse {
 	public BuildRunsResponse(@JsonProperty("uri") String uri,
 			@JsonProperty("buildsNumbers") List<BuildRun> buildsRuns) {
 		this.uri = uri;
-		this.buildsRuns = (buildsRuns != null)
-				? Collections.unmodifiableList(new ArrayList<>(buildsRuns))
+		this.buildsRuns = (buildsRuns != null) ? Collections.unmodifiableList(new ArrayList<>(buildsRuns))
 				: Collections.emptyList();
 	}
 

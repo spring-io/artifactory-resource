@@ -41,8 +41,7 @@ public class OutRequest {
 	private final Params params;
 
 	@JsonCreator
-	public OutRequest(@JsonProperty("source") Source source,
-			@JsonProperty("params") Params params) {
+	public OutRequest(@JsonProperty("source") Source source, @JsonProperty("params") Params params) {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(params, "Params must not be null");
 		this.source = source;
@@ -59,8 +58,7 @@ public class OutRequest {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("source", this.source)
-				.append("params", this.params).toString();
+		return new ToStringCreator(this).append("source", this.source).append("params", this.params).toString();
 	}
 
 	/**
@@ -93,14 +91,10 @@ public class OutRequest {
 		private final List<ArtifactSet> artifactSet;
 
 		@JsonCreator
-		public Params(@JsonProperty("debug") Boolean debug,
-				@JsonProperty("repo") String repo,
-				@JsonProperty("build_number") String buildNumber,
-				@JsonProperty("folder") String folder,
-				@JsonProperty("include") List<String> include,
-				@JsonProperty("exclude") List<String> exclude,
-				@JsonProperty("module_layout") String moduleLayout,
-				@JsonProperty("build_uri") String buildUri,
+		public Params(@JsonProperty("debug") Boolean debug, @JsonProperty("repo") String repo,
+				@JsonProperty("build_number") String buildNumber, @JsonProperty("folder") String folder,
+				@JsonProperty("include") List<String> include, @JsonProperty("exclude") List<String> exclude,
+				@JsonProperty("module_layout") String moduleLayout, @JsonProperty("build_uri") String buildUri,
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
@@ -110,20 +104,15 @@ public class OutRequest {
 			this.buildNumber = buildNumber;
 			this.repo = repo;
 			this.folder = folder;
-			this.include = (include != null)
-					? Collections.unmodifiableList(new ArrayList<>(include))
+			this.include = (include != null) ? Collections.unmodifiableList(new ArrayList<>(include))
 					: Collections.emptyList();
-			this.exclude = (exclude != null)
-					? Collections.unmodifiableList(new ArrayList<>(exclude))
+			this.exclude = (exclude != null) ? Collections.unmodifiableList(new ArrayList<>(exclude))
 					: Collections.emptyList();
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
-			this.stripSnapshotTimestamps = (stripSnapshotTimestamps != null)
-					? stripSnapshotTimestamps : true;
-			this.disableChecksumUploads = (disableChecksumUploads != null)
-					? disableChecksumUploads : false;
-			this.artifactSet = (artifactSet != null)
-					? Collections.unmodifiableList(new ArrayList<>(artifactSet))
+			this.stripSnapshotTimestamps = (stripSnapshotTimestamps != null) ? stripSnapshotTimestamps : true;
+			this.disableChecksumUploads = (disableChecksumUploads != null) ? disableChecksumUploads : false;
+			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
 					: Collections.emptyList();
 		}
 
@@ -173,11 +162,9 @@ public class OutRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
-					.append("folder", this.folder).append("include", this.include)
-					.append("exclude", this.exclude)
-					.append("moduleLayout", this.moduleLayout)
-					.append("buildUri", this.buildUri)
+			return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("folder", this.folder)
+					.append("include", this.include).append("exclude", this.exclude)
+					.append("moduleLayout", this.moduleLayout).append("buildUri", this.buildUri)
 					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
 					.append("artifactSet", this.artifactSet).toString();
 		}
@@ -196,17 +183,13 @@ public class OutRequest {
 		private final Map<String, String> properties;
 
 		@JsonCreator
-		public ArtifactSet(@JsonProperty("include") List<String> include,
-				@JsonProperty("exclude") List<String> exclude,
+		public ArtifactSet(@JsonProperty("include") List<String> include, @JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("properties") Map<String, String> properties) {
-			this.include = (include != null)
-					? Collections.unmodifiableList(new ArrayList<>(include))
+			this.include = (include != null) ? Collections.unmodifiableList(new ArrayList<>(include))
 					: Collections.emptyList();
-			this.exclude = (exclude != null)
-					? Collections.unmodifiableList(new ArrayList<>(exclude))
+			this.exclude = (exclude != null) ? Collections.unmodifiableList(new ArrayList<>(exclude))
 					: Collections.emptyList();
-			this.properties = (properties != null)
-					? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
+			this.properties = (properties != null) ? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
 					: Collections.emptyMap();
 		}
 
@@ -224,9 +207,8 @@ public class OutRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("include", this.include)
-					.append("exclude", this.exclude).append("properties", this.properties)
-					.toString();
+			return new ToStringCreator(this).append("include", this.include).append("exclude", this.exclude)
+					.append("properties", this.properties).toString();
 		}
 
 	}

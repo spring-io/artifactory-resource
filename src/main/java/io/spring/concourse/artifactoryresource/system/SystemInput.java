@@ -50,13 +50,12 @@ public class SystemInput {
 	private final long timeout;
 
 	@Autowired
-	public SystemInput(Environment environment, SystemStreams systemStreams,
-			ObjectMapper objectMapper) {
+	public SystemInput(Environment environment, SystemStreams systemStreams, ObjectMapper objectMapper) {
 		this(environment, systemStreams, objectMapper, TIMEOUT);
 	}
 
-	protected SystemInput(Environment environment, SystemStreams systemStreams,
-			ObjectMapper objectMapper, long timeout) {
+	protected SystemInput(Environment environment, SystemStreams systemStreams, ObjectMapper objectMapper,
+			long timeout) {
 		this.environment = environment;
 		this.systemStreams = systemStreams;
 		this.objectMapper = objectMapper;
@@ -64,12 +63,10 @@ public class SystemInput {
 	}
 
 	public <T> T read(Class<T> type) throws IOException {
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(this.systemStreams.in()));
+		BufferedReader in = new BufferedReader(new InputStreamReader(this.systemStreams.in()));
 		long startTime = System.currentTimeMillis();
 		while (!in.ready()) {
-			Assert.state(System.currentTimeMillis() - startTime < this.timeout,
-					"Timeout waiting for input");
+			Assert.state(System.currentTimeMillis() - startTime < this.timeout, "Timeout waiting for input");
 		}
 		String content = FileCopyUtils.copyToString(in);
 		String resolved = this.environment.resolvePlaceholders(content);

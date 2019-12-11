@@ -36,18 +36,15 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
 public class MockBuildModulesGenerator implements BuildModulesGenerator {
 
 	@Override
-	public List<BuildModule> getBuildModules(
-			List<DeployableArtifact> deployableArtifacts) {
-		return deployableArtifacts.stream().map(this::getBuildModule)
-				.collect(Collectors.toCollection(ArrayList::new));
+	public List<BuildModule> getBuildModules(List<DeployableArtifact> deployableArtifacts) {
+		return deployableArtifacts.stream().map(this::getBuildModule).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	private BuildModule getBuildModule(DeployableArtifact artifact) {
 		Checksums checksums = artifact.getChecksums();
-		BuildArtifact buildArtifact = new BuildArtifact("file", checksums.getSha1(),
-				checksums.getMd5(), artifact.getPath());
-		return new BuildModule(artifact.getPath(),
-				Collections.singletonList(buildArtifact));
+		BuildArtifact buildArtifact = new BuildArtifact("file", checksums.getSha1(), checksums.getMd5(),
+				artifact.getPath());
+		return new BuildModule(artifact.getPath(), Collections.singletonList(buildArtifact));
 	}
 
 }

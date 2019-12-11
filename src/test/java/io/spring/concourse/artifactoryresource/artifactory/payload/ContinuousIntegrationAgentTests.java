@@ -42,17 +42,14 @@ public class ContinuousIntegrationAgentTests {
 
 	@Test
 	public void createWhenNameIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ContinuousIntegrationAgent("", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ContinuousIntegrationAgent("", null))
 				.withMessage("Name must not be empty");
 	}
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
-				"3.0.0");
-		assertThat(this.json.write(agent))
-				.isEqualToJson("continuous-integration-agent.json");
+		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
+		assertThat(this.json.write(agent)).isEqualToJson("continuous-integration-agent.json");
 	}
 
 }

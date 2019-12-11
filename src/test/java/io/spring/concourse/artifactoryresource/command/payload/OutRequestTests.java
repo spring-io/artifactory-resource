@@ -39,42 +39,36 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 public class OutRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password",
-			"my-build");
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
-	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local",
-			"1234", "folder", null, null, null, null, null, null, null);
+	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
+			null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
 
 	@Test
 	public void createWhenSourceIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OutRequest(null, this.params))
+		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(null, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWhenParamsIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OutRequest(this.source, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(this.source, null))
 				.withMessage("Params must not be null");
 	}
 
 	@Test
 	public void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
-						"1234", "", null, null, null, null, null, null, null))
-				.withMessage("Folder must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
+				"1234", "", null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
 	}
 
 	@Test
 	public void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
-						null, null, null, null, null, null))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new OutRequest.Params(false, "", "1234", "folder", null, null, null, null, null, null, null))
 				.withMessage("Repo must not be empty");
 	}
 
@@ -97,14 +91,13 @@ public class OutRequestTests {
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");
 		assertThat(artifactSet.get(0).getExclude()).containsExactly("**/foo.zip");
-		assertThat(artifactSet.get(0).getProperties()).hasSize(2)
-				.containsEntry("zip-type", "docs").containsEntry("zip-deployed", "false");
+		assertThat(artifactSet.get(0).getProperties()).hasSize(2).containsEntry("zip-type", "docs")
+				.containsEntry("zip-deployed", "false");
 	}
 
 	@Test
 	public void readWhenHasNoArtifactSetPropertiesUsesEmptyCollection() throws Exception {
-		OutRequest request = this.json
-				.readObject("out-request-without-artifact-set-properties.json");
+		OutRequest request = this.json.readObject("out-request-without-artifact-set-properties.json");
 		assertThat(request.getParams().getArtifactSet().get(0).getProperties()).isEmpty();
 	}
 

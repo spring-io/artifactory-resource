@@ -42,16 +42,14 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 		this(root, file, properties, null);
 	}
 
-	public DeployableFileArtifact(File root, File file, Map<String, String> properties,
-			Checksums checksums) {
+	public DeployableFileArtifact(File root, File file, Map<String, String> properties, Checksums checksums) {
 		super(calculatePath(root, file), properties, checksums);
 		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
 		Assert.isTrue(file.isFile(), "File '" + file + "' does not refer to a file");
 		this.file = file;
 	}
 
-	public DeployableFileArtifact(String path, File file, Map<String, String> properties,
-			Checksums checksums) {
+	public DeployableFileArtifact(String path, File file, Map<String, String> properties, Checksums checksums) {
 		super(path, properties, checksums);
 		Assert.isTrue(file.exists(), "File '" + file + "' does not exist");
 		Assert.isTrue(file.isFile(), "File '" + file + "' does not refer to a file");
@@ -71,8 +69,7 @@ public class DeployableFileArtifact extends AbstractDeployableArtifact {
 	public static String calculatePath(File root, File file) {
 		String rootPath = root.getAbsolutePath();
 		String filePath = file.getAbsolutePath();
-		Assert.isTrue(filePath.startsWith(rootPath),
-				"File '" + root + "' is not a parent of '" + file + "'");
+		Assert.isTrue(filePath.startsWith(rootPath), "File '" + root + "' is not a parent of '" + file + "'");
 		return cleanPath(filePath.substring(rootPath.length() + 1));
 	}
 

@@ -51,16 +51,15 @@ public class HttpArtifactory implements Artifactory {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		return new HttpArtifactoryServer(uri, this.restTemplateBuilder
-				.requestFactory(getRequestFactorySupplier(username, password)));
+		return new HttpArtifactoryServer(uri,
+				this.restTemplateBuilder.requestFactory(getRequestFactorySupplier(username, password)));
 	}
 
-	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username,
-			String password) {
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password) {
 		Supplier<ClientHttpRequestFactory> requestFactorySupplier = this::getNonBufferingClientHttpRequestFactory;
 		if (StringUtils.hasText(username)) {
-			requestFactorySupplier = new BasicAuthClientHttpRequestFactorySupplier(
-					requestFactorySupplier, username, password);
+			requestFactorySupplier = new BasicAuthClientHttpRequestFactorySupplier(requestFactorySupplier, username,
+					password);
 		}
 		return requestFactorySupplier;
 	}
@@ -71,14 +70,12 @@ public class HttpArtifactory implements Artifactory {
 			((SimpleClientHttpRequestFactory) factory).setBufferRequestBody(false);
 		}
 		if (factory instanceof HttpComponentsClientHttpRequestFactory) {
-			((HttpComponentsClientHttpRequestFactory) factory)
-					.setBufferRequestBody(false);
+			((HttpComponentsClientHttpRequestFactory) factory).setBufferRequestBody(false);
 		}
 		return factory;
 	}
 
-	private static class BasicAuthClientHttpRequestFactorySupplier
-			implements Supplier<ClientHttpRequestFactory> {
+	private static class BasicAuthClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
 		private final Supplier<ClientHttpRequestFactory> requestFactorySupplier;
 
@@ -86,8 +83,7 @@ public class HttpArtifactory implements Artifactory {
 
 		private final String password;
 
-		BasicAuthClientHttpRequestFactorySupplier(
-				Supplier<ClientHttpRequestFactory> requestFactorySupplier,
+		BasicAuthClientHttpRequestFactorySupplier(Supplier<ClientHttpRequestFactory> requestFactorySupplier,
 				String username, String password) {
 			this.requestFactorySupplier = requestFactorySupplier;
 			this.username = username;
@@ -102,10 +98,8 @@ public class HttpArtifactory implements Artifactory {
 				@Override
 				protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
 						ClientHttpRequestFactory requestFactory) throws IOException {
-					ClientHttpRequest request = requestFactory.createRequest(uri,
-							httpMethod);
-					request.getHeaders().setBasicAuth(
-							BasicAuthClientHttpRequestFactorySupplier.this.username,
+					ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
+					request.getHeaders().setBasicAuth(BasicAuthClientHttpRequestFactorySupplier.this.username,
 							BasicAuthClientHttpRequestFactorySupplier.this.password);
 					return request;
 				}

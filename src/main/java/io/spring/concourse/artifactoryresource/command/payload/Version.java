@@ -46,8 +46,7 @@ public class Version {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("buildNumber", this.buildNumber)
-				.toString();
+		return new ToStringCreator(this).append("buildNumber", this.buildNumber).toString();
 	}
 
 }

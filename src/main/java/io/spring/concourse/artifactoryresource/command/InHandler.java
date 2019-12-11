@@ -58,8 +58,7 @@ public class InHandler {
 
 	private final MavenMetadataGenerator mavenMetadataGenerator;
 
-	public InHandler(Artifactory artifactory,
-			MavenMetadataGenerator mavenMetadataGenerator) {
+	public InHandler(Artifactory artifactory, MavenMetadataGenerator mavenMetadataGenerator) {
 		this.artifactory = artifactory;
 		this.mavenMetadataGenerator = mavenMetadataGenerator;
 	}
@@ -71,19 +70,14 @@ public class InHandler {
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
-		ArtifactoryBuildRuns buildRuns = artifactoryServer
-				.buildRuns(source.getBuildName());
+		ArtifactoryBuildRuns buildRuns = artifactoryServer.buildRuns(source.getBuildName());
 		if (params.isDownloadArtifacts()) {
-			List<DeployedArtifact> artifacts = buildRuns
-					.getDeployedArtifacts(buildNumber);
-			console.log("Downloading build {} artifacts from {}", buildNumber,
-					source.getUri());
-			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(),
-					params.isDownloadChecksums());
+			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
+			console.log("Downloading build {} artifacts from {}", buildNumber, source.getUri());
+			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(), params.isDownloadChecksums());
 			if (params.isGenerateMavenMetadata()) {
 				logger.debug("Generating maven metadata");
-				this.mavenMetadataGenerator.generate(directory,
-						params.isDownloadChecksums());
+				this.mavenMetadataGenerator.generate(directory, params.isDownloadChecksums());
 			}
 		}
 		if (params.isSaveBuildInfo()) {
@@ -105,24 +99,20 @@ public class InHandler {
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
 		logger.debug("Using artifactory server " + source.getUri());
-		return this.artifactory.server(source.getUri(), source.getUsername(),
-				source.getPassword());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
 	}
 
-	private MultiValueMap<String, DeployedArtifact> groupByRepo(
-			List<DeployedArtifact> artifacts) {
+	private MultiValueMap<String, DeployedArtifact> groupByRepo(List<DeployedArtifact> artifacts) {
 		MultiValueMap<String, DeployedArtifact> artifactsByRepo = new LinkedMultiValueMap<>();
 		artifacts.stream().forEach((a) -> artifactsByRepo.add(a.getRepo(), a));
 		return artifactsByRepo;
 	}
 
-	private void download(ArtifactoryServer artifactoryServer,
-			MultiValueMap<String, DeployedArtifact> artifactsByRepo, File destination,
-			boolean downloadChecksums) {
+	private void download(ArtifactoryServer artifactoryServer, MultiValueMap<String, DeployedArtifact> artifactsByRepo,
+			File destination, boolean downloadChecksums) {
 		artifactsByRepo.forEach((repo, artifacts) -> artifacts.forEach((artifact) -> {
 			console.log("Downloading {} from {}", artifact.getPath(), repo);
-			artifactoryServer.repository(repo).download(artifact, destination,
-					downloadChecksums);
+			artifactoryServer.repository(repo).download(artifact, destination, downloadChecksums);
 		}));
 	}
 

@@ -36,28 +36,24 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 public class InRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password",
-			"my-build");
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
 	private Version version = new Version("1234");
 
-	private InRequest.Params params = new InRequest.Params(false, false, false, false,
-			false);
+	private InRequest.Params params = new InRequest.Params(false, false, false, false, false);
 
 	@Autowired
 	private JacksonTester<InRequest> json;
 
 	@Test
 	public void createWhenSourceIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new InRequest(null, this.version, this.params))
+		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(null, this.version, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
 	public void createWhenVersionIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new InRequest(this.source, null, this.params))
+		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(this.source, null, this.params))
 				.withMessage("Version must not be null");
 	}
 
@@ -85,8 +81,7 @@ public class InRequestTests {
 
 	@Test
 	public void readWhenMissingGenerateMavenMetadataDeserializesJson() throws Exception {
-		InRequest request = this.json
-				.readObject("in-request-without-generate-maven-metadata.json");
+		InRequest request = this.json.readObject("in-request-without-generate-maven-metadata.json");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 	}
 

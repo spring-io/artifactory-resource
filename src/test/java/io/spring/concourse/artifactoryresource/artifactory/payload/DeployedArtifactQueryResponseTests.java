@@ -42,8 +42,7 @@ public class DeployedArtifactQueryResponseTests {
 
 	@Test
 	public void readDeserializesJson() throws Exception {
-		DeployedArtifactQueryResponse response = this.json
-				.readObject("deployed-artifacts.json");
+		DeployedArtifactQueryResponse response = this.json.readObject("deployed-artifacts.json");
 		assertThat(response.getResults()).hasSize(1);
 		DeployedArtifact artifact = response.getResults().get(0);
 		assertThat(artifact.getRepo()).isEqualTo("libs-release-local");
@@ -51,14 +50,11 @@ public class DeployedArtifactQueryResponseTests {
 		assertThat(artifact.getName()).isEqualTo("artifactory.war");
 		assertThat(artifact.getType()).isEqualTo("item type");
 		assertThat(artifact.getSize()).isEqualTo(75500000);
-		assertThat(artifact.getCreated())
-				.isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:33.423-0700"));
+		assertThat(artifact.getCreated()).isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:33.423-0700"));
 		assertThat(artifact.getCreatedBy()).isEqualTo("jfrog");
-		assertThat(artifact.getModified())
-				.isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:34.423-0700"));
+		assertThat(artifact.getModified()).isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:34.423-0700"));
 		assertThat(artifact.getModifiedBy()).isEqualTo("spring");
-		assertThat(artifact.getUpdated())
-				.isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:35.423-0700"));
+		assertThat(artifact.getUpdated()).isEqualTo(ArtifactoryDateFormat.parse("2017-06-19T17:17:35.423-0700"));
 		assertThat(response.getRange().getStartPos()).isEqualTo(0);
 		assertThat(response.getRange().getEndPos()).isEqualTo(1);
 		assertThat(response.getRange().getTotal()).isEqualTo(1);

@@ -39,9 +39,8 @@ public class BuildArtifact {
 	private final String name;
 
 	@JsonCreator
-	public BuildArtifact(@JsonProperty("type") String type,
-			@JsonProperty("sha1") String sha1, @JsonProperty("md5") String md5,
-			@JsonProperty("name") String name) {
+	public BuildArtifact(@JsonProperty("type") String type, @JsonProperty("sha1") String sha1,
+			@JsonProperty("md5") String md5, @JsonProperty("name") String name) {
 		Assert.hasText(type, "Type must not be empty");
 		Assert.hasText(sha1, "SHA1 must not be empty");
 		Assert.hasText(md5, "MD5 must not be empty");

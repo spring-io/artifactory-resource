@@ -16,7 +16,7 @@
 		<revision>0.0.11-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 		<artifactory.version>6.9.0</artifactory.version>
-		<spring-javaformat.version>0.0.8</spring-javaformat.version>
+		<spring-javaformat.version>0.0.17</spring-javaformat.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
@@ -83,7 +83,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>8.18</version>
+							<version>8.24</version>
 						</dependency>
 						<dependency>
 							<groupId>io.spring.javaformat</groupId>

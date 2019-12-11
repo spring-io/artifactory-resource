@@ -34,8 +34,7 @@ public class ContinuousIntegrationAgent {
 	private final String version;
 
 	@JsonCreator
-	public ContinuousIntegrationAgent(@JsonProperty("name") String name,
-			@JsonProperty("version") String version) {
+	public ContinuousIntegrationAgent(@JsonProperty("name") String name, @JsonProperty("version") String version) {
 		Assert.hasText(name, "Name must not be empty");
 		this.name = name;
 		this.version = version;

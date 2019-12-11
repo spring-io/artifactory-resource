@@ -52,8 +52,7 @@ public class Checksums {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("sha1", this.sha1).append("md5", this.md5)
-				.toString();
+		return new ToStringCreator(this).append("sha1", this.sha1).append("md5", this.md5).toString();
 	}
 
 	public static Checksums calculate(Resource content) {

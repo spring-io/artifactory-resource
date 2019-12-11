@@ -37,18 +37,14 @@ public class MavenVersionTypeTests {
 
 	@Test
 	public void fromVersionWhenSnapshotReturnsSnapshot() throws Exception {
-		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-SNAPSHOT"))
-				.isEqualTo(MavenVersionType.SNAPSHOT);
-		assertThat(MavenVersionType.fromVersion("0.0.1-SNAPSHOT"))
-				.isEqualTo(MavenVersionType.SNAPSHOT);
+		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
+		assertThat(MavenVersionType.fromVersion("0.0.1-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
 	}
 
 	@Test
 	public void fromVersionWhenFixedReturnsFixed() throws Exception {
-		assertThat(MavenVersionType.fromVersion("0.0.1.RELEASE"))
-				.isEqualTo(MavenVersionType.FIXED);
-		assertThat(MavenVersionType.fromVersion("0.0.1"))
-				.isEqualTo(MavenVersionType.FIXED);
+		assertThat(MavenVersionType.fromVersion("0.0.1.RELEASE")).isEqualTo(MavenVersionType.FIXED);
+		assertThat(MavenVersionType.fromVersion("0.0.1")).isEqualTo(MavenVersionType.FIXED);
 
 	}
 

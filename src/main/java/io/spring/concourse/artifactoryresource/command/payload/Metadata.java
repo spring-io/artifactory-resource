@@ -48,8 +48,7 @@ public class Metadata {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", this.name)
-				.append("value", this.value).toString();
+		return new ToStringCreator(this).append("name", this.name).append("value", this.value).toString();
 	}
 
 }

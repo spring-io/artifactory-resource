@@ -34,8 +34,7 @@ public class DeployedArtifactQueryResponse {
 	private Range range;
 
 	@JsonCreator
-	public DeployedArtifactQueryResponse(
-			@JsonProperty("results") List<DeployedArtifact> results,
+	public DeployedArtifactQueryResponse(@JsonProperty("results") List<DeployedArtifact> results,
 			@JsonProperty("range") Range range) {
 		this.results = results;
 		this.range = range;
@@ -61,8 +60,8 @@ public class DeployedArtifactQueryResponse {
 		private int total;
 
 		@JsonCreator
-		public Range(@JsonProperty("start_pos") int startPos,
-				@JsonProperty("end_pos") int endPos, @JsonProperty("total") int total) {
+		public Range(@JsonProperty("start_pos") int startPos, @JsonProperty("end_pos") int endPos,
+				@JsonProperty("total") int total) {
 			this.startPos = startPos;
 			this.endPos = endPos;
 			this.total = total;

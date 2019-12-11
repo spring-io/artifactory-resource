@@ -42,8 +42,7 @@ public class SourceTests {
 
 	@Test
 	public void createWhenUriIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("", "username", "password", "my-build"))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build"))
 				.withMessage("URI must not be empty");
 	}
 
@@ -59,8 +58,8 @@ public class SourceTests {
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new Source("https://repo.example.com", "username", "password", ""))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", ""))
 				.withMessage("Build Name must not be empty");
 	}
 

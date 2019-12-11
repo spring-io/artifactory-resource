@@ -40,8 +40,7 @@ public class OutCommand implements Command {
 
 	private final OutHandler handler;
 
-	public OutCommand(SystemInput systemInput, SystemOutput systemOutput,
-			OutHandler handler) {
+	public OutCommand(SystemInput systemInput, SystemOutput systemOutput, OutHandler handler) {
 		this.systemInput = systemInput;
 		this.systemOutput = systemOutput;
 		this.handler = handler;

@@ -33,14 +33,13 @@ public class DeployableByteArrayArtifactTests extends AbstractDeployableArtifact
 
 	@Test
 	public void createWhenBytesIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DeployableByteArrayArtifact("/foo", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DeployableByteArrayArtifact("/foo", null))
 				.withMessage("Content must not be null");
 	}
 
 	@Override
-	protected AbstractDeployableArtifact create(String path, byte[] content,
-			Map<String, String> properties, Checksums checksums) throws IOException {
+	protected AbstractDeployableArtifact create(String path, byte[] content, Map<String, String> properties,
+			Checksums checksums) throws IOException {
 		return new DeployableByteArrayArtifact(path, content, properties, checksums);
 	}
 

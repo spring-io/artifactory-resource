@@ -36,13 +36,12 @@ public class DeployableByteArrayArtifact extends AbstractDeployableArtifact {
 		this(path, content, null);
 	}
 
-	public DeployableByteArrayArtifact(String path, byte[] content,
-			Map<String, String> properties) {
+	public DeployableByteArrayArtifact(String path, byte[] content, Map<String, String> properties) {
 		this(path, content, properties, null);
 	}
 
-	public DeployableByteArrayArtifact(String path, byte[] content,
-			Map<String, String> properties, Checksums checksums) {
+	public DeployableByteArrayArtifact(String path, byte[] content, Map<String, String> properties,
+			Checksums checksums) {
 		super(path, properties, checksums);
 		Assert.notNull(content, "Content must not be null");
 		this.content = content;

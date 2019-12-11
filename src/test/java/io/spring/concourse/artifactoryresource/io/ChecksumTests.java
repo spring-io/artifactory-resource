@@ -55,8 +55,7 @@ public class ChecksumTests {
 
 	@Test
 	public void validateWhenNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Checksum.SHA1.validate(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.SHA1.validate(null))
 				.withMessage("SHA1 must not be empty");
 	}
 
@@ -68,15 +67,15 @@ public class ChecksumTests {
 
 	@Test
 	public void validateWhenTooLongThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
 	public void validateWhenTooShortThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
@@ -85,10 +84,8 @@ public class ChecksumTests {
 		File file = this.temp.newFile();
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
-		assertThat(new File(file.getParentFile(), file.getName() + ".sha1"))
-				.hasContent(SHA1);
-		assertThat(new File(file.getParentFile(), file.getName() + ".md5"))
-				.hasContent(MD5);
+		assertThat(new File(file.getParentFile(), file.getName() + ".sha1")).hasContent(SHA1);
+		assertThat(new File(file.getParentFile(), file.getName() + ".md5")).hasContent(MD5);
 	}
 
 	@Test
@@ -96,10 +93,8 @@ public class ChecksumTests {
 		File file = this.temp.newFile("test.md5");
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
-		assertThat(new File(file.getParentFile(), file.getName() + ".sha1"))
-				.doesNotExist();
-		assertThat(new File(file.getParentFile(), file.getName() + ".md5"))
-				.doesNotExist();
+		assertThat(new File(file.getParentFile(), file.getName() + ".sha1")).doesNotExist();
+		assertThat(new File(file.getParentFile(), file.getName() + ".md5")).doesNotExist();
 	}
 
 	@Test
@@ -123,15 +118,13 @@ public class ChecksumTests {
 	public void calculateAllFromResourceReturnsChecksums() {
 		ByteArrayResource resource = new ByteArrayResource(SOURCE.getBytes());
 		Map<Checksum, String> checksums = Checksum.calculateAll(resource);
-		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5),
-				entry(Checksum.SHA1, SHA1));
+		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5), entry(Checksum.SHA1, SHA1));
 	}
 
 	@Test
 	public void calculateAllFromStringReturnsChecksums() {
 		Map<Checksum, String> checksums = Checksum.calculateAll(SOURCE);
-		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5),
-				entry(Checksum.SHA1, SHA1));
+		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5), entry(Checksum.SHA1, SHA1));
 	}
 
 }

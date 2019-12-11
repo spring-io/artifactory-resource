@@ -79,12 +79,10 @@ public enum Checksum {
 	 */
 	public void validate(String checksum) {
 		Assert.hasText(checksum, name() + " must not be empty");
-		Assert.isTrue(checksum.length() == this.length,
-				name() + " must be " + this.length + " characters long");
+		Assert.isTrue(checksum.length() == this.length, name() + " must be " + this.length + " characters long");
 	}
 
-	private DigestInputStream getDigestStream(InputStream content)
-			throws NoSuchAlgorithmException {
+	private DigestInputStream getDigestStream(InputStream content) throws NoSuchAlgorithmException {
 		return new DigestInputStream(content, MessageDigest.getInstance(this.algorithm));
 	}
 
@@ -95,11 +93,9 @@ public enum Checksum {
 	 */
 	public static void generateChecksumFiles(File source) throws IOException {
 		if (!isChecksumFile(source.getName())) {
-			Map<Checksum, String> checksums = calculateAll(
-					new FileSystemResource(source));
+			Map<Checksum, String> checksums = calculateAll(new FileSystemResource(source));
 			for (Map.Entry<Checksum, String> entry : checksums.entrySet()) {
-				File file = new File(source.getParentFile(),
-						source.getName() + entry.getKey().getFileExtension());
+				File file = new File(source.getParentFile(), source.getName() + entry.getKey().getFileExtension());
 				FileCopyUtils.copy(entry.getValue(), new FileWriter(file));
 			}
 		}
@@ -144,8 +140,7 @@ public enum Checksum {
 	 */
 	public static Map<Checksum, String> calculateAll(String content) {
 		Assert.notNull(content, "Content must not be null");
-		return calculateAll(
-				new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+		return calculateAll(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
 	}
 
 	private static Map<Checksum, String> calculateAll(InputStream content) {
@@ -170,11 +165,9 @@ public enum Checksum {
 		}
 	}
 
-	private static Map<Checksum, String> getDigests(
-			Map<Checksum, DigestInputStream> streams) {
+	private static Map<Checksum, String> getDigests(Map<Checksum, DigestInputStream> streams) {
 		Map<Checksum, String> checksums = new LinkedHashMap<>(streams.size());
-		streams.forEach(
-				(checksum, stream) -> checksums.put(checksum, getDigestHex(stream)));
+		streams.forEach((checksum, stream) -> checksums.put(checksum, getDigestHex(stream)));
 		return checksums;
 	}
 

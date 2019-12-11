@@ -36,8 +36,7 @@ public class BuildRun implements Comparable<BuildRun> {
 	private Date started;
 
 	@JsonCreator
-	public BuildRun(@JsonProperty("uri") String uri,
-			@JsonProperty("started") Date started) {
+	public BuildRun(@JsonProperty("uri") String uri, @JsonProperty("started") Date started) {
 		this.uri = uri;
 		this.started = started;
 	}

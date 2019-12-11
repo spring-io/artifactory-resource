@@ -66,8 +66,7 @@ public class CheckHandlerTests {
 		List<BuildRun> runs = createBuildRuns();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
-		given(this.artifactoryServer.buildRuns("my-build"))
-				.willReturn(this.artifactoryBuildRuns);
+		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryBuildRuns.getAll()).willReturn(runs);
 		this.handler = new CheckHandler(this.artifactory);
 	}
@@ -75,59 +74,46 @@ public class CheckHandlerTests {
 	private List<BuildRun> createBuildRuns() {
 		// The API seems to return things in no specific order
 		List<BuildRun> runs = new ArrayList<>();
-		runs.add(new BuildRun("/2",
-				ArtifactoryDateFormat.parse("2014-01-21T12:01:02.003+0000")));
-		runs.add(new BuildRun("/1",
-				ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003+0000")));
-		runs.add(new BuildRun("/4",
-				ArtifactoryDateFormat.parse("2014-01-23T12:01:02.003+0000")));
-		runs.add(new BuildRun("/3",
-				ArtifactoryDateFormat.parse("2014-01-22T12:01:02.003+0000")));
+		runs.add(new BuildRun("/2", ArtifactoryDateFormat.parse("2014-01-21T12:01:02.003+0000")));
+		runs.add(new BuildRun("/1", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003+0000")));
+		runs.add(new BuildRun("/4", ArtifactoryDateFormat.parse("2014-01-23T12:01:02.003+0000")));
+		runs.add(new BuildRun("/3", ArtifactoryDateFormat.parse("2014-01-22T12:01:02.003+0000")));
 		return runs;
 	}
 
 	@Test
 	public void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
-		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build"),
+		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				null);
 		CheckResponse response = this.handler.handle(request);
-		Stream<String> buildsNumbers = response.getVersions().stream()
-				.map(Version::getBuildNumber);
+		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 
 	@Test
 	public void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
-		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build"),
+		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("2"));
 		CheckResponse response = this.handler.handle(request);
-		Stream<String> buildsNumbers = response.getVersions().stream()
-				.map(Version::getBuildNumber);
+		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("2", "3", "4");
 	}
 
 	@Test
-	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions()
-			throws Exception {
-		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build"),
+	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() throws Exception {
+		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("4"));
 		CheckResponse response = this.handler.handle(request);
-		Stream<String> buildsNumbers = response.getVersions().stream()
-				.map(Version::getBuildNumber);
+		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 
 	@Test
 	public void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
-		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build"),
+		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("5"));
 		CheckResponse response = this.handler.handle(request);
-		Stream<String> buildsNumbers = response.getVersions().stream()
-				.map(Version::getBuildNumber);
+		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
 	}
 

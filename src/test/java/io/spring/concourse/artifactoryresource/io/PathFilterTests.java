@@ -33,58 +33,47 @@ public class PathFilterTests {
 
 	@Test
 	public void createWhenIncludeIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PathFilter(null, Collections.emptyList()))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PathFilter(null, Collections.emptyList()))
 				.withMessage("Include must not be null");
 	}
 
 	@Test
 	public void createWhenExcludeIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PathFilter(Collections.emptyList(), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new PathFilter(Collections.emptyList(), null))
 				.withMessage("Exclude must not be null");
 	}
 
 	@Test
 	public void isMatchWhenIncludeIsEmptyAndExcludeIsEmptyReturnsTrue() throws Exception {
-		PathFilter filter = new PathFilter(Collections.emptyList(),
-				Collections.emptyList());
+		PathFilter filter = new PathFilter(Collections.emptyList(), Collections.emptyList());
 		assertThat(filter.isMatch("/foo")).isTrue();
 	}
 
 	@Test
-	public void isMatchWhenIncludeIsEmptyAndExcludeMatchesReturnsFalse()
-			throws Exception {
-		PathFilter filter = new PathFilter(Collections.emptyList(),
-				Collections.singletonList("/**/foo"));
+	public void isMatchWhenIncludeIsEmptyAndExcludeMatchesReturnsFalse() throws Exception {
+		PathFilter filter = new PathFilter(Collections.emptyList(), Collections.singletonList("/**/foo"));
 		assertThat(filter.isMatch("/foo/bar")).isTrue();
 		assertThat(filter.isMatch("/bar/foo")).isFalse();
 	}
 
 	@Test
 	public void isMatchWhenIncludeMatchesAndExcludeIsEmptyReturnsTrue() throws Exception {
-		PathFilter filter = new PathFilter(Collections.singletonList("/**/foo"),
-				Collections.emptyList());
+		PathFilter filter = new PathFilter(Collections.singletonList("/**/foo"), Collections.emptyList());
 		assertThat(filter.isMatch("/foo/bar")).isFalse();
 		assertThat(filter.isMatch("/bar/foo")).isTrue();
 	}
 
 	@Test
-	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyReturnsTrue()
-			throws Exception {
-		PathFilter filter = new PathFilter(
-				Collections.singletonList("/**/spring-boot-docs-*.zip"),
+	public void isMatchWhenIncludeMatchesExtensionAndExcludeIsEmptyReturnsTrue() throws Exception {
+		PathFilter filter = new PathFilter(Collections.singletonList("/**/spring-boot-docs-*.zip"),
 				Collections.emptyList());
 		assertThat(filter.isMatch("/org/springframework/boot/spring-boot-docs/"
-				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip"))
-						.isTrue();
+				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip")).isTrue();
 	}
 
 	@Test
-	public void isMatchWhenIncludeMatchesAndExcludeMatchesReturnsFalse()
-			throws Exception {
-		PathFilter filter = new PathFilter(Collections.singletonList("/foo/**"),
-				Collections.singletonList("/**/bar"));
+	public void isMatchWhenIncludeMatchesAndExcludeMatchesReturnsFalse() throws Exception {
+		PathFilter filter = new PathFilter(Collections.singletonList("/foo/**"), Collections.singletonList("/**/bar"));
 		assertThat(filter.isMatch("/foo/bar")).isFalse();
 		assertThat(filter.isMatch("/foo/baz")).isTrue();
 	}

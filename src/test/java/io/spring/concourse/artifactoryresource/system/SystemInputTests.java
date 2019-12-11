@@ -42,16 +42,15 @@ public class SystemInputTests {
 
 	@Test
 	public void readWhenNoDataTimesout() throws Exception {
-		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""),
-				new ObjectMapper(), 10);
+		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""), new ObjectMapper(), 10);
 		assertThatIllegalStateException().isThrownBy(() -> input.read(String[].class))
 				.withMessage("Timeout waiting for input");
 	}
 
 	@Test
 	public void readDeserializesJson() throws Exception {
-		SystemInput input = new SystemInput(this.environment,
-				new MockSystemStreams("[\"foo\",\"bar\"]"), new ObjectMapper());
+		SystemInput input = new SystemInput(this.environment, new MockSystemStreams("[\"foo\",\"bar\"]"),
+				new ObjectMapper());
 		String[] result = input.read(String[].class);
 		assertThat(result).containsExactly("foo", "bar");
 	}
@@ -59,8 +58,8 @@ public class SystemInputTests {
 	@Test
 	public void readResolvesPlaceholders() throws Exception {
 		this.environment.setProperty("bar", "hello-world");
-		SystemInput input = new SystemInput(this.environment,
-				new MockSystemStreams("[\"foo\",\"${bar}\"]"), new ObjectMapper());
+		SystemInput input = new SystemInput(this.environment, new MockSystemStreams("[\"foo\",\"${bar}\"]"),
+				new ObjectMapper());
 		String[] result = input.read(String[].class);
 		assertThat(result).containsExactly("foo", "hello-world");
 	}

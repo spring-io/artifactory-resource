@@ -86,8 +86,7 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Before
 	public void setup() {
-		this.artifactoryBuildRuns = this.artifactory
-				.server("https://repo.example.com", "admin", "password")
+		this.artifactoryBuildRuns = this.artifactory.server("https://repo.example.com", "admin", "password")
 				.buildRuns("my-build");
 	}
 
@@ -98,31 +97,24 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	public void addAddsBuildInfo() throws Exception {
-		this.server.expect(requestTo("https://repo.example.com/api/build"))
-				.andExpect(method(HttpMethod.PUT))
+		this.server.expect(requestTo("https://repo.example.com/api/build")).andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonContent(getResource("payload/build-info.json")))
-				.andRespond(withSuccess());
-		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse",
-				"3.0.0");
-		BuildArtifact artifact = new BuildArtifact("jar",
-				"a9993e364706816aba3e25717850c26c9cd0d89d",
+				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
+		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
+		BuildArtifact artifact = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
 				"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
-		List<BuildModule> modules = Collections.singletonList(new BuildModule(
-				"com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
+		List<BuildModule> modules = Collections
+				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
-		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", agent, started,
-				modules);
+		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", agent, started, modules);
 		this.server.verify();
 	}
 
 	@Test
 	public void getAllReturnsBuildRuns() throws Exception {
-		this.server.expect(requestTo("https://repo.example.com/api/build/my-build"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(getResource("payload/build-runs-response.json"),
-						MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getUri()).isEqualTo("/1234");
@@ -133,8 +125,7 @@ public class HttpArtifactoryBuildRunsTests {
 	public void getRawBuildInfoReturnsBuildInfo() throws Exception {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(getResource("payload/build-info.json"),
-						MediaType.APPLICATION_JSON));
+				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
 		String buildInfo = this.artifactoryBuildRuns.getRawBuildInfo("5678");
 		assertThat(buildInfo).isNotEmpty().contains("my-build");
 	}
@@ -143,12 +134,9 @@ public class HttpArtifactoryBuildRunsTests {
 	public void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(aqlContent("my-build", "1234"))
-				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"),
-						MediaType.APPLICATION_JSON));
-		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns
-				.getDeployedArtifacts("1234");
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN)).andExpect(aqlContent("my-build", "1234"))
+				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
+		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns.getDeployedArtifacts("1234");
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.get(0).getModifiedBy()).isEqualTo("spring");
 		this.server.verify();
@@ -160,8 +148,8 @@ public class HttpArtifactoryBuildRunsTests {
 			Matcher matcher = AQL_PATTERN.matcher(body);
 			assertThat(matcher.matches()).isTrue();
 			String actualJson = matcher.group(1);
-			String expectedJson = "{\"@build.name\": \"" + buildName
-					+ "\", \"@build.number\": \"" + buildNumber + "\"}";
+			String expectedJson = "{\"@build.name\": \"" + buildName + "\", \"@build.number\": \"" + buildNumber
+					+ "\"}";
 			assertJson(expectedJson, actualJson);
 		};
 	}
@@ -169,14 +157,13 @@ public class HttpArtifactoryBuildRunsTests {
 	private RequestMatcher jsonContent(Resource expected) {
 		return (request) -> {
 			String actualJson = ((MockClientHttpRequest) request).getBodyAsString();
-			String expectedJson = FileCopyUtils.copyToString(new InputStreamReader(
-					expected.getInputStream(), Charset.forName("UTF-8")));
+			String expectedJson = FileCopyUtils
+					.copyToString(new InputStreamReader(expected.getInputStream(), Charset.forName("UTF-8")));
 			assertJson(actualJson, expectedJson);
 		};
 	}
 
-	private void assertJson(String actualJson, String expectedJson)
-			throws AssertionError {
+	private void assertJson(String actualJson, String expectedJson) throws AssertionError {
 		try {
 			JSONAssert.assertEquals(expectedJson, actualJson, false);
 		}

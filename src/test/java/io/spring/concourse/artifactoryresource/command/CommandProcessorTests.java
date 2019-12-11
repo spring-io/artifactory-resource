@@ -42,10 +42,8 @@ public class CommandProcessorTests {
 
 	@Test
 	public void runWhenNoArgumentThrowsException() throws Exception {
-		CommandProcessor processor = new CommandProcessor(
-				Collections.singletonList(mock(Command.class)));
-		assertThatIllegalStateException()
-				.isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
+		CommandProcessor processor = new CommandProcessor(Collections.singletonList(mock(Command.class)));
+		assertThatIllegalStateException().isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
 				.withMessage("No command argument specified");
 	}
 
@@ -53,12 +51,9 @@ public class CommandProcessorTests {
 	public void runWhenUnknownCommandThrowsException() throws Exception {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
-		CommandProcessor processor = new CommandProcessor(
-				Collections.singletonList(fooCommand));
-		DefaultApplicationArguments args = new DefaultApplicationArguments(
-				new String[] { "bar", "go" });
-		assertThatIllegalStateException().isThrownBy(() -> processor.run(args))
-				.withMessage("Unknown command 'bar'");
+		CommandProcessor processor = new CommandProcessor(Collections.singletonList(fooCommand));
+		DefaultApplicationArguments args = new DefaultApplicationArguments(new String[] { "bar", "go" });
+		assertThatIllegalStateException().isThrownBy(() -> processor.run(args)).withMessage("Unknown command 'bar'");
 	}
 
 	@Test
@@ -67,10 +62,8 @@ public class CommandProcessorTests {
 		given(fooCommand.getName()).willReturn("foo");
 		Command barCommand = mock(Command.class);
 		given(barCommand.getName()).willReturn("bar");
-		CommandProcessor processor = new CommandProcessor(
-				Arrays.asList(fooCommand, barCommand));
-		DefaultApplicationArguments args = new DefaultApplicationArguments(
-				new String[] { "bar", "go" });
+		CommandProcessor processor = new CommandProcessor(Arrays.asList(fooCommand, barCommand));
+		DefaultApplicationArguments args = new DefaultApplicationArguments(new String[] { "bar", "go" });
 		processor.run(args);
 		verify(fooCommand, never()).run(any());
 		verify(barCommand).run(args);

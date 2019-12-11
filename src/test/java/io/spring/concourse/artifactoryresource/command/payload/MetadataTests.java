@@ -47,8 +47,7 @@ public class MetadataTests {
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		assertThat(this.json.write(new Metadata("foo", "bar")))
-				.isEqualToJson("metadata.json");
+		assertThat(this.json.write(new Metadata("foo", "bar"))).isEqualToJson("metadata.json");
 	}
 
 }

@@ -36,13 +36,11 @@ public abstract class AbstractDeployableArtifact implements DeployableArtifact {
 
 	private Checksums checksums;
 
-	public AbstractDeployableArtifact(String path, Map<String, String> properties,
-			Checksums checksums) {
+	public AbstractDeployableArtifact(String path, Map<String, String> properties, Checksums checksums) {
 		Assert.hasText(path, "Path must not be empty");
 		Assert.isTrue(path.startsWith("/"), "Path must start with '/'");
 		this.path = path;
-		this.properties = (properties != null)
-				? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
+		this.properties = (properties != null) ? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
 				: Collections.emptyMap();
 		this.checksums = checksums;
 	}

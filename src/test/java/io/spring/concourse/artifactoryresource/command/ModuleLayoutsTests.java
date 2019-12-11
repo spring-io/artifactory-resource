@@ -35,33 +35,27 @@ public class ModuleLayoutsTests {
 
 	@Test
 	public void getBuildModulesGeneratorWhenLayoutIsNullReturnsMaven() throws Exception {
-		assertThat(this.moduleLayouts.getBuildModulesGenerator(null))
-				.isInstanceOf(MavenBuildModulesGenerator.class);
+		assertThat(this.moduleLayouts.getBuildModulesGenerator(null)).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
 	public void getBuildModulesGeneratorWhenLayoutIsEmptyReturnsMaven() throws Exception {
-		assertThat(this.moduleLayouts.getBuildModulesGenerator(""))
-				.isInstanceOf(MavenBuildModulesGenerator.class);
+		assertThat(this.moduleLayouts.getBuildModulesGenerator("")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
 	public void getBuildModulesGeneratorWhenLayoutIsMavenReturnsMaven() throws Exception {
-		assertThat(this.moduleLayouts.getBuildModulesGenerator("mAvEN"))
-				.isInstanceOf(MavenBuildModulesGenerator.class);
+		assertThat(this.moduleLayouts.getBuildModulesGenerator("mAvEN")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
 	public void getBuildModulesGeneratorWhenLayoutIsNoneReturnsNone() throws Exception {
-		assertThat(this.moduleLayouts.getBuildModulesGenerator("none"))
-				.isSameAs(BuildModulesGenerator.NONE);
+		assertThat(this.moduleLayouts.getBuildModulesGenerator("none")).isSameAs(BuildModulesGenerator.NONE);
 	}
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException()
-			throws Exception {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.moduleLayouts.getBuildModulesGenerator("foo"))
+	public void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException() throws Exception {
+		assertThatIllegalStateException().isThrownBy(() -> this.moduleLayouts.getBuildModulesGenerator("foo"))
 				.withMessage("Unknown module layout 'foo'");
 	}
 

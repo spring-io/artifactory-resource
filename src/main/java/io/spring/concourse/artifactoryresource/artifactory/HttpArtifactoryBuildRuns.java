@@ -51,44 +51,38 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private final String buildName;
 
-	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri,
-			String buildName) {
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.buildName = buildName;
 	}
 
 	@Override
-	public void add(String buildNumber, String buildUri,
-			ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
-			List<BuildModule> modules) {
-		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent,
-				started, buildUri, modules));
+	public void add(String buildNumber, String buildUri, ContinuousIntegrationAgent continuousIntegrationAgent,
+			Date started, List<BuildModule> modules) {
+		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, started, buildUri, modules));
 	}
 
 	private void add(BuildInfo buildInfo) {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build")
-				.buildAndExpand(NO_VARIABLES).encode().toUri();
-		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
-				.contentType(MediaType.APPLICATION_JSON).body(buildInfo);
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build").buildAndExpand(NO_VARIABLES).encode()
+				.toUri();
+		RequestEntity<BuildInfo> request = RequestEntity.put(uri).contentType(MediaType.APPLICATION_JSON)
+				.body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
 		exchange.getBody();
 	}
 
 	@Override
 	public List<BuildRun> getAll() {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path("api/build/{buildName}").buildAndExpand(this.buildName).encode()
-				.toUri();
-		return this.restTemplate.getForObject(uri, BuildRunsResponse.class)
-				.getBuildsRuns();
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}")
+				.buildAndExpand(this.buildName).encode().toUri();
+		return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
 	}
 
 	@Override
 	public String getRawBuildInfo(String buildNumber) {
 		Assert.hasText(buildNumber, "BuildNumber must not be empty");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri)
-				.path("api/build/{buildName}/{buildNumber}")
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}/{buildNumber}")
 				.buildAndExpand(this.buildName, buildNumber).encode().toUri();
 		return this.restTemplate.getForObject(uri, String.class);
 	}
@@ -96,18 +90,15 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql")
-				.buildAndExpand(NO_VARIABLES).encode().toUri();
-		RequestEntity<String> request = RequestEntity.post(uri)
-				.contentType(MediaType.TEXT_PLAIN)
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").buildAndExpand(NO_VARIABLES)
+				.encode().toUri();
+		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN)
 				.body(buildFetchQuery(this.buildName, buildNumber));
-		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class)
-				.getBody().getResults();
+		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class).getBody().getResults();
 	}
 
 	private String buildFetchQuery(String buildName, String buildNumber) {
-		return "items.find({\"@build.name\": \"" + buildName + "\",\"@build.number\": \""
-				+ buildNumber + "\"" + "})";
+		return "items.find({\"@build.name\": \"" + buildName + "\",\"@build.number\": \"" + buildNumber + "\"" + "})";
 	}
 
 }

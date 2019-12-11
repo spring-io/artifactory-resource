@@ -36,8 +36,7 @@ public class BuildNumberGeneratorTests {
 
 	@Test
 	public void generateBuildNumberUsesFormattedInstant() throws Exception {
-		Instant fixedInstant = LocalDateTime
-				.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
+		Instant fixedInstant = LocalDateTime.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
 				.toInstant(ZoneOffset.UTC);
 		Clock clock = Clock.fixed(fixedInstant, ZoneOffset.UTC);
 		String buildNumber = new BuildNumberGenerator(clock).generateBuildNumber();

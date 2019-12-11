@@ -45,10 +45,8 @@ public abstract class AbstractDeployableArtifactTests {
 	@Test
 	public void createWhenChecksumIsNullCalculatesChecksums() throws Exception {
 		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, null);
-		assertThat(artifact.getChecksums().getSha1())
-				.isEqualTo("a9993e364706816aba3e25717850c26c9cd0d89d");
-		assertThat(artifact.getChecksums().getMd5())
-				.isEqualTo("900150983cd24fb0d6963f7d28e17f72");
+		assertThat(artifact.getChecksums().getSha1()).isEqualTo("a9993e364706816aba3e25717850c26c9cd0d89d");
+		assertThat(artifact.getChecksums().getMd5()).isEqualTo("900150983cd24fb0d6963f7d28e17f72");
 	}
 
 	@Test
@@ -75,11 +73,10 @@ public abstract class AbstractDeployableArtifactTests {
 	@Test
 	public void getContentReturnsContent() throws Exception {
 		AbstractDeployableArtifact artifact = create("/foo", CONTENT, null, null);
-		assertThat(FileCopyUtils.copyToByteArray(artifact.getContent().getInputStream()))
-				.isEqualTo(CONTENT);
+		assertThat(FileCopyUtils.copyToByteArray(artifact.getContent().getInputStream())).isEqualTo(CONTENT);
 	}
 
-	protected abstract AbstractDeployableArtifact create(String path, byte[] content,
-			Map<String, String> properties, Checksums checksums) throws IOException;
+	protected abstract AbstractDeployableArtifact create(String path, byte[] content, Map<String, String> properties,
+			Checksums checksums) throws IOException;
 
 }

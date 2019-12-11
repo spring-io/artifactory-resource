@@ -61,22 +61,20 @@ public class MavenBuildModulesGenerator implements BuildModulesGenerator {
 	private static Pattern PATH_PATTERN = Pattern.compile("\\/(.*)\\/(.*)\\/(.*)\\/(.*)");
 
 	@Override
-	public List<BuildModule> getBuildModules(
-			List<DeployableArtifact> deployableArtifacts) {
+	public List<BuildModule> getBuildModules(List<DeployableArtifact> deployableArtifacts) {
 		List<BuildModule> buildModules = new ArrayList<>();
-		getBuildArtifactsById(deployableArtifacts).forEach(
-				(id, artifacts) -> buildModules.add(new BuildModule(id, artifacts)));
+		getBuildArtifactsById(deployableArtifacts)
+				.forEach((id, artifacts) -> buildModules.add(new BuildModule(id, artifacts)));
 		return buildModules;
 	}
 
-	private MultiValueMap<String, BuildArtifact> getBuildArtifactsById(
-			List<DeployableArtifact> deployableArtifacts) {
+	private MultiValueMap<String, BuildArtifact> getBuildArtifactsById(List<DeployableArtifact> deployableArtifacts) {
 		MultiValueMap<String, BuildArtifact> buildArtifacts = new LinkedMultiValueMap<>();
 		deployableArtifacts.forEach((deployableArtifact) -> {
 			try {
 				String id = getArtifactId(deployableArtifact);
-				getBuildArtifact(deployableArtifact).ifPresent(
-						(buildArtifact) -> buildArtifacts.add(id, buildArtifact));
+				getBuildArtifact(deployableArtifact)
+						.ifPresent((buildArtifact) -> buildArtifacts.add(id, buildArtifact));
 			}
 			catch (Exception ex) {
 				// Ignore and don't add as a module
@@ -93,8 +91,7 @@ public class MavenBuildModulesGenerator implements BuildModulesGenerator {
 		return groupId + ":" + artifactId + ":" + version;
 	}
 
-	private Optional<BuildArtifact> getBuildArtifact(
-			DeployableArtifact deployableArtifact) {
+	private Optional<BuildArtifact> getBuildArtifact(DeployableArtifact deployableArtifact) {
 		Matcher pathMatcher = getPathMatcher(deployableArtifact);
 		String filename = pathMatcher.group(4);
 		String type = getType(filename);
@@ -102,8 +99,7 @@ public class MavenBuildModulesGenerator implements BuildModulesGenerator {
 			return Optional.empty();
 		}
 		Checksums checksums = deployableArtifact.getChecksums();
-		return Optional.of(new BuildArtifact(type, checksums.getSha1(),
-				checksums.getMd5(), filename));
+		return Optional.of(new BuildArtifact(type, checksums.getSha1(), checksums.getMd5(), filename));
 	}
 
 	private String getType(String name) {

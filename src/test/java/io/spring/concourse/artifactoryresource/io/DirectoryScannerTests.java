@@ -48,48 +48,39 @@ public class DirectoryScannerTests {
 	@Test
 	public void scanWhenNoIncludeExcludeReturnsAllFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
-				Collections.emptyList());
-		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly(
-				"/bar/bar.jar", "/bar/bar.pom", "/baz/baz.jar", "/baz/baz.pom");
+		List<File> files = this.scanner.scan(directory, Collections.emptyList(), Collections.emptyList());
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar", "/bar/bar.pom",
+				"/baz/baz.jar", "/baz/baz.pom");
 	}
 
 	@Test
 	public void scanWhenUsingIncludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory,
-				Collections.singletonList("**/*.jar"), Collections.emptyList());
-		assertThat(files).extracting((f) -> relativePath(directory, f))
-				.containsExactly("/bar/bar.jar", "/baz/baz.jar");
+		List<File> files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"), Collections.emptyList());
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar", "/baz/baz.jar");
 	}
 
 	@Test
 	public void scanWhenUsingExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.emptyList(),
-				Collections.singletonList("**/*.jar"));
-		assertThat(files).extracting((f) -> relativePath(directory, f))
-				.containsExactly("/bar/bar.pom", "/baz/baz.pom");
+		List<File> files = this.scanner.scan(directory, Collections.emptyList(), Collections.singletonList("**/*.jar"));
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.pom", "/baz/baz.pom");
 	}
 
 	@Test
 	public void scanWhenUsingIncludesAndExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory,
-				Collections.singletonList("**/*.jar"),
+		List<File> files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"),
 				Collections.singletonList("**/baz.*"));
-		assertThat(files).extracting((f) -> relativePath(directory, f))
-				.containsExactly("/bar/bar.jar");
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar");
 	}
 
 	@Test
 	public void scanWhenUsingSlashPrefixFiltersFiles() throws IOException {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory,
-				Collections.singletonList("/**/*.jar"),
+		List<File> files = this.scanner.scan(directory, Collections.singletonList("/**/*.jar"),
 				Collections.singletonList("/**/baz.*"));
-		assertThat(files).extracting((f) -> relativePath(directory, f))
-				.containsExactly("/bar/bar.jar");
+		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar");
 	}
 
 	private String relativePath(Directory directory, File file) {

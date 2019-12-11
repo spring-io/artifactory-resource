@@ -50,29 +50,25 @@ public class BuildArtifactTests {
 
 	@Test
 	public void createWhenTypeIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
 				.withMessage("Type must not be empty");
 	}
 
 	@Test
 	public void createWhenSha1IsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
 				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	public void createWhenMd5IsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
 				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	public void createWhenNameIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
+		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
 				.withMessage("Name must not be empty");
 	}
 

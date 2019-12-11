@@ -53,8 +53,7 @@ public class BuildInfo {
 	private List<BuildModule> modules;
 
 	@JsonCreator
-	public BuildInfo(@JsonProperty("name") String buildName,
-			@JsonProperty("number") String buildNumber,
+	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,
 			@JsonProperty("agent") ContinuousIntegrationAgent continuousIntegrationAgent,
 			@JsonProperty("started") Date started, @JsonProperty("url") String buildUri,
 			@JsonProperty("") List<BuildModule> modules) {
@@ -65,8 +64,7 @@ public class BuildInfo {
 		this.continuousIntegrationAgent = continuousIntegrationAgent;
 		this.started = (started != null) ? started : new Date();
 		this.buildUri = buildUri;
-		this.modules = (modules != null)
-				? Collections.unmodifiableList(new ArrayList<>(modules))
+		this.modules = (modules != null) ? Collections.unmodifiableList(new ArrayList<>(modules))
 				: Collections.emptyList();
 	}
 

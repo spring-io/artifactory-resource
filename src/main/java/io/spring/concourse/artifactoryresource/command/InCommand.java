@@ -40,8 +40,7 @@ public class InCommand implements Command {
 
 	private final InHandler handler;
 
-	public InCommand(SystemInput systemInput, SystemOutput systemOutput,
-			InHandler handler) {
+	public InCommand(SystemInput systemInput, SystemOutput systemOutput, InHandler handler) {
 		this.systemInput = systemInput;
 		this.systemOutput = systemOutput;
 		this.handler = handler;

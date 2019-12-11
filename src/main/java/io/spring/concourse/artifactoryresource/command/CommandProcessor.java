@@ -47,9 +47,7 @@ public class CommandProcessor implements ApplicationRunner {
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		String request = nonOptionArgs.get(0);
 		this.commands.stream().filter((c) -> c.getName().equals(request)).findFirst()
-				.orElseThrow(() -> new IllegalStateException(
-						"Unknown command '" + request + "'"))
-				.run(args);
+				.orElseThrow(() -> new IllegalStateException("Unknown command '" + request + "'")).run(args);
 	}
 
 }

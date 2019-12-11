@@ -95,8 +95,8 @@ public class InCommandTests {
 	public void runWhenFolderArgIsMissingThrowsException() throws Exception {
 		InRequest request = mock(InRequest.class);
 		given(this.systemInput.read(InRequest.class)).willReturn(request);
-		assertThatIllegalStateException().isThrownBy(
-				() -> this.command.run(new DefaultApplicationArguments(new String[] {})))
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.command.run(new DefaultApplicationArguments(new String[] {})))
 				.withMessage("No directory argument specified");
 	}
 

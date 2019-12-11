@@ -30,35 +30,30 @@ public class MavenCoordinatesTests {
 
 	@Test
 	public void fromPathReturnsCoordinates() throws Exception {
-		MavenCoordinates coordinates = MavenCoordinates.fromPath(
-				"/com/example/project/" + "my-project/" + "1.0.0.BUILD-SNAPSHOT/"
-						+ "my-project-1.0.0.BUILD-20171005.194031-1.jar");
+		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
+				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
 		assertThat(coordinates.getArtifactId()).isEqualTo("my-project");
 		assertThat(coordinates.getVersion()).isEqualTo("1.0.0.BUILD-SNAPSHOT");
 		assertThat(coordinates.getClassifier()).isEqualTo("");
-		assertThat(coordinates.getSnapshotVersion())
-				.isEqualTo("1.0.0.BUILD-20171005.194031-1");
+		assertThat(coordinates.getSnapshotVersion()).isEqualTo("1.0.0.BUILD-20171005.194031-1");
 	}
 
 	@Test
 	public void fromPathWhenHasClassifierReturnsCoordinates() throws Exception {
-		MavenCoordinates coordinates = MavenCoordinates.fromPath(
-				"/com/example/project/" + "my-project/" + "1.0.0.BUILD-SNAPSHOT/"
-						+ "my-project-1.0.0.BUILD-20171005.194031-1-sources.jar");
+		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
+				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
 		assertThat(coordinates.getArtifactId()).isEqualTo("my-project");
 		assertThat(coordinates.getVersion()).isEqualTo("1.0.0.BUILD-SNAPSHOT");
 		assertThat(coordinates.getClassifier()).isEqualTo("sources");
-		assertThat(coordinates.getSnapshotVersion())
-				.isEqualTo("1.0.0.BUILD-20171005.194031-1");
+		assertThat(coordinates.getSnapshotVersion()).isEqualTo("1.0.0.BUILD-20171005.194031-1");
 	}
 
 	@Test
 	public void fromPathWhenReleaseReturnsCoordinates() throws Exception {
-		MavenCoordinates coordinates = MavenCoordinates
-				.fromPath("/com/example/project/" + "my-project/" + "1.0.0.RELEASE/"
-						+ "my-project-1.0.0.RELEASE-sources.jar");
+		MavenCoordinates coordinates = MavenCoordinates.fromPath(
+				"/com/example/project/" + "my-project/" + "1.0.0.RELEASE/" + "my-project-1.0.0.RELEASE-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
 		assertThat(coordinates.getArtifactId()).isEqualTo("my-project");
 		assertThat(coordinates.getVersion()).isEqualTo("1.0.0.RELEASE");
@@ -70,12 +65,10 @@ public class MavenCoordinatesTests {
 	public void fromPathWhenIsBadThrowsNiceException() {
 		// gh-5
 		assertThatIllegalStateException()
-				.isThrownBy(() -> MavenCoordinates
-						.fromPath("org/springframework/cloud/skipper/acceptance/app/"
-								+ "skipper-server-with-drivers/maven-metadata-local.xml"))
+				.isThrownBy(() -> MavenCoordinates.fromPath("org/springframework/cloud/skipper/acceptance/app/"
+						+ "skipper-server-with-drivers/maven-metadata-local.xml"))
 				.withMessageContaining("Unable to parse maven coordinates from path")
-				.withStackTraceContaining(
-						"Name 'maven-metadata-local.xml' does not start with artifact ID 'app'");
+				.withStackTraceContaining("Name 'maven-metadata-local.xml' does not start with artifact ID 'app'");
 	}
 
 }

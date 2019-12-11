@@ -43,8 +43,7 @@ public class BuildRunsResponseTests {
 	@Test
 	public void readDeserializesJson() throws Exception {
 		BuildRunsResponse response = this.json.readObject("build-runs-response.json");
-		assertThat(response.getUri())
-				.isEqualTo("http://localhost:8081/artifactory/api/build/my-build");
+		assertThat(response.getUri()).isEqualTo("http://localhost:8081/artifactory/api/build/my-build");
 		assertThat(response.getBuildsRuns()).hasSize(2);
 		assertThat(response.getBuildsRuns().get(0).getBuildNumber()).isEqualTo("1234");
 		assertThat(response.getBuildsRuns().get(0).getUri()).isEqualTo("/1234");

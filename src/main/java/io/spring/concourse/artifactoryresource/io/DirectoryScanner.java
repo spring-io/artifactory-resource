@@ -58,12 +58,10 @@ public class DirectoryScanner {
 	 * @param exclude the exclude patterns
 	 * @return the scanned list of files
 	 */
-	public List<File> scan(Directory directory, List<String> include,
-			List<String> exclude) {
+	public List<File> scan(Directory directory, List<String> include, List<String> exclude) {
 		try {
 			Path path = directory.getFile().toPath();
-			List<File> files = Files
-					.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
+			List<File> files = Files.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
 					.map(Path::toFile).collect(Collectors.toCollection(ArrayList::new));
 			FileComparator.sort(files);
 			return files;
@@ -73,16 +71,15 @@ public class DirectoryScanner {
 		}
 	}
 
-	private BiPredicate<Path, BasicFileAttributes> getFilter(Directory root,
-			List<String> include, List<String> exclude) {
+	private BiPredicate<Path, BasicFileAttributes> getFilter(Directory root, List<String> include,
+			List<String> exclude) {
 		PathFilter filter = new PathFilter(include, exclude);
 		String rootPath = StringUtils.cleanPath(root.getFile().getPath());
 		return (path, fileAttributes) -> {
 			if (!path.toFile().isFile()) {
 				return false;
 			}
-			String relativePath = StringUtils.cleanPath(path.toString())
-					.substring(rootPath.length() + 1);
+			String relativePath = StringUtils.cleanPath(path.toString()).substring(rootPath.length() + 1);
 			return filter.isMatch(relativePath);
 		};
 	}

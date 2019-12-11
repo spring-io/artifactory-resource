@@ -35,8 +35,7 @@ public class CheckRequest {
 	private final Version version;
 
 	@JsonCreator
-	public CheckRequest(@JsonProperty("source") Source source,
-			@JsonProperty("version") Version version) {
+	public CheckRequest(@JsonProperty("source") Source source, @JsonProperty("version") Version version) {
 		Assert.notNull(source, "Source must not be null");
 		this.source = source;
 		this.version = version;
@@ -52,8 +51,7 @@ public class CheckRequest {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("source", this.source)
-				.append("version", this.version).toString();
+		return new ToStringCreator(this).append("source", this.source).append("version", this.version).toString();
 	}
 
 }

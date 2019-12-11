@@ -43,8 +43,7 @@ public class DirectoryTests {
 
 	@Test
 	public void createWhenPathIsNullThrowsException() throws Exception {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Directory((String) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((String) null))
 				.withMessage("File must not be null");
 	}
 
@@ -58,8 +57,7 @@ public class DirectoryTests {
 	public void createWhenFileDoesNotExistThrowsException() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		file.delete();
-		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
-				.withMessageContaining("does not exist");
+		assertThatIllegalStateException().isThrownBy(() -> new Directory(file)).withMessageContaining("does not exist");
 	}
 
 	@Test
@@ -129,8 +127,7 @@ public class DirectoryTests {
 	public void createFromArgsUsesArgument() throws Exception {
 		File file = this.temporaryFolder.newFolder();
 		String path = StringUtils.cleanPath(file.getPath());
-		ApplicationArguments args = new DefaultApplicationArguments(
-				new String[] { "in", path });
+		ApplicationArguments args = new DefaultApplicationArguments(new String[] { "in", path });
 		Directory directory = Directory.fromArgs(args);
 		assertThat(directory.getFile()).isEqualTo(file);
 	}

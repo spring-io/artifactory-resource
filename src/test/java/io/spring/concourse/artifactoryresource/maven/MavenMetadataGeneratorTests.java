@@ -47,15 +47,13 @@ public class MavenMetadataGeneratorTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	private MavenMetadataGenerator generator = new MavenMetadataGenerator(
-			new DirectoryScanner());
+	private MavenMetadataGenerator generator = new MavenMetadataGenerator(new DirectoryScanner());
 
 	@Test
 	public void generateWhenUsingNonSnapshotDoesNotCreateMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.RELEASE");
 		this.generator.generate(directory, false);
-		File file = new File(directory.toString()
-				+ "/com/example/project/my-project/1.0.0.RELEASE/maven-metadata.xml");
+		File file = new File(directory.toString() + "/com/example/project/my-project/1.0.0.RELEASE/maven-metadata.xml");
 		assertThat(file).doesNotExist();
 	}
 
@@ -63,21 +61,19 @@ public class MavenMetadataGeneratorTests {
 	public void generateWhenUsingSnapshotCreatesMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, false);
-		File file = new File(directory.toString()
-				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
+		File file = new File(
+				directory.toString() + "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
 		URL expected = getClass().getResource("generate-when-using-snapshot.xml");
 		assertThat(file).exists().has(xmlContent(expected));
 	}
 
 	@Test
 	public void generateWhenUsingSnapshotTimestampCreatesMetadata() throws Exception {
-		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT",
-				"1.0.0.BUILD-20170626.200218-328");
+		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT", "1.0.0.BUILD-20170626.200218-328");
 		this.generator.generate(directory, false);
-		File file = new File(directory.toString()
-				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
-		URL expected = getClass()
-				.getResource("generate-when-using-snapshot-timestamp.xml");
+		File file = new File(
+				directory.toString() + "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/maven-metadata.xml");
+		URL expected = getClass().getResource("generate-when-using-snapshot-timestamp.xml");
 		assertThat(file).exists().has(xmlContent(expected));
 	}
 
@@ -85,8 +81,7 @@ public class MavenMetadataGeneratorTests {
 	public void generateWhenCreatingChecksumsCreatesChecksums() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, true);
-		File folder = new File(directory.toString()
-				+ "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/");
+		File folder = new File(directory.toString() + "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/");
 		assertThat(new File(folder, "maven-metadata.xml.md5")).exists();
 		assertThat(new File(folder, "maven-metadata.xml.sha1")).exists();
 	}
@@ -95,8 +90,7 @@ public class MavenMetadataGeneratorTests {
 		return createStructure(version, version);
 	}
 
-	private Directory createStructure(String folderVersion, String fileVersion)
-			throws IOException {
+	private Directory createStructure(String folderVersion, String fileVersion) throws IOException {
 		Directory root = new Directory(this.temporaryFolder.newFolder());
 		String prefix = "com/example/project/my-project/";
 		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".pom");
@@ -120,13 +114,11 @@ public class MavenMetadataGeneratorTests {
 
 			@Override
 			public boolean matches(File actual) {
-				Diff diff = DiffBuilder.compare(Input.from(expected))
-						.withTest(Input.from(actual)).checkForSimilar().ignoreWhitespace()
-						.build();
+				Diff diff = DiffBuilder.compare(Input.from(expected)).withTest(Input.from(actual)).checkForSimilar()
+						.ignoreWhitespace().build();
 				if (diff.hasDifferences()) {
 					try {
-						String content = new String(
-								FileCopyUtils.copyToByteArray(actual));
+						String content = new String(FileCopyUtils.copyToByteArray(actual));
 						throw new AssertionError(diff.toString() + "\n" + content);
 					}
 					catch (IOException ex) {

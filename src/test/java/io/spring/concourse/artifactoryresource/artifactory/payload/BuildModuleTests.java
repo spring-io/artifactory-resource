@@ -42,8 +42,7 @@ public class BuildModuleTests {
 	private static final String ID = "com.example.module:my-module:1.0.0-SNAPSHOT";
 
 	private static final BuildArtifact BUILD_ARTIFACT = new BuildArtifact("jar",
-			"a9993e364706816aba3e25717850c26c9cd0d89d",
-			"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
+			"a9993e364706816aba3e25717850c26c9cd0d89d", "900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 
 	@Autowired
 	private JacksonTester<BuildModule> json;
@@ -62,8 +61,7 @@ public class BuildModuleTests {
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		BuildModule module = new BuildModule(ID,
-				Collections.singletonList(BUILD_ARTIFACT));
+		BuildModule module = new BuildModule(ID, Collections.singletonList(BUILD_ARTIFACT));
 		assertThat(this.json.write(module)).isEqualToJson("build-module.json");
 	}
 

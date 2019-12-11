@@ -34,11 +34,9 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 
 	private static final String SNAPSHOT_SUFFIX = "-" + SNAPSHOT;
 
-	private static final Pattern FOLDER_PATTERN = Pattern
-			.compile("(.*)\\/(.*)\\/(.*)\\/(.*)");
+	private static final Pattern FOLDER_PATTERN = Pattern.compile("(.*)\\/(.*)\\/(.*)\\/(.*)");
 
-	private static final Pattern VERSION_FILE_PATTERN = Pattern
-			.compile("^([0-9]{8}.[0-9]{6})-([0-9]+)(.*)$");
+	private static final Pattern VERSION_FILE_PATTERN = Pattern.compile("^([0-9]{8}.[0-9]{6})-([0-9]+)(.*)$");
 
 	private final String groupId;
 
@@ -52,8 +50,8 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 
 	private final String snapshotVersion;
 
-	private MavenCoordinates(String groupId, String artifactId, String version,
-			String classifier, String extension, String snapshotVersion) {
+	private MavenCoordinates(String groupId, String artifactId, String version, String classifier, String extension,
+			String snapshotVersion) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
@@ -96,16 +94,14 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 
 	@Override
 	public String toString() {
-		return this.groupId + ":" + this.artifactId + ":" + this.version + ":"
-				+ this.classifier + ":" + this.version + ":" + this.snapshotVersion;
+		return this.groupId + ":" + this.artifactId + ":" + this.version + ":" + this.classifier + ":" + this.version
+				+ ":" + this.snapshotVersion;
 	}
 
 	@Override
 	public int compareTo(MavenCoordinates o) {
-		return Comparator.comparing(MavenCoordinates::getGroupId)
-				.thenComparing(MavenCoordinates::getArtifactId)
-				.thenComparing(MavenCoordinates::getVersion)
-				.thenComparing(MavenCoordinates::getExtension)
+		return Comparator.comparing(MavenCoordinates::getGroupId).thenComparing(MavenCoordinates::getArtifactId)
+				.thenComparing(MavenCoordinates::getVersion).thenComparing(MavenCoordinates::getExtension)
 				.thenComparing(MavenCoordinates::getClassifier).compare(this, o);
 	}
 
@@ -120,14 +116,12 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 			String artifactId = folderMatcher.group(2);
 			String version = folderMatcher.group(3);
 			String rootVersion = (version.endsWith(SNAPSHOT_SUFFIX)
-					? version.substring(0, version.length() - SNAPSHOT_SUFFIX.length())
-					: version);
+					? version.substring(0, version.length() - SNAPSHOT_SUFFIX.length()) : version);
 			String name = folderMatcher.group(4);
-			Assert.state(name.startsWith(artifactId), "Name '" + name
-					+ "' does not start with artifact ID '" + artifactId + "'");
+			Assert.state(name.startsWith(artifactId),
+					"Name '" + name + "' does not start with artifact ID '" + artifactId + "'");
 			String snapshotVersionAndClassifier = name.substring(artifactId.length() + 1);
-			String extension = StringUtils
-					.getFilenameExtension(snapshotVersionAndClassifier);
+			String extension = StringUtils.getFilenameExtension(snapshotVersionAndClassifier);
 			snapshotVersionAndClassifier = snapshotVersionAndClassifier.substring(0,
 					snapshotVersionAndClassifier.length() - extension.length() - 1);
 			String classifier = snapshotVersionAndClassifier;
@@ -144,16 +138,12 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 				classifier = classifier.substring(SNAPSHOT.length());
 				classifier = stripDash(classifier);
 			}
-			String snapshotVersion = (classifier.isEmpty() ? snapshotVersionAndClassifier
-					: snapshotVersionAndClassifier.substring(0,
-							snapshotVersionAndClassifier.length() - classifier.length()
-									- 1));
-			return new MavenCoordinates(groupId, artifactId, version, classifier,
-					extension, snapshotVersion);
+			String snapshotVersion = (classifier.isEmpty() ? snapshotVersionAndClassifier : snapshotVersionAndClassifier
+					.substring(0, snapshotVersionAndClassifier.length() - classifier.length() - 1));
+			return new MavenCoordinates(groupId, artifactId, version, classifier, extension, snapshotVersion);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to parse maven coordinates from path '" + path + "'", ex);
+			throw new IllegalStateException("Unable to parse maven coordinates from path '" + path + "'", ex);
 		}
 	}
 

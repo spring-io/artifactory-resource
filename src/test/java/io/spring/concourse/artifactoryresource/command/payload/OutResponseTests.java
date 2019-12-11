@@ -60,8 +60,7 @@ public class OutResponseTests {
 	@Test
 	public void writeWhenMetadataIsNullSerializesJson() throws Exception {
 		OutResponse response = new OutResponse(new Version("1234"), null);
-		assertThat(this.json.write(response))
-				.isEqualToJson("out-response-without-metadata.json");
+		assertThat(this.json.write(response)).isEqualToJson("out-response-without-metadata.json");
 	}
 
 }

@@ -60,8 +60,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private final String repositoryName;
 
-	public HttpArtifactoryRepository(RestTemplate restTemplate, String uri,
-			String repositoryName) {
+	public HttpArtifactoryRepository(RestTemplate restTemplate, String uri, String repositoryName) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.repositoryName = repositoryName;
@@ -71,8 +70,8 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	public void deploy(DeployableArtifact artifact, DeployOption... options) {
 		try {
 			Assert.notNull(artifact, "Artifact must not be null");
-			if (artifact.getSize() <= CHECKSUM_THRESHOLD || ObjectUtils
-					.containsElement(options, DeployOption.DISABLE_CHECKSUM_UPLOADS)) {
+			if (artifact.getSize() <= CHECKSUM_THRESHOLD
+					|| ObjectUtils.containsElement(options, DeployOption.DISABLE_CHECKSUM_UPLOADS)) {
 				deployUsingContent(artifact);
 				return;
 			}
@@ -89,31 +88,24 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private void deployUsingChecksum(DeployableArtifact artifact) throws IOException {
-		RequestEntity<Void> request = deployRequest(artifact)
-				.header("X-Checksum-Deploy", "true").build();
+		RequestEntity<Void> request = deployRequest(artifact).header("X-Checksum-Deploy", "true").build();
 		this.restTemplate.exchange(request, Void.class);
 	}
 
 	private void deployUsingContent(DeployableArtifact artifact) throws IOException {
-		RequestEntity<Resource> request = deployRequest(artifact)
-				.body(artifact.getContent());
+		RequestEntity<Resource> request = deployRequest(artifact).body(artifact.getContent());
 		this.restTemplate.exchange(request, Void.class);
 	}
 
 	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
-				.path(artifact.getPath())
-				.path(buildMatrixParams(artifact.getProperties()))
-				.buildAndExpand(NO_VARIABLES).encode().toUri();
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName).path(artifact.getPath())
+				.path(buildMatrixParams(artifact.getProperties())).buildAndExpand(NO_VARIABLES).encode().toUri();
 		Checksums checksums = artifact.getChecksums();
-		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.contentLength(artifact.getSize())
-				.header("X-Checksum-Sha1", checksums.getSha1())
-				.header("X-Checksum-Md5", checksums.getMd5());
+		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM).contentLength(artifact.getSize())
+				.header("X-Checksum-Sha1", checksums.getSha1()).header("X-Checksum-Md5", checksums.getMd5());
 	}
 
-	private String buildMatrixParams(Map<String, String> matrixParams)
-			throws UnsupportedEncodingException {
+	private String buildMatrixParams(Map<String, String> matrixParams) throws UnsupportedEncodingException {
 		StringBuilder matrix = new StringBuilder();
 		if (matrixParams != null && !matrixParams.isEmpty()) {
 			for (Map.Entry<String, String> entry : matrixParams.entrySet()) {
@@ -140,10 +132,9 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private void getFile(String path, File destination) {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
-				.path("/" + path).buildAndExpand(NO_VARIABLES).encode().toUri();
-		this.restTemplate.execute(uri, HttpMethod.GET, null,
-				getResponseExtractor(path, destination));
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName).path("/" + path)
+				.buildAndExpand(NO_VARIABLES).encode().toUri();
+		this.restTemplate.execute(uri, HttpMethod.GET, null, getResponseExtractor(path, destination));
 	}
 
 	private ResponseExtractor<Void> getResponseExtractor(String path, File destination) {
