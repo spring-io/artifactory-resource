@@ -214,6 +214,8 @@ public class OutHandlerTests {
 		List<File> checksumFiles = new ArrayList<>();
 		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.md5"));
 		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha1"));
+		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha256"));
+		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha512"));
 		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"),

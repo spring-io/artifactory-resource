@@ -64,6 +64,9 @@ import org.springframework.util.StringUtils;
 @Component
 public class OutHandler {
 
+	private static final Set<String> CHECKSUM_FILE_EXTENSIONS = Collections
+			.unmodifiableSet(new HashSet<>(Arrays.asList(".md5", ".sha1", ".sha256", ".sha512")));
+
 	private static final Set<String> METADATA_FILES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
 
@@ -199,7 +202,12 @@ public class OutHandler {
 	private Predicate<File> getChecksumFilter() {
 		return (file) -> {
 			String name = file.getName().toLowerCase();
-			return (!name.endsWith(".md5") && !name.endsWith("sha1"));
+			for (String extension : CHECKSUM_FILE_EXTENSIONS) {
+				if (name.endsWith(extension)) {
+					return false;
+				}
+			}
+			return true;
 		};
 	}
 
