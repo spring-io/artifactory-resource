@@ -25,6 +25,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -184,12 +188,30 @@ public class OutHandler {
 			List<DeployableArtifact> deployableArtifacts) {
 		logger.debug("Deploying artifacts to {}", params.getRepo());
 		ArtifactoryRepository artifactoryRepository = artifactoryServer.repository(params.getRepo());
-		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(), deployableArtifact.getProperties(),
-					deployableArtifact.getChecksums().getSha1(), deployableArtifact.getChecksums().getMd5());
-			artifactoryRepository.deploy(deployableArtifact,
-					params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS : NO_DEPLOY_OPTIONS);
+		DeployOption[] options = params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS : NO_DEPLOY_OPTIONS;
+		ExecutorService executor = Executors.newFixedThreadPool(params.getThreads());
+		try {
+			CompletableFuture.allOf(deployableArtifacts.stream()
+					.map((artifact) -> CompletableFuture
+							.runAsync(() -> deploy(artifactoryRepository, artifact, options), executor))
+					.toArray(CompletableFuture[]::new)).get();
 		}
+		catch (ExecutionException ex) {
+			throw new RuntimeException(ex);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		finally {
+			executor.shutdown();
+		}
+	}
+
+	private void deploy(ArtifactoryRepository artifactoryRepository, DeployableArtifact deployableArtifact,
+			DeployOption[] options) {
+		console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(), deployableArtifact.getProperties(),
+				deployableArtifact.getChecksums().getSha1(), deployableArtifact.getChecksums().getMd5());
+		artifactoryRepository.deploy(deployableArtifact, options);
 	}
 
 	private Predicate<File> getMetadataFilter(Params params) {

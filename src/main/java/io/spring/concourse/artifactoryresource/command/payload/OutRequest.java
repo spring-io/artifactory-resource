@@ -90,6 +90,8 @@ public class OutRequest {
 
 		private final List<ArtifactSet> artifactSet;
 
+		private final int threads;
+
 		@JsonCreator
 		public Params(@JsonProperty("debug") Boolean debug, @JsonProperty("repo") String repo,
 				@JsonProperty("build_number") String buildNumber, @JsonProperty("folder") String folder,
@@ -97,7 +99,7 @@ public class OutRequest {
 				@JsonProperty("module_layout") String moduleLayout, @JsonProperty("build_uri") String buildUri,
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
-				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet) {
+				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet, @JsonProperty("threads") Integer threads) {
 			Assert.hasText(repo, "Repo must not be empty");
 			Assert.hasText(folder, "Folder must not be empty");
 			this.debug = (debug != null) ? debug : false;
@@ -114,6 +116,7 @@ public class OutRequest {
 			this.disableChecksumUploads = (disableChecksumUploads != null) ? disableChecksumUploads : false;
 			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
 					: Collections.emptyList();
+			this.threads = Integer.max(1, (threads != null) ? threads : 1);
 		}
 
 		public boolean isDebug() {
@@ -160,13 +163,17 @@ public class OutRequest {
 			return this.artifactSet;
 		}
 
+		public int getThreads() {
+			return this.threads;
+		}
+
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("folder", this.folder)
 					.append("include", this.include).append("exclude", this.exclude)
 					.append("moduleLayout", this.moduleLayout).append("buildUri", this.buildUri)
 					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
-					.append("artifactSet", this.artifactSet).toString();
+					.append("artifactSet", this.artifactSet).append("threads", this.threads).toString();
 		}
 
 	}

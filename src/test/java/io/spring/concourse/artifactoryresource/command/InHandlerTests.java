@@ -167,9 +167,14 @@ public class InHandlerTests {
 
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
 			boolean downloadChecksums) {
+		return createRequest(generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, 1);
+	}
+
+	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
+			boolean downloadChecksums, int threads) {
 		InRequest request = new InRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("1234"),
-				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums));
+				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, threads));
 		return request;
 	}
 

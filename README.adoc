@@ -149,6 +149,7 @@ This is required if you with to use timestamp based SNAPSHOT artifacts with Mave
 * `download_artifacts`: If artifacts should be downloaded or skipped.
  If you only need `build-info.json` you can set this to `false`.
 * `download_checksums`: If artifact checksum files should be downloaded (default `true`).
+* `threads`: Number of threads to use when downloading artifacts (default `1`).
 
 
 === `out`: Deploy build artifacts
@@ -170,6 +171,7 @@ Build modules will be also automatically added when dealing with a Maven style d
 * `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`).
 * `strip_snapshot_timestamps`: If snapshot timestamps should be removed to allow artifactory to generate them (defaults to `true`).
 * `disable_checksum_uploads`: If checksum based uploads should be disabled (useful to prevent artifactory from associating the wrong resource with a snapshot version).
+* `threads`: Number of threads to use when deploying artifacts (defaults to `1`).
 * `artifact_set`: Additional configuration for a subset of the artifacts (see below).
 
 The `artifact_set` parameter can be used to apply specific additional configuration to a subset of artifacts.

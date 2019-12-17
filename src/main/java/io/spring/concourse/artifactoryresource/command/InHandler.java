@@ -20,6 +20,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
@@ -74,7 +78,8 @@ public class InHandler {
 		if (params.isDownloadArtifacts()) {
 			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
 			console.log("Downloading build {} artifacts from {}", buildNumber, source.getUri());
-			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(), params.isDownloadChecksums());
+			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(), params.isDownloadChecksums(),
+					params.getThreads());
 			if (params.isGenerateMavenMetadata()) {
 				logger.debug("Generating maven metadata");
 				this.mavenMetadataGenerator.generate(directory, params.isDownloadChecksums());
@@ -109,11 +114,29 @@ public class InHandler {
 	}
 
 	private void download(ArtifactoryServer artifactoryServer, MultiValueMap<String, DeployedArtifact> artifactsByRepo,
-			File destination, boolean downloadChecksums) {
-		artifactsByRepo.forEach((repo, artifacts) -> artifacts.forEach((artifact) -> {
-			console.log("Downloading {} from {}", artifact.getPath(), repo);
-			artifactoryServer.repository(repo).download(artifact, destination, downloadChecksums);
-		}));
+			File destination, boolean downloadChecksums, int threads) {
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
+		try {
+			CompletableFuture.allOf(artifactsByRepo.values().stream().flatMap((artifacts) -> artifacts.stream())
+					.map((artifact) -> CompletableFuture.runAsync(() -> download(artifactoryServer, destination,
+							downloadChecksums, artifact.getRepo(), artifact), executor))
+					.toArray(CompletableFuture[]::new)).get();
+		}
+		catch (ExecutionException ex) {
+			throw new RuntimeException(ex);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		finally {
+			executor.shutdown();
+		}
+	}
+
+	private void download(ArtifactoryServer artifactoryServer, File destination, boolean downloadChecksums, String repo,
+			DeployedArtifact artifact) {
+		console.log("Downloading {} from {}", artifact.getPath(), repo);
+		artifactoryServer.repository(repo).download(artifact, destination, downloadChecksums);
 	}
 
 }

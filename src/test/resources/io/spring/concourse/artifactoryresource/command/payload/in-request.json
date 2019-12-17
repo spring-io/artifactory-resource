@@ -12,6 +12,7 @@
 		"generate_maven_metadata": false,
 		"save_build_info": true,
 		"download_artifacts": false,
-		"download_checksums": false
+		"download_checksums": false,
+		"threads": 8
 	}
 }

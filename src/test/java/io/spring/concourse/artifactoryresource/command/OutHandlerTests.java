@@ -171,7 +171,7 @@ public class OutHandlerTests {
 		List<String> exclude = null;
 		Map<String, String> properties = Collections.singletonMap("foo", "bar");
 		artifactSet.add(new ArtifactSet(include, exclude, properties));
-		OutRequest request = createRequest("1234", null, null, false, false, artifactSet);
+		OutRequest request = createRequest("1234", null, null, false, false, artifactSet, 1);
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
@@ -252,7 +252,7 @@ public class OutHandlerTests {
 
 	private List<BuildModule> testStripSnapshotTimestampMetadata(boolean stripSnapshotTimestamps, String metadataFile)
 			throws IOException {
-		OutRequest request = createRequest("1234", null, null, stripSnapshotTimestamps, false, null);
+		OutRequest request = createRequest("1234", null, null, stripSnapshotTimestamps, false, null, 1);
 		Directory directory = createDirectory();
 		List<File> metadataFiles = new ArrayList<>();
 		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(), metadataFile));
@@ -266,7 +266,7 @@ public class OutHandlerTests {
 
 	@Test
 	public void handleWhenStripSnapshotTimestampsChangesDeployArtifactPath() throws Exception {
-		OutRequest request = createRequest("1234", null, null, true, false, null);
+		OutRequest request = createRequest("1234", null, null, true, false, null, 1);
 		Directory directory = createDirectory();
 		configureMockScanner(directory, Collections.emptyList(), "1.0.0.BUILD-SNAPSHOT",
 				"1.0.0.BUILD-20171005.194031-1");
@@ -280,7 +280,7 @@ public class OutHandlerTests {
 
 	@Test
 	public void handleWhenDisableChecksumUploadDoesNotUseChecksumUpload() throws Exception {
-		OutRequest request = createRequest("1234", null, null, false, true, null);
+		OutRequest request = createRequest("1234", null, null, false, true, null, 1);
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
@@ -293,14 +293,16 @@ public class OutHandlerTests {
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude) {
-		return createRequest(buildNumber, include, exclude, false, false, null);
+		return createRequest(buildNumber, include, exclude, false, false, null, 1);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
-			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet) {
+			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet,
+			int threads) {
 		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
-						"https://ci.example.com/1234", stripSnapshotTimestamps, disableChecksumUploads, artifactSet));
+						"https://ci.example.com/1234", stripSnapshotTimestamps, disableChecksumUploads, artifactSet,
+						threads));
 	}
 
 	private Directory createDirectory() throws IOException {

@@ -40,7 +40,7 @@ public class InRequestTests {
 
 	private Version version = new Version("1234");
 
-	private InRequest.Params params = new InRequest.Params(false, false, false, false, false);
+	private InRequest.Params params = new InRequest.Params(false, false, false, false, false, null);
 
 	@Autowired
 	private JacksonTester<InRequest> json;
@@ -64,6 +64,7 @@ public class InRequestTests {
 		assertThat(request.getParams().isSaveBuildInfo()).isFalse();
 		assertThat(request.getParams().isDownloadArtifacts()).isTrue();
 		assertThat(request.getParams().isDownloadChecksums()).isTrue();
+		assertThat(request.getParams().getThreads()).isEqualTo(1);
 	}
 
 	@Test
@@ -77,6 +78,7 @@ public class InRequestTests {
 		assertThat(request.getParams().isSaveBuildInfo()).isTrue();
 		assertThat(request.getParams().isDownloadArtifacts()).isFalse();
 		assertThat(request.getParams().isDownloadChecksums()).isFalse();
+		assertThat(request.getParams().getThreads()).isEqualTo(8);
 	}
 
 	@Test

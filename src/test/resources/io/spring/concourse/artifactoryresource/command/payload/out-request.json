@@ -20,6 +20,7 @@
 		"build_uri": "https://ci.example.com",
 		"strip_snapshot_timestamps": false,
 		"disable_checksum_uploads": true,
+		"threads": 8,
 		"artifact_set": [ {
 			"include": [
 				"**/*.zip"

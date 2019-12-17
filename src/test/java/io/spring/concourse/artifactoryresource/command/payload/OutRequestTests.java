@@ -42,7 +42,7 @@ public class OutRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
-			null, null, null, null, null);
+			null, null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -62,14 +62,13 @@ public class OutRequestTests {
 	@Test
 	public void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
-				"1234", "", null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
+				"1234", "", null, null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
 	}
 
 	@Test
 	public void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new OutRequest.Params(false, "", "1234", "folder", null, null, null, null, null, null, null))
-				.withMessage("Repo must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
+				null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
 	}
 
 	@Test
@@ -87,6 +86,7 @@ public class OutRequestTests {
 		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
 		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		assertThat(request.getParams().isDisableChecksumUploads()).isEqualTo(true);
+		assertThat(request.getParams().getThreads()).isEqualTo(8);
 		List<ArtifactSet> artifactSet = request.getParams().getArtifactSet();
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");
