@@ -77,7 +77,8 @@ public class InHandler {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer.buildRuns(source.getBuildName());
 		if (params.isDownloadArtifacts()) {
 			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
-			console.log("Downloading build {} artifacts from {}", buildNumber, source.getUri());
+			console.log("Downloading build {} artifacts from {} using {} thread(s)", buildNumber, source.getUri(),
+					params.getThreads());
 			download(artifactoryServer, groupByRepo(artifacts), directory.getFile(), params.isDownloadChecksums(),
 					params.getThreads());
 			if (params.isGenerateMavenMetadata()) {

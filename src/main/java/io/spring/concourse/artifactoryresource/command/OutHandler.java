@@ -107,7 +107,8 @@ public class OutHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source, params, directory);
 		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
-		console.log("Deploying {} artifacts to {} as build {}", artifacts.size(), source.getUri(), buildNumber);
+		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", artifacts.size(), source.getUri(),
+				buildNumber, params.getThreads());
 		deployArtifacts(artifactoryServer, params, artifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
 		logger.debug("Done");
