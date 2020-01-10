@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +58,8 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -191,11 +194,37 @@ public class OutHandler {
 		ArtifactoryRepository artifactoryRepository = artifactoryServer.repository(params.getRepo());
 		DeployOption[] options = params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS : NO_DEPLOY_OPTIONS;
 		ExecutorService executor = Executors.newFixedThreadPool(params.getThreads());
+		Function<DeployableArtifact, CompletableFuture<?>> deployer = (deployableArtifact) -> getArtifactDeployer(
+				artifactoryRepository, options, deployableArtifact);
 		try {
-			CompletableFuture.allOf(deployableArtifacts.stream()
-					.map((artifact) -> CompletableFuture
-							.runAsync(() -> deploy(artifactoryRepository, artifact, options), executor))
-					.toArray(CompletableFuture[]::new)).get();
+			getDeployableBatches(deployableArtifacts)
+					.forEach((batchName, batch) -> deployBatch(batchName, batch, deployer));
+		}
+		finally {
+			executor.shutdown();
+		}
+	}
+
+	private MultiValueMap<String, DeployableArtifact> getDeployableBatches(
+			List<DeployableArtifact> deployableArtifacts) {
+		MultiValueMap<String, DeployableArtifact> batches = new LinkedMultiValueMap<>();
+		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
+			String extension = StringUtils.getFilenameExtension(deployableArtifact.getPath());
+			String batchName = (extension != null) ? "with the extension " + extension : "without an extension";
+			batches.add(batchName, deployableArtifact);
+		}
+		return batches;
+	}
+
+	private void deployBatch(String batchName, List<DeployableArtifact> batch,
+			Function<DeployableArtifact, CompletableFuture<?>> artifactDeployer) {
+		logger.debug("Deploying artifacts {}", batchName);
+		deployBatch(batch.stream().map(artifactDeployer).toArray(CompletableFuture[]::new));
+	}
+
+	private void deployBatch(CompletableFuture<?>[] batch) {
+		try {
+			CompletableFuture.allOf(batch).get();
 		}
 		catch (ExecutionException ex) {
 			throw new RuntimeException(ex);
@@ -203,12 +232,14 @@ public class OutHandler {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
-		finally {
-			executor.shutdown();
-		}
 	}
 
-	private void deploy(ArtifactoryRepository artifactoryRepository, DeployableArtifact deployableArtifact,
+	private CompletableFuture<?> getArtifactDeployer(ArtifactoryRepository artifactoryRepository,
+			DeployOption[] options, DeployableArtifact deployableArtifact) {
+		return CompletableFuture.runAsync(() -> deployArtifact(artifactoryRepository, deployableArtifact, options));
+	}
+
+	private void deployArtifact(ArtifactoryRepository artifactoryRepository, DeployableArtifact deployableArtifact,
 			DeployOption[] options) {
 		console.log("Deploying {} {} ({}/{})", deployableArtifact.getPath(), deployableArtifact.getProperties(),
 				deployableArtifact.getChecksums().getSha1(), deployableArtifact.getChecksums().getMd5());

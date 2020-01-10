@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -54,6 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -162,6 +164,33 @@ public class OutHandlerTests {
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build").containsEntry("build.number",
 				"1234");
 		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
+	}
+
+	@Test
+	public void handleDeploysArtifactsInBatches() throws Exception {
+		OutRequest request = createRequest("1234");
+		Directory directory = createDirectory();
+		List<File> files = new ArrayList<>();
+		Directory foos = createStructure(directory, "folder", "com", "example", "foo", "0.0.1");
+		Directory bars = createStructure(directory, "folder", "com", "example", "bar", "0.0.1");
+		files.add(new File(foos.getFile(), "foo-0.0.1.pom"));
+		files.add(new File(bars.getFile(), "bar-0.0.1.pom"));
+		files.add(new File(foos.getFile(), "foo-0.0.1.jar"));
+		files.add(new File(foos.getFile(), "foo-0.0.1-sources.jar"));
+		files.add(new File(bars.getFile(), "bar-0.0.1.jar"));
+		files.add(new File(bars.getFile(), "bar-0.0.1-sources.jar"));
+		createEmptyFiles(files);
+		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository, times(6)).deploy(this.artifactCaptor.capture(),
+				this.optionsCaptor.capture());
+		List<DeployableArtifact> values = this.artifactCaptor.getAllValues();
+		assertThat(StringUtils.getFilenameExtension(values.get(0).getPath())).isEqualTo("pom");
+		assertThat(StringUtils.getFilenameExtension(values.get(1).getPath())).isEqualTo("pom");
+		assertThat(StringUtils.getFilenameExtension(values.get(2).getPath())).isEqualTo("jar");
+		assertThat(StringUtils.getFilenameExtension(values.get(3).getPath())).isEqualTo("jar");
+		assertThat(StringUtils.getFilenameExtension(values.get(4).getPath())).isEqualTo("jar");
+		assertThat(StringUtils.getFilenameExtension(values.get(5).getPath())).isEqualTo("jar");
 	}
 
 	@Test
