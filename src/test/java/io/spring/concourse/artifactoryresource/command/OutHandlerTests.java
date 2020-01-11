@@ -47,7 +47,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -173,24 +172,37 @@ public class OutHandlerTests {
 		List<File> files = new ArrayList<>();
 		Directory foos = createStructure(directory, "folder", "com", "example", "foo", "0.0.1");
 		Directory bars = createStructure(directory, "folder", "com", "example", "bar", "0.0.1");
+		Directory bazs = createStructure(directory, "folder", "com", "example", "bar", "0.0.1");
+		files.add(new File(foos.getFile(), "foo-0.0.1.jar"));
+		files.add(new File(bars.getFile(), "bar-0.0.1.jar"));
+		files.add(new File(bazs.getFile(), "baz-0.0.1.jar"));
 		files.add(new File(foos.getFile(), "foo-0.0.1.pom"));
 		files.add(new File(bars.getFile(), "bar-0.0.1.pom"));
-		files.add(new File(foos.getFile(), "foo-0.0.1.jar"));
+		files.add(new File(bazs.getFile(), "baz-0.0.1.pom"));
+		files.add(new File(foos.getFile(), "foo-0.0.1-javadoc.jar"));
+		files.add(new File(bars.getFile(), "bar-0.0.1-javadoc.jar"));
+		files.add(new File(bazs.getFile(), "baz-0.0.1-javadoc.jar"));
 		files.add(new File(foos.getFile(), "foo-0.0.1-sources.jar"));
-		files.add(new File(bars.getFile(), "bar-0.0.1.jar"));
 		files.add(new File(bars.getFile(), "bar-0.0.1-sources.jar"));
+		files.add(new File(bazs.getFile(), "baz-0.0.1-sources.jar"));
 		createEmptyFiles(files);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository, times(6)).deploy(this.artifactCaptor.capture(),
+		verify(this.artifactoryRepository, times(12)).deploy(this.artifactCaptor.capture(),
 				this.optionsCaptor.capture());
 		List<DeployableArtifact> values = this.artifactCaptor.getAllValues();
-		assertThat(StringUtils.getFilenameExtension(values.get(0).getPath())).isEqualTo("pom");
-		assertThat(StringUtils.getFilenameExtension(values.get(1).getPath())).isEqualTo("pom");
-		assertThat(StringUtils.getFilenameExtension(values.get(2).getPath())).isEqualTo("jar");
-		assertThat(StringUtils.getFilenameExtension(values.get(3).getPath())).isEqualTo("jar");
-		assertThat(StringUtils.getFilenameExtension(values.get(4).getPath())).isEqualTo("jar");
-		assertThat(StringUtils.getFilenameExtension(values.get(5).getPath())).isEqualTo("jar");
+		for (int i = 0; i < 3; i++) {
+			assertThat(values.get(i).getPath()).doesNotContain("javadoc", "sources").endsWith(".jar");
+		}
+		for (int i = 3; i < 6; i++) {
+			assertThat(values.get(i).getPath()).endsWith(".pom");
+		}
+		for (int i = 6; i < 9; i++) {
+			assertThat(values.get(i).getPath()).doesNotContain("sources").endsWith("-javadoc.jar");
+		}
+		for (int i = 9; i < 12; i++) {
+			assertThat(values.get(i).getPath()).doesNotContain("javadoc").endsWith("-sources.jar");
+		}
 	}
 
 	@Test

@@ -209,16 +209,34 @@ public class OutHandler {
 			List<DeployableArtifact> deployableArtifacts) {
 		MultiValueMap<String, DeployableArtifact> batches = new LinkedMultiValueMap<>();
 		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			String extension = StringUtils.getFilenameExtension(deployableArtifact.getPath());
-			String batchName = (extension != null) ? "with the extension " + extension : "without an extension";
+			String batchName = getBatchName(deployableArtifact.getPath());
 			batches.add(batchName, deployableArtifact);
 		}
 		return batches;
 	}
 
+	private String getBatchName(String path) {
+		if (path.endsWith("-javadoc.jar")) {
+			return "javadoc jars";
+		}
+		if (path.endsWith("-sources.jar")) {
+			return "source jars";
+		}
+		if (path.endsWith(".jar")) {
+			return "library jars";
+		}
+		if (path.endsWith(".pom")) {
+			return "poms";
+		}
+		if (path.endsWith("/maven-metadata-local.xml") || path.endsWith("/maven-metadata.xml")) {
+			return "maven metadata";
+		}
+		return "remaining files";
+	}
+
 	private void deployBatch(String batchName, List<DeployableArtifact> batch,
 			Function<DeployableArtifact, CompletableFuture<?>> artifactDeployer) {
-		logger.debug("Deploying artifacts {}", batchName);
+		logger.debug("Deploying {}", batchName);
 		deployBatch(batch.stream().map(artifactDeployer).toArray(CompletableFuture[]::new));
 	}
 
