@@ -17,7 +17,6 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,7 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
@@ -49,6 +47,8 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
+import io.spring.concourse.artifactoryresource.io.FileSet;
+import io.spring.concourse.artifactoryresource.io.FileSet.Category;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
 import io.spring.concourse.artifactoryresource.maven.MavenCoordinates;
 import io.spring.concourse.artifactoryresource.maven.MavenVersionType;
@@ -108,12 +108,14 @@ public class OutHandler {
 		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
 		String buildNumber = getOrGenerateBuildNumber(params);
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
-		List<DeployableArtifact> artifacts = getDeployableArtifacts(buildNumber, source, params, directory);
-		Assert.state(artifacts.size() > 0, "No artifacts found to deploy");
-		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", artifacts.size(), source.getUri(),
-				buildNumber, params.getThreads());
-		deployArtifacts(artifactoryServer, params, artifacts);
-		addBuildRun(artifactoryServer, source, params, buildNumber, artifacts);
+		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, source, params,
+				directory);
+		int size = batchedArtifacts.values().stream().mapToInt(List::size).sum();
+		Assert.state(size > 0, "No artifacts found to deploy");
+		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", size, source.getUri(), buildNumber,
+				params.getThreads());
+		deployArtifacts(artifactoryServer, params, batchedArtifacts);
+		addBuildRun(artifactoryServer, source, params, buildNumber, batchedArtifacts);
 		logger.debug("Done");
 		return new OutResponse(new Version(buildNumber));
 	}
@@ -132,22 +134,25 @@ public class OutHandler {
 		return buildNumber;
 	}
 
-	private List<DeployableArtifact> getDeployableArtifacts(String buildNumber, Source source, Params params,
-			Directory directory) {
+	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Source source,
+			Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
-		Stream<File> files = this.directoryScanner.scan(root, params.getInclude(), params.getExclude()).stream();
-		files = files.filter(getChecksumFilter());
-		files = files.filter(getMetadataFilter(params));
-		return files.map((file) -> {
-			String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
-			logger.debug("Including file {} with path {}", file, path);
-			Map<String, String> properties = getDeployableArtifactProperties(path, buildNumber, source, params);
-			if (params.isStripSnapshotTimestamps()) {
-				path = stripSnapshotTimestamp(path);
-			}
-			return new DeployableFileArtifact(path, file, properties, null);
-		}).collect(Collectors.toCollection(ArrayList::new));
+		FileSet fileSet = this.directoryScanner.scan(root, params.getInclude(), params.getExclude())
+				.filter(getChecksumFilter()).filter(getMetadataFilter(params));
+		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = new LinkedMultiValueMap<>();
+		fileSet.batchedByCategory().forEach((category, files) -> {
+			files.forEach((file) -> {
+				String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
+				logger.debug("Including file {} with path {}", file, path);
+				Map<String, String> properties = getDeployableArtifactProperties(path, buildNumber, source, params);
+				if (params.isStripSnapshotTimestamps()) {
+					path = stripSnapshotTimestamp(path);
+				}
+				batchedArtifacts.add(category, new DeployableFileArtifact(path, file, properties, null));
+			});
+		});
+		return batchedArtifacts;
 	}
 
 	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Source source,
@@ -189,7 +194,7 @@ public class OutHandler {
 	}
 
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,
-			List<DeployableArtifact> deployableArtifacts) {
+			MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
 		logger.debug("Deploying artifacts to {}", params.getRepo());
 		ArtifactoryRepository artifactoryRepository = artifactoryServer.repository(params.getRepo());
 		DeployOption[] options = params.isDisableChecksumUploads() ? DISABLE_CHECKSUM_UPLOADS : NO_DEPLOY_OPTIONS;
@@ -197,50 +202,20 @@ public class OutHandler {
 		Function<DeployableArtifact, CompletableFuture<?>> deployer = (deployableArtifact) -> getArtifactDeployer(
 				artifactoryRepository, options, deployableArtifact);
 		try {
-			getDeployableBatches(deployableArtifacts)
-					.forEach((batchName, batch) -> deployBatch(batchName, batch, deployer));
+			batchedArtifacts.forEach((category, artifacts) -> deploy(category, artifacts, deployer));
 		}
 		finally {
 			executor.shutdown();
 		}
 	}
 
-	private MultiValueMap<String, DeployableArtifact> getDeployableBatches(
-			List<DeployableArtifact> deployableArtifacts) {
-		MultiValueMap<String, DeployableArtifact> batches = new LinkedMultiValueMap<>();
-		for (DeployableArtifact deployableArtifact : deployableArtifacts) {
-			String batchName = getBatchName(deployableArtifact.getPath());
-			batches.add(batchName, deployableArtifact);
-		}
-		return batches;
+	private void deploy(Category category, List<DeployableArtifact> artifacts,
+			Function<DeployableArtifact, CompletableFuture<?>> deployer) {
+		logger.debug("Deploying {} artifacts", category);
+		deploy(artifacts.stream().map(deployer).toArray(CompletableFuture[]::new));
 	}
 
-	private String getBatchName(String path) {
-		if (path.endsWith("-javadoc.jar")) {
-			return "javadoc jars";
-		}
-		if (path.endsWith("-sources.jar")) {
-			return "source jars";
-		}
-		if (path.endsWith(".jar")) {
-			return "library jars";
-		}
-		if (path.endsWith(".pom")) {
-			return "poms";
-		}
-		if (path.endsWith("/maven-metadata-local.xml") || path.endsWith("/maven-metadata.xml")) {
-			return "maven metadata";
-		}
-		return "remaining files";
-	}
-
-	private void deployBatch(String batchName, List<DeployableArtifact> batch,
-			Function<DeployableArtifact, CompletableFuture<?>> artifactDeployer) {
-		logger.debug("Deploying {}", batchName);
-		deployBatch(batch.stream().map(artifactDeployer).toArray(CompletableFuture[]::new));
-	}
-
-	private void deployBatch(CompletableFuture<?>[] batch) {
+	private void deploy(CompletableFuture<?>[] batch) {
 		try {
 			CompletableFuture.allOf(batch).get();
 		}
@@ -284,7 +259,9 @@ public class OutHandler {
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, String buildNumber,
-			List<DeployableArtifact> artifacts) {
+			MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
+		List<DeployableArtifact> artifacts = batchedArtifacts.values().stream().flatMap(List::stream)
+				.collect(Collectors.toList());
 		logger.debug("Adding build run {}", buildNumber);
 		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);

@@ -37,6 +37,7 @@ import io.spring.concourse.artifactoryresource.command.payload.OutRequest.Params
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
+import io.spring.concourse.artifactoryresource.io.FileSet;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -127,6 +128,7 @@ public class OutHandlerTests {
 	public void handleWhenNoFilesThrowsException() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
+		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of());
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, directory))
 				.withMessage("No artifacts found to deploy");
 	}
@@ -172,7 +174,7 @@ public class OutHandlerTests {
 		List<File> files = new ArrayList<>();
 		Directory foos = createStructure(directory, "folder", "com", "example", "foo", "0.0.1");
 		Directory bars = createStructure(directory, "folder", "com", "example", "bar", "0.0.1");
-		Directory bazs = createStructure(directory, "folder", "com", "example", "bar", "0.0.1");
+		Directory bazs = createStructure(directory, "folder", "com", "example", "baz", "0.0.1");
 		files.add(new File(foos.getFile(), "foo-0.0.1.jar"));
 		files.add(new File(bars.getFile(), "bar-0.0.1.jar"));
 		files.add(new File(bazs.getFile(), "baz-0.0.1.jar"));
@@ -186,7 +188,7 @@ public class OutHandlerTests {
 		files.add(new File(bars.getFile(), "bar-0.0.1-sources.jar"));
 		files.add(new File(bazs.getFile(), "baz-0.0.1-sources.jar"));
 		createEmptyFiles(files);
-		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
+		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of(files));
 		this.handler.handle(request, directory);
 		verify(this.artifactoryRepository, times(12)).deploy(this.artifactCaptor.capture(),
 				this.optionsCaptor.capture());
@@ -197,11 +199,9 @@ public class OutHandlerTests {
 		for (int i = 3; i < 6; i++) {
 			assertThat(values.get(i).getPath()).endsWith(".pom");
 		}
-		for (int i = 6; i < 9; i++) {
-			assertThat(values.get(i).getPath()).doesNotContain("sources").endsWith("-javadoc.jar");
-		}
-		for (int i = 9; i < 12; i++) {
-			assertThat(values.get(i).getPath()).doesNotContain("javadoc").endsWith("-sources.jar");
+		for (int i = 6; i < 12; i++) {
+			assertThat(values.get(i).getPath())
+					.matches((path) -> path.endsWith("-javadoc.jar") || path.endsWith("-sources.jar"));
 		}
 	}
 
@@ -369,7 +369,7 @@ public class OutHandlerTests {
 		files.add(file);
 		files.addAll(extraFiles);
 		createEmptyFiles(files);
-		given(this.directoryScanner.scan(any(), any(), any())).willReturn(files);
+		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of(files));
 	}
 
 	private Directory createStructure(Directory directory, String... paths) {

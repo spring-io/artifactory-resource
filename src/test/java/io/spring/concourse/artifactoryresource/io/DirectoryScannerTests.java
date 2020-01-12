@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package io.spring.concourse.artifactoryresource.io;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +47,7 @@ public class DirectoryScannerTests {
 	@Test
 	public void scanWhenNoIncludeExcludeReturnsAllFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.emptyList(), Collections.emptyList());
+		FileSet files = this.scanner.scan(directory, Collections.emptyList(), Collections.emptyList());
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar", "/bar/bar.pom",
 				"/baz/baz.jar", "/baz/baz.pom");
 	}
@@ -56,21 +55,21 @@ public class DirectoryScannerTests {
 	@Test
 	public void scanWhenUsingIncludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"), Collections.emptyList());
+		FileSet files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"), Collections.emptyList());
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar", "/baz/baz.jar");
 	}
 
 	@Test
 	public void scanWhenUsingExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.emptyList(), Collections.singletonList("**/*.jar"));
+		FileSet files = this.scanner.scan(directory, Collections.emptyList(), Collections.singletonList("**/*.jar"));
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.pom", "/baz/baz.pom");
 	}
 
 	@Test
 	public void scanWhenUsingIncludesAndExcludesFiltersFiles() throws Exception {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"),
+		FileSet files = this.scanner.scan(directory, Collections.singletonList("**/*.jar"),
 				Collections.singletonList("**/baz.*"));
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar");
 	}
@@ -78,7 +77,7 @@ public class DirectoryScannerTests {
 	@Test
 	public void scanWhenUsingSlashPrefixFiltersFiles() throws IOException {
 		Directory directory = createFiles();
-		List<File> files = this.scanner.scan(directory, Collections.singletonList("/**/*.jar"),
+		FileSet files = this.scanner.scan(directory, Collections.singletonList("/**/*.jar"),
 				Collections.singletonList("/**/baz.*"));
 		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar");
 	}

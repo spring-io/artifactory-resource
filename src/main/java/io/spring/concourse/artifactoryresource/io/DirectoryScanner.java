@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -46,7 +44,7 @@ public class DirectoryScanner {
 	 * @param include the include patterns
 	 * @return the scanned list of files
 	 */
-	public List<File> scan(Directory directory, List<String> include) {
+	public FileSet scan(Directory directory, List<String> include) {
 		return this.scan(directory, include, Collections.emptyList());
 	}
 
@@ -58,13 +56,11 @@ public class DirectoryScanner {
 	 * @param exclude the exclude patterns
 	 * @return the scanned list of files
 	 */
-	public List<File> scan(Directory directory, List<String> include, List<String> exclude) {
+	public FileSet scan(Directory directory, List<String> include, List<String> exclude) {
 		try {
 			Path path = directory.getFile().toPath();
-			List<File> files = Files.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
-					.map(Path::toFile).collect(Collectors.toCollection(ArrayList::new));
-			FileComparator.sort(files);
-			return files;
+			return FileSet.of(Files.find(path, Integer.MAX_VALUE, getFilter(directory, include, exclude))
+					.map(Path::toFile).toArray(File[]::new));
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
