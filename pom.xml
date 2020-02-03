@@ -16,7 +16,7 @@
 		<revision>0.0.11-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 		<artifactory.version>6.9.0</artifactory.version>
-		<spring-javaformat.version>0.0.17</spring-javaformat.version>
+		<spring-javaformat.version>0.0.20</spring-javaformat.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
@@ -78,12 +78,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>8.24</version>
+							<version>8.29</version>
 						</dependency>
 						<dependency>
 							<groupId>io.spring.javaformat</groupId>
