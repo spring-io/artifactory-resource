@@ -140,7 +140,7 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("2000"), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq("2000"), any(), any(), any());
 	}
 
 	@Test
@@ -149,7 +149,7 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), any(), any());
 		verifyZeroInteractions(this.buildNumberGenerator);
 	}
 
@@ -162,8 +162,8 @@ public class OutHandlerTests {
 		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture(), this.optionsCaptor.capture());
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
-		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build").containsEntry("build.number",
-				"1234");
+		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234").containsKey("build.timestamp");
 		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
 	}
 
@@ -227,7 +227,7 @@ public class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"),
+		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"), any(),
 				this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
@@ -259,7 +259,7 @@ public class OutHandlerTests {
 		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha512"));
 		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"),
+		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"), any(),
 				this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
@@ -299,7 +299,7 @@ public class OutHandlerTests {
 		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(), metadataFile));
 		configureMockScanner(directory, metadataFiles);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"),
+		verify(this.artifactoryBuildRuns).add(eq("1234"), eq("https://ci.example.com/1234"), any(),
 				this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		return buildModules;
@@ -315,8 +315,8 @@ public class OutHandlerTests {
 		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/1.0.0.BUILD-SNAPSHOT/foo-1.0.0.BUILD-SNAPSHOT.jar");
-		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build").containsEntry("build.number",
-				"1234");
+		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234").containsKey("build.timestamp");
 	}
 
 	@Test

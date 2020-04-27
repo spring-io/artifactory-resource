@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class HttpArtifactoryBuildRunsTests {
 		List<BuildModule> modules = Collections
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
-		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", agent, started, modules);
+		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", started, agent, modules);
 		this.server.verify();
 	}
 

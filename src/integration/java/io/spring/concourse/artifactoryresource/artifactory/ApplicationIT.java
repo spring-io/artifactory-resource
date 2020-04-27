@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,9 @@ public class ApplicationIT {
 		File file = createLargeFile();
 		ArtifactoryRepository repository = getServer().repository("example-repo-local");
 		ArtifactoryBuildRuns buildRuns = getServer().buildRuns("my-build");
-		deployArtifact(repository, buildNumber, file);
-		addBuildRun(buildRuns, buildNumber);
+		Date buildTimestamp = new Date();
+		deployArtifact(repository, buildNumber, buildTimestamp, file);
+		addBuildRun(buildRuns, buildNumber, buildTimestamp);
 		getBuildRuns(buildRuns, buildNumber);
 		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
 	}
@@ -86,13 +88,13 @@ public class ApplicationIT {
 		return new BuildNumberGenerator().generateBuildNumber();
 	}
 
-	private void deployArtifact(ArtifactoryRepository artifactoryRepository,
-			String buildNumber, File file) throws Exception {
+	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Date buildTimestamp,
+			File file) throws Exception {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
-		DeployableArtifact artifact = new DeployableFileArtifact("/foo/bar", file,
-				properties, null);
+		properties.put("build.timestamp", Long.toString(buildTimestamp.toInstant().toEpochMilli()));
+		DeployableArtifact artifact = new DeployableFileArtifact("/foo/bar", file, properties, null);
 		artifactoryRepository.deploy(artifact);
 	}
 
@@ -111,39 +113,31 @@ public class ApplicationIT {
 		return file;
 	}
 
-	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns,
-			String buildNumber) throws Exception {
+	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Date buildTimestamp)
+			throws Exception {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
-		BuildModule modules = new BuildModule("foo-test",
-				Collections.singletonList(artifact));
-		artifactoryBuildRuns.add(buildNumber, "ci.example.com",
-				new ContinuousIntegrationAgent("Concourse", null),
-				Collections.singletonList(modules));
+		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
+		artifactoryBuildRuns.add(buildNumber, "ci.example.com", buildTimestamp,
+				new ContinuousIntegrationAgent("Concourse", null), Collections.singletonList(modules));
 	}
 
-	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns,
-			String buildNumber) {
+	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber) {
 		List<BuildRun> runs = artifactoryBuildRuns.getAll();
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo(buildNumber);
 	}
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
-			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber,
-			File expectedContent) throws Exception {
+			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, File expectedContent) throws Exception {
 		this.temporaryFolder.create();
-		List<DeployedArtifact> results = artifactoryBuildRuns
-				.getDeployedArtifacts(buildNumber);
+		List<DeployedArtifact> results = artifactoryBuildRuns.getDeployedArtifacts(buildNumber);
 		File folder = this.temporaryFolder.newFolder();
 		for (DeployedArtifact result : results) {
 			artifactoryRepository.download(result, folder, true);
 		}
 		assertThat(new File(folder, "foo/bar")).hasSameClassAs(expectedContent);
-		Map<Checksum, String> checksums = Checksum
-				.calculateAll(new FileSystemResource(expectedContent));
-		assertThat(new File(folder, "foo/bar.md5"))
-				.hasContent(checksums.get(Checksum.MD5));
-		assertThat(new File(folder, "foo/bar.sha1"))
-				.hasContent(checksums.get(Checksum.SHA1));
+		Map<Checksum, String> checksums = Checksum.calculateAll(new FileSystemResource(expectedContent));
+		assertThat(new File(folder, "foo/bar.md5")).hasContent(checksums.get(Checksum.MD5));
+		assertThat(new File(folder, "foo/bar.sha1")).hasContent(checksums.get(Checksum.SHA1));
 	}
 
 	private ArtifactoryServer getServer() {

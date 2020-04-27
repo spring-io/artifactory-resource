@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,34 +38,23 @@ public interface ArtifactoryBuildRuns {
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param buildUri the build URL
+	 * @param buildTimestamp the build timestamp
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, String buildUri, List<BuildModule> modules) {
-		add(buildNumber, buildUri, null, new Date(), modules);
+	default void add(String buildNumber, String buildUri, Date buildTimestamp, List<BuildModule> modules) {
+		add(buildNumber, buildUri, buildTimestamp, null, modules);
 	}
 
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
+	 * @param buildTimestamp the build timestamp
 	 * @param buildUri the build URL
 	 * @param continuousIntegrationAgent the CI Agent
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, String buildUri, ContinuousIntegrationAgent continuousIntegrationAgent,
-			List<BuildModule> modules) {
-		add(buildNumber, buildUri, continuousIntegrationAgent, new Date(), modules);
-	}
-
-	/**
-	 * Add a new build run.
-	 * @param buildNumber the build number
-	 * @param buildUri the build URL
-	 * @param continuousIntegrationAgent the CI Agent
-	 * @param started the date the build was started
-	 * @param modules the modules for the build run
-	 */
-	void add(String buildNumber, String buildUri, ContinuousIntegrationAgent continuousIntegrationAgent, Date started,
-			List<BuildModule> modules);
+	void add(String buildNumber, String buildUri, Date buildTimestamp,
+			ContinuousIntegrationAgent continuousIntegrationAgent, List<BuildModule> modules);
 
 	/**
 	 * Return all previous build runs.
