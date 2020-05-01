@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 @Component
 public class CheckHandler {
@@ -57,7 +58,8 @@ public class CheckHandler {
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
-		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(),
+				source.getProxyHost(), source.getProxyPort());
 	}
 
 	private CheckResponse getAfter(List<BuildRun> runs, Version version) {

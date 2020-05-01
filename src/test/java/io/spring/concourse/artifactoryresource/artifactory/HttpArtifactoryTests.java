@@ -16,6 +16,9 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URI;
 import java.util.List;
 
@@ -36,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link HttpArtifactory}.
  *
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 public class HttpArtifactoryTests {
 
@@ -50,7 +54,7 @@ public class HttpArtifactoryTests {
 
 	@Test
 	public void serverWhenNoUsernameReturnsServer() {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
+		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null, null, 0);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate, "interceptors");
 		assertThat(interceptors.size()).isEqualTo(0);
@@ -58,7 +62,7 @@ public class HttpArtifactoryTests {
 
 	@Test
 	public void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password");
+		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password", null, 0);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
 				HttpMethod.GET);
@@ -66,9 +70,24 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
+	public void serverWithProxyReturnsServerWithProxy() throws Exception {
+		String proxyHost = "proxy.example.com";
+		int proxyPort = 8080;
+		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password", proxyHost,
+				proxyPort);
+		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
+		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
+				HttpMethod.GET);
+		HttpURLConnection connection = (HttpURLConnection) ReflectionTestUtils.getField(request, "connection");
+		Proxy proxy = (Proxy) ReflectionTestUtils.getField(connection, "instProxy");
+		assertThat(proxy).isNotNull();
+		assertThat(proxy.address()).isEqualTo(new InetSocketAddress(proxyHost, proxyPort));
+	}
+
+	@Test
 	public void serverDoesNotBuffer() {
 		// gh-50
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
+		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null, null, 0);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
 				.getRequestFactory();

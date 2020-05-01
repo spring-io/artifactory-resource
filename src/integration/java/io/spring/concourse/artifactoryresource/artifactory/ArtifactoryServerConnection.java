@@ -99,7 +99,7 @@ public class ArtifactoryServerConnection implements TestRule {
 		public ArtifactoryServer getArtifactoryServer(DockerComposeRule rule,
 				Artifactory artifactory) {
 			DockerPort port = rule.containers().container("artifactory").port(8081);
-			return artifactory.server(artifactoryUri(port), "admin", "password");
+			return artifactory.server(artifactoryUri(port), "admin", "password", null, 0);
 		}
 
 		private static String artifactoryHealthUri(DockerPort port) {
@@ -130,7 +130,7 @@ public class ArtifactoryServerConnection implements TestRule {
 		@Override
 		public ArtifactoryServer getArtifactoryServer(TestRule rule,
 				Artifactory artifactory) {
-			return artifactory.server(this.uri, "admin", "password");
+			return artifactory.server(this.uri, "admin", "password", null, 0);
 		}
 
 	}

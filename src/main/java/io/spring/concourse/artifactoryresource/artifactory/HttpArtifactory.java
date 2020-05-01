@@ -17,6 +17,8 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URI;
 import java.util.function.Supplier;
 
@@ -36,6 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 @Service
 public class HttpArtifactory implements Artifactory {
@@ -47,16 +50,23 @@ public class HttpArtifactory implements Artifactory {
 	}
 
 	@Override
-	public ArtifactoryServer server(String uri, String username, String password) {
+	public ArtifactoryServer server(String uri, String username, String password, String proxyHost, int proxyPort) {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		return new HttpArtifactoryServer(uri,
-				this.restTemplateBuilder.requestFactory(getRequestFactorySupplier(username, password)));
+		return new HttpArtifactoryServer(uri, this.restTemplateBuilder
+				.requestFactory(getRequestFactorySupplier(username, password, proxyHost, proxyPort)));
 	}
 
-	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password) {
-		Supplier<ClientHttpRequestFactory> requestFactorySupplier = this::getNonBufferingClientHttpRequestFactory;
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password,
+			String proxyHost, int proxyPort) {
+		Supplier<ClientHttpRequestFactory> requestFactorySupplier = new Supplier<ClientHttpRequestFactory>() {
+			@Override
+			public ClientHttpRequestFactory get() {
+				return getNonBufferingClientHttpRequestFactory(proxyHost, proxyPort);
+			}
+		};
+
 		if (StringUtils.hasText(username)) {
 			requestFactorySupplier = new BasicAuthClientHttpRequestFactorySupplier(requestFactorySupplier, username,
 					password);
@@ -64,12 +74,17 @@ public class HttpArtifactory implements Artifactory {
 		return requestFactorySupplier;
 	}
 
-	private ClientHttpRequestFactory getNonBufferingClientHttpRequestFactory() {
+	private ClientHttpRequestFactory getNonBufferingClientHttpRequestFactory(String proxyHost, int proxyPort) {
 		ClientHttpRequestFactory factory = new ClientHttpRequestFactorySupplier().get();
 		if (factory instanceof SimpleClientHttpRequestFactory) {
 			((SimpleClientHttpRequestFactory) factory).setBufferRequestBody(false);
+			if (StringUtils.hasText(proxyHost)) {
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+				((SimpleClientHttpRequestFactory) factory).setProxy(proxy);
+			}
 		}
 		if (factory instanceof HttpComponentsClientHttpRequestFactory) {
+			// TODO how to pass the proxy to such a factory?
 			((HttpComponentsClientHttpRequestFactory) factory).setBufferRequestBody(false);
 		}
 		return factory;

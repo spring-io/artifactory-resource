@@ -86,7 +86,8 @@ public class HttpArtifactoryBuildRunsTests {
 
 	@Before
 	public void setup() {
-		this.artifactoryBuildRuns = this.artifactory.server("https://repo.example.com", "admin", "password")
+		this.artifactoryBuildRuns = this.artifactory
+				.server("https://repo.example.com", "admin", "password", "proxy.example.com", 8080)
 				.buildRuns("my-build");
 	}
 

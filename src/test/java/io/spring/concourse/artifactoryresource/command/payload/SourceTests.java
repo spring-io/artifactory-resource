@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 @RunWith(SpringRunner.class)
 @JsonTest
@@ -42,24 +43,25 @@ public class SourceTests {
 
 	@Test
 	public void createWhenUriIsEmptyThrowsException() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build"))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new Source("", "username", "password", "my-build", null, 0))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
 	public void createWhenUsernameIsEmptyDoesNotThrowException() throws Exception {
-		new Source("https://repo.example.com", "", "password", "my-build");
+		new Source("https://repo.example.com", "", "password", "my-build", null, 0);
 	}
 
 	@Test
 	public void createWhenPasswordIsEmptyDoesNotThrowException() throws Exception {
-		new Source("https://repo.example.com", "username", "", "my-build");
+		new Source("https://repo.example.com", "username", "", "my-build", null, 0);
 	}
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", ""))
+				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", "", null, 0))
 				.withMessage("Build Name must not be empty");
 	}
 
@@ -70,6 +72,17 @@ public class SourceTests {
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
 		assertThat(source.getBuildName()).isEqualTo("my-build");
+	}
+
+	@Test
+	public void readDeserializesJsonWithProxy() throws Exception {
+		Source source = this.json.readObject("source-with-proxy.json");
+		assertThat(source.getUri()).isEqualTo("https://repo.example.com");
+		assertThat(source.getUsername()).isEqualTo("admin");
+		assertThat(source.getPassword()).isEqualTo("password");
+		assertThat(source.getBuildName()).isEqualTo("my-build");
+		assertThat(source.getProxyHost()).isEqualTo("proxy.example.com");
+		assertThat(source.getProxyPort()).isEqualTo(8080);
 	}
 
 }

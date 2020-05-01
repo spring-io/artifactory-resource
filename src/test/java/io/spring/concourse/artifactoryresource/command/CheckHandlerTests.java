@@ -45,6 +45,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Gabriel Petrovay
  */
 @RunWith(SpringRunner.class)
 public class CheckHandlerTests {
@@ -64,7 +65,7 @@ public class CheckHandlerTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		List<BuildRun> runs = createBuildRuns();
-		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password", null, 0))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryBuildRuns.getAll()).willReturn(runs);
@@ -83,8 +84,8 @@ public class CheckHandlerTests {
 
 	@Test
 	public void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
-		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
-				null);
+		CheckRequest request = new CheckRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), null);
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
@@ -92,8 +93,8 @@ public class CheckHandlerTests {
 
 	@Test
 	public void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
-		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
-				new Version("2"));
+		CheckRequest request = new CheckRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("2"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("2", "3", "4");
@@ -101,8 +102,8 @@ public class CheckHandlerTests {
 
 	@Test
 	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() throws Exception {
-		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
-				new Version("4"));
+		CheckRequest request = new CheckRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("4"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
@@ -110,8 +111,8 @@ public class CheckHandlerTests {
 
 	@Test
 	public void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
-		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
-				new Version("5"));
+		CheckRequest request = new CheckRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("5"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");

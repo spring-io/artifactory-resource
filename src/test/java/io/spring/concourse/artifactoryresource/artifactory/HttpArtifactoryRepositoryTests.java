@@ -82,7 +82,8 @@ public class HttpArtifactoryRepositoryTests {
 
 	@Before
 	public void setup() {
-		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password")
+		this.artifactoryRepository = this.artifactory
+				.server("https://repo.example.com", "admin", "password", "proxy.example.com", 8080)
 				.repository("libs-snapshot-local");
 	}
 

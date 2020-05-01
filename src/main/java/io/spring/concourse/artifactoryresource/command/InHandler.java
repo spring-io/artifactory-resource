@@ -44,12 +44,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * Delegate used to handle operations triggered from the {@link InCommand}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 @Component
 public class InHandler {
@@ -105,7 +107,12 @@ public class InHandler {
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
 		logger.debug("Using artifactory server " + source.getUri());
-		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword());
+		if (StringUtils.hasText(source.getProxyHost())) {
+			logger.debug("Artifactory server configured to use proxy: {}:{}", source.getProxyHost(),
+					source.getProxyPort());
+		}
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(),
+				source.getProxyHost(), source.getProxyPort());
 	}
 
 	private MultiValueMap<String, DeployedArtifact> groupByRepo(List<DeployedArtifact> artifacts) {
