@@ -56,7 +56,7 @@ resources:
 
 == Environment variables
 Environment variables can be referenced in any part of the configuration by using `${...}` notation.
-For example, typically the `build_url` `out` parameter would be built using `${BUILD_ID}`
+For example, typically the `build_uri` `out` parameter would be built using `${BUILD_ID}`
 
 [source,yaml]
 .Environment variable reference
@@ -66,7 +66,8 @@ jobs:
   plan:
   - put: artifactory
     params:
-      build_url: https://my.concourse.url/builds/${BUILD_ID}
+      repo: libs-snapshot-local
+      build_uri: https://my.concourse.url/builds/${BUILD_ID}
 ----
 
 
