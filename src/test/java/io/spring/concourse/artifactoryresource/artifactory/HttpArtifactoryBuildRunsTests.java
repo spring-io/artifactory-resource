@@ -45,6 +45,7 @@ import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -56,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
@@ -109,6 +111,14 @@ public class HttpArtifactoryBuildRunsTests {
 		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
 		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", started, agent, modules);
 		this.server.verify();
+	}
+
+	@Test
+	public void getAllWhenBuildDoesNotExistReturnsEmptyList() {
+		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
+		assertThat(runs).hasSize(0);
 	}
 
 	@Test

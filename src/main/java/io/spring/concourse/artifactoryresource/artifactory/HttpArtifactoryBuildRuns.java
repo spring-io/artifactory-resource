@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -76,7 +78,12 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	public List<BuildRun> getAll() {
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}")
 				.buildAndExpand(this.buildName).encode().toUri();
-		return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
+		try {
+			return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
+		}
+		catch (HttpClientErrorException ex) {
+			return Collections.emptyList();
+		}
 	}
 
 	@Override
