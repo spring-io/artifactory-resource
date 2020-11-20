@@ -29,13 +29,10 @@ import io.spring.concourse.artifactoryresource.command.payload.CheckResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -46,8 +43,7 @@ import static org.mockito.BDDMockito.given;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
-public class CheckHandlerTests {
+class CheckHandlerTests {
 
 	@Mock
 	private Artifactory artifactory;
@@ -60,8 +56,8 @@ public class CheckHandlerTests {
 
 	private CheckHandler handler;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		List<BuildRun> runs = createBuildRuns();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
@@ -82,7 +78,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
+	void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				null);
 		CheckResponse response = this.handler.handle(request);
@@ -91,7 +87,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
+	void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("2"));
 		CheckResponse response = this.handler.handle(request);
@@ -100,7 +96,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() throws Exception {
+	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() throws Exception {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("4"));
 		CheckResponse response = this.handler.handle(request);
@@ -109,7 +105,7 @@ public class CheckHandlerTests {
 	}
 
 	@Test
-	public void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
+	void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("5"));
 		CheckResponse response = this.handler.handle(request);

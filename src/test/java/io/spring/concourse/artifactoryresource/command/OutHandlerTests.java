@@ -38,10 +38,10 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.FileSet;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -65,12 +65,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class OutHandlerTests {
+class OutHandlerTests {
 
 	private static final byte[] NO_BYTES = {};
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Mock
 	private Artifactory artifactory;
@@ -104,9 +104,11 @@ public class OutHandlerTests {
 	@Captor
 	private ArgumentCaptor<List<BuildModule>> modulesCaptor;
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
+	private AutoCloseable closeable;
+
+	@BeforeEach
+	void setup() {
+		this.closeable = MockitoAnnotations.openMocks(this);
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
@@ -116,16 +118,21 @@ public class OutHandlerTests {
 				this.directoryScanner);
 	}
 
+	@AfterEach
+	void tearDown() throws Exception {
+		this.closeable.close();
+	}
+
 	@Test
-	public void handleWhenEmptyThrowsException() throws Exception {
+	void handleWhenEmptyThrowsException() throws Exception {
 		OutRequest request = createRequest("1234");
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, directory))
 				.withMessage("No artifacts found in empty directory");
 	}
 
 	@Test
-	public void handleWhenNoFilesThrowsException() throws Exception {
+	void handleWhenNoFilesThrowsException() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of());
@@ -134,7 +141,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenBuildNumberIsMissingGeneratesBuildNumber() throws Exception {
+	void handleWhenBuildNumberIsMissingGeneratesBuildNumber() throws Exception {
 		given(this.buildNumberGenerator.generateBuildNumber()).willReturn("2000");
 		OutRequest request = createRequest(null);
 		Directory directory = createDirectory();
@@ -144,7 +151,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenBuildNumberIsSpecifiedUsesBuildNumber() throws Exception {
+	void handleWhenBuildNumberIsSpecifiedUsesBuildNumber() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -154,7 +161,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleDeploysArtifacts() throws Exception {
+	void handleDeploysArtifacts() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -168,7 +175,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleDeploysArtifactsInBatches() throws Exception {
+	void handleDeploysArtifactsInBatches() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		List<File> files = new ArrayList<>();
@@ -206,7 +213,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasArtifactSetDeploysWithAdditionalProperties() throws Exception {
+	void handleWhenHasArtifactSetDeploysWithAdditionalProperties() throws Exception {
 		List<ArtifactSet> artifactSet = new ArrayList<>();
 		List<String> include = Collections.singletonList("/**/foo-0.0.1.jar");
 		List<String> exclude = null;
@@ -222,7 +229,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleAddsBuildRun() throws Exception {
+	void handleAddsBuildRun() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -238,7 +245,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleUsesIncludesAndExcludes() throws Exception {
+	void handleUsesIncludesAndExcludes() throws Exception {
 		List<String> include = Arrays.asList("foo");
 		List<String> exclude = Arrays.asList("bar");
 		OutRequest request = createRequest("1234", include, exclude);
@@ -249,7 +256,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleFiltersChecksumFiles() throws Exception {
+	void handleFiltersChecksumFiles() throws Exception {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		List<File> checksumFiles = new ArrayList<>();
@@ -268,25 +275,25 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterMetadataFiles() throws Exception {
+	void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterMetadataFiles() throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false, "maven-metadata.xml");
 		assertThat(buildModules).hasSize(2);
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsTrueFiltersMetadataFiles() throws Exception {
+	void handleWhenStripSnapshotTimestampsIsTrueFiltersMetadataFiles() throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true, "maven-metadata.xml");
 		assertThat(buildModules).hasSize(1);
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterLocalMetadataFiles() throws Exception {
+	void handleWhenStripSnapshotTimestampsIsFalseDoesNotFilterLocalMetadataFiles() throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(false, "maven-metadata-local.xml");
 		assertThat(buildModules).hasSize(2);
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsIsTrueFiltersLocalMetadataFiles() throws Exception {
+	void handleWhenStripSnapshotTimestampsIsTrueFiltersLocalMetadataFiles() throws Exception {
 		List<BuildModule> buildModules = testStripSnapshotTimestampMetadata(true, "maven-metadata-local.xml");
 		assertThat(buildModules).hasSize(1);
 	}
@@ -306,7 +313,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenStripSnapshotTimestampsChangesDeployArtifactPath() throws Exception {
+	void handleWhenStripSnapshotTimestampsChangesDeployArtifactPath() throws Exception {
 		OutRequest request = createRequest("1234", null, null, true, false, null, 1);
 		Directory directory = createDirectory();
 		configureMockScanner(directory, Collections.emptyList(), "1.0.0.BUILD-SNAPSHOT",
@@ -320,7 +327,7 @@ public class OutHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDisableChecksumUploadDoesNotUseChecksumUpload() throws Exception {
+	void handleWhenDisableChecksumUploadDoesNotUseChecksumUpload() throws Exception {
 		OutRequest request = createRequest("1234", null, null, false, true, null, 1);
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
@@ -347,10 +354,8 @@ public class OutHandlerTests {
 	}
 
 	private Directory createDirectory() throws IOException {
-		File sources = this.temporaryFolder.newFolder();
-		new File(sources, "folder").mkdirs();
-		Directory directory = new Directory(sources);
-		return directory;
+		new File(this.tempDir, "folder").mkdirs();
+		return new Directory(this.tempDir);
 	}
 
 	private void configureMockScanner(Directory directory) throws IOException {

@@ -18,9 +18,8 @@ package io.spring.concourse.artifactoryresource.io;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -36,86 +35,84 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class DirectoryTests {
+class DirectoryTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void createWhenPathIsNullThrowsException() throws Exception {
+	void createWhenPathIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((String) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	public void createWhenFileIsNullThrowsException() throws Exception {
+	void createWhenFileIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((File) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	public void createWhenFileDoesNotExistThrowsException() throws Exception {
-		File file = this.temporaryFolder.newFile();
-		file.delete();
-		assertThatIllegalStateException().isThrownBy(() -> new Directory(file)).withMessageContaining("does not exist");
+	void createWhenFileDoesNotExistThrowsException() throws Exception {
+		this.tempDir.delete();
+		assertThatIllegalStateException().isThrownBy(() -> new Directory(this.tempDir))
+				.withMessageContaining("does not exist");
 	}
 
 	@Test
-	public void createWhenFileIsNotDirectoryThrowsException() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	void createWhenFileIsNotDirectoryThrowsException() throws Exception {
+		File file = File.createTempFile("test", "", this.tempDir);
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
 				.withMessageContaining("is not a directory");
 	}
 
 	@Test
-	public void isEmptyWhenEmptyReturnsTrue() throws Exception {
-		File file = this.temporaryFolder.newFolder();
-		Directory directory = new Directory(file);
+	void isEmptyWhenEmptyReturnsTrue() throws Exception {
+		Directory directory = new Directory(this.tempDir);
 		assertThat(directory.isEmpty()).isTrue();
 	}
 
 	@Test
-	public void isEmptyWhenNotEmptyReturnsFalse() throws Exception {
-		File file = this.temporaryFolder.newFolder();
-		new File(file, "nested").mkdirs();
-		Directory directory = new Directory(file);
+	void isEmptyWhenNotEmptyReturnsFalse() throws Exception {
+		new File(this.tempDir, "nested").mkdirs();
+		Directory directory = new Directory(this.tempDir);
 		assertThat(directory.isEmpty()).isFalse();
 	}
 
 	@Test
-	public void getFileReturnsFile() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void getFileReturnsFile() throws Exception {
+		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		assertThat(directory.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	public void toStringReturnsFilePath() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void toStringReturnsFilePath() throws Exception {
+		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		String expected = StringUtils.cleanPath(file.getPath());
 		assertThat(directory.toString()).isEqualTo(expected);
 	}
 
 	@Test
-	public void getSubDirectoryWhenPathIsNullReturnsThis() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void getSubDirectoryWhenPathIsNullReturnsThis() throws Exception {
+		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory(null);
 		assertThat(directory).isEqualTo(subdirectory);
 	}
 
 	@Test
-	public void getSubDirectoryWhenPathIsEmptyReturnsThis() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void getSubDirectoryWhenPathIsEmptyReturnsThis() throws Exception {
+		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory("");
 		assertThat(directory).isEqualTo(subdirectory);
 	}
 
 	@Test
-	public void getSubDirectoryGetsSubDirectory() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void getSubDirectoryGetsSubDirectory() throws Exception {
+		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		File nested = new File(file, "nested");
 		nested.mkdirs();
@@ -124,8 +121,8 @@ public class DirectoryTests {
 	}
 
 	@Test
-	public void createFromArgsUsesArgument() throws Exception {
-		File file = this.temporaryFolder.newFolder();
+	void createFromArgsUsesArgument() throws Exception {
+		File file = this.tempDir;
 		String path = StringUtils.cleanPath(file.getPath());
 		ApplicationArguments args = new DefaultApplicationArguments(new String[] { "in", path });
 		Directory directory = Directory.fromArgs(args);

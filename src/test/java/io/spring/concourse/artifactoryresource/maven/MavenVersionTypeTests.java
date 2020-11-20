@@ -16,7 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class MavenVersionTypeTests {
+class MavenVersionTypeTests {
 
 	@Test
-	public void fromVersionWhenTimestampReturnsTimestampSnapshot() throws Exception {
+	void fromVersionWhenTimestampReturnsTimestampSnapshot() throws Exception {
 		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-20171005.194031-1"))
 				.isEqualTo(MavenVersionType.TIMESTAMP_SNAPSHOT);
 		assertThat(MavenVersionType.fromVersion("0.0.1-20171005.194031-1"))
@@ -36,13 +36,13 @@ public class MavenVersionTypeTests {
 	}
 
 	@Test
-	public void fromVersionWhenSnapshotReturnsSnapshot() throws Exception {
+	void fromVersionWhenSnapshotReturnsSnapshot() throws Exception {
 		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
 		assertThat(MavenVersionType.fromVersion("0.0.1-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
 	}
 
 	@Test
-	public void fromVersionWhenFixedReturnsFixed() throws Exception {
+	void fromVersionWhenFixedReturnsFixed() throws Exception {
 		assertThat(MavenVersionType.fromVersion("0.0.1.RELEASE")).isEqualTo(MavenVersionType.FIXED);
 		assertThat(MavenVersionType.fromVersion("0.0.1")).isEqualTo(MavenVersionType.FIXED);
 

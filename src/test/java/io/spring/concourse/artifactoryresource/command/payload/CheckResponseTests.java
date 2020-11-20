@@ -19,13 +19,11 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -35,21 +33,20 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class CheckResponseTests {
+class CheckResponseTests {
 
 	@Autowired
 	private JacksonTester<CheckResponse> json;
 
 	@Test
-	public void createWhenVersionsIsNullThrowsException() throws Exception {
+	void createWhenVersionsIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CheckResponse(null))
 				.withMessage("Versions must not be null");
 	}
 
 	@Test
-	public void writeSerializesJson() throws Exception {
+	void writeSerializesJson() throws Exception {
 		List<Version> versions = new ArrayList<>();
 		versions.add(new Version("1234"));
 		versions.add(new Version("5678"));

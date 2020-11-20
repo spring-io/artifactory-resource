@@ -18,35 +18,31 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.util.function.Function;
 
-import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.DockerComposeExtension;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
-import org.junit.rules.ExternalResource;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link TestRule} providing access to an artifactory server connection.
+ * providing access to an artifactory server connection.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ArtifactoryServerConnection implements TestRule {
+public class ArtifactoryServerConnection implements BeforeAllCallback, AfterAllCallback {
 
 	private static final String SERVER_PROPERTY = "artifactoryServer";
 
 	private Function<Artifactory, ArtifactoryServer> serverFactory;
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		return apply(base, description, getDelegate());
-	}
+	private Delegate delegate;
 
-	private Delegate<?> getDelegate() {
+	private Delegate getDelegate() {
 		String serverLocation = System.getProperty(SERVER_PROPERTY);
 		if (StringUtils.hasLength(serverLocation) && !serverLocation.startsWith("$")) {
 			return new RunningServerDelegate(serverLocation);
@@ -55,51 +51,64 @@ public class ArtifactoryServerConnection implements TestRule {
 
 	}
 
-	private <R extends TestRule> Statement apply(Statement base, Description description,
-			Delegate<R> delegate) {
-		final R rule = delegate.createRule();
-		Statement statement = new Statement() {
-
-			@Override
-			public void evaluate() throws Throwable {
-				ArtifactoryServerConnection.this.serverFactory = (artifactory) -> delegate
-						.getArtifactoryServer(rule, artifactory);
-				base.evaluate();
-			}
-
-		};
-		return rule.apply(statement, description);
-	}
-
 	public ArtifactoryServer getArtifactoryServer(Artifactory artifactory) {
 		Assert.state(this.serverFactory != null, "No artifactory server available");
 		return this.serverFactory.apply(artifactory);
 	}
 
-	private interface Delegate<R extends TestRule> {
+	@Override
+	public void beforeAll(ExtensionContext context) throws Exception {
+		before(context);
+	}
 
-		R createRule();
+	private void before(ExtensionContext context) throws Exception {
+		this.delegate = getDelegate();
+		this.serverFactory = (artifactory) -> (delegate).getArtifactoryServer(context, artifactory);
+	}
 
-		ArtifactoryServer getArtifactoryServer(R rule, Artifactory artifactory);
+	@Override
+	public void afterAll(ExtensionContext context) throws Exception {
+		this.delegate.after(context);
+	}
+
+	private interface Delegate {
+
+		ArtifactoryServer getArtifactoryServer(ExtensionContext context, Artifactory artifactory);
+
+		void after(ExtensionContext context);
 
 	}
 
-	private static class DockerDelegate implements Delegate<DockerComposeRule> {
+	private static class DockerDelegate implements Delegate {
 
-		@Override
-		public DockerComposeRule createRule() {
-			return DockerComposeRule.builder()
-					.file("src/integration/resources/docker-compose.yml")
-					.waitingForService("artifactory", HealthChecks.toRespond2xxOverHttp(
-							8081, DockerDelegate::artifactoryHealthUri))
+		private final DockerComposeExtension extension;
+
+		DockerDelegate() {
+			this.extension = DockerComposeExtension.builder().file("src/integration/resources/docker-compose.yml")
+					.waitingForService("artifactory",
+							HealthChecks.toRespond2xxOverHttp(8081, DockerDelegate::artifactoryHealthUri))
 					.build();
 		}
 
 		@Override
-		public ArtifactoryServer getArtifactoryServer(DockerComposeRule rule,
-				Artifactory artifactory) {
-			DockerPort port = rule.containers().container("artifactory").port(8081);
+		public ArtifactoryServer getArtifactoryServer(ExtensionContext context, Artifactory artifactory) {
+			DockerPort port = getDockerPort(context);
 			return artifactory.server(artifactoryUri(port), "admin", "password");
+		}
+
+		private DockerPort getDockerPort(ExtensionContext context) {
+			try {
+				this.extension.beforeAll(context);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			return this.extension.containers().container("artifactory").port(8081);
+		}
+
+		@Override
+		public void after(ExtensionContext context) {
+			this.extension.afterAll(context);
 		}
 
 		private static String artifactoryHealthUri(DockerPort port) {
@@ -112,7 +121,7 @@ public class ArtifactoryServerConnection implements TestRule {
 
 	}
 
-	private static class RunningServerDelegate implements Delegate<TestRule> {
+	private static class RunningServerDelegate implements Delegate {
 
 		private final String uri;
 
@@ -121,16 +130,13 @@ public class ArtifactoryServerConnection implements TestRule {
 		}
 
 		@Override
-		public TestRule createRule() {
-			return new ExternalResource() {
-
-			};
+		public ArtifactoryServer getArtifactoryServer(ExtensionContext extension, Artifactory artifactory) {
+			return artifactory.server(this.uri, "admin", "password");
 		}
 
 		@Override
-		public ArtifactoryServer getArtifactoryServer(TestRule rule,
-				Artifactory artifactory) {
-			return artifactory.server(this.uri, "admin", "password");
+		public void after(ExtensionContext context) {
+
 		}
 
 	}

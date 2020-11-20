@@ -24,12 +24,10 @@ import java.util.Random;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
@@ -38,7 +36,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
 
@@ -55,9 +52,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
-public class HttpArtifactoryRepositoryTests {
+class HttpArtifactoryRepositoryTests {
 
 	private static final byte[] BYTES;
 
@@ -77,22 +73,22 @@ public class HttpArtifactoryRepositoryTests {
 
 	private ArtifactoryRepository artifactoryRepository;
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password")
 				.repository("libs-snapshot-local");
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterEach
+	void tearDown() throws Exception {
 		this.customizer.getExpectationManagers().clear();
 	}
 
 	@Test
-	public void deployUploadsTheDeployableArtifact() throws IOException {
+	void deployUploadsTheDeployableArtifact() throws IOException {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
@@ -106,7 +102,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployUploadsTheDeployableArtifactWithMatrixParameters() {
+	void deployUploadsTheDeployableArtifactWithMatrixParameters() {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("buildNumber", "1");
 		properties.put("revision", "123");
@@ -118,7 +114,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenChecksumMatchesDoesNotUpload() throws Exception {
+	void deployWhenChecksumMatchesDoesNotUpload() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
@@ -129,7 +125,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionUploads() throws Exception {
+	void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionUploads() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
@@ -143,7 +139,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenSmallFileDoesNotUseChecksum() throws Exception {
+	void deployWhenSmallFileDoesNotUseChecksum() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
@@ -153,7 +149,7 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum() throws Exception {
+	void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum() throws Exception {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
@@ -167,24 +163,22 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadFetchsArtifactAndWriteToFile() throws Exception {
+	void downloadFetchsArtifactAndWriteToFile() throws Exception {
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
-		File destination = this.temporaryFolder.newFolder();
-		this.artifactoryRepository.download("foo/bar.jar", destination, false);
-		assertThat(new File(new File(destination, "foo"), "bar.jar")).exists().isFile();
+		this.artifactoryRepository.download("foo/bar.jar", this.tempDir, false);
+		assertThat(new File(new File(this.tempDir, "foo"), "bar.jar")).exists().isFile();
 		this.server.verify();
 	}
 
 	@Test
-	public void downloadFetchsChecksumFiles() throws Exception {
+	void downloadFetchsChecksumFiles() throws Exception {
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
 		expectFileDownload(url + ".md5");
 		expectFileDownload(url + ".sha1");
-		File destination = this.temporaryFolder.newFolder();
-		this.artifactoryRepository.download("foo/bar.jar", destination, true);
-		File folder = new File(destination, "foo");
+		this.artifactoryRepository.download("foo/bar.jar", this.tempDir, true);
+		File folder = new File(this.tempDir, "foo");
 		assertThat(new File(folder, "bar.jar")).exists().isFile();
 		assertThat(new File(folder, "bar.jar.md5")).exists().isFile();
 		assertThat(new File(folder, "bar.jar.sha1")).exists().isFile();
@@ -192,12 +186,11 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadWhenChecksumFileDoesNotFetchChecksumFiles() throws Exception {
+	void downloadWhenChecksumFileDoesNotFetchChecksumFiles() throws Exception {
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar.md5";
 		expectFileDownload(url);
-		File destination = this.temporaryFolder.newFolder();
-		this.artifactoryRepository.download("foo/bar.jar.md5", destination, true);
-		File folder = new File(destination, "foo");
+		this.artifactoryRepository.download("foo/bar.jar.md5", this.tempDir, true);
+		File folder = new File(this.tempDir, "foo");
 		assertThat(new File(folder, "bar.jar.md5")).exists().isFile();
 		assertThat(new File(folder, "bar.jar.md5.md5")).doesNotExist();
 		assertThat(new File(folder, "bar.jar.md5.sha1")).doesNotExist();
@@ -205,14 +198,13 @@ public class HttpArtifactoryRepositoryTests {
 	}
 
 	@Test
-	public void downloadIgnoresChecksumFileFailures() throws Exception {
+	void downloadIgnoresChecksumFileFailures() throws Exception {
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		expectFileDownload(url);
 		expectFile404(url + ".md5");
 		expectFile404(url + ".sha1");
-		File destination = this.temporaryFolder.newFolder();
-		this.artifactoryRepository.download("foo/bar.jar", destination, true);
-		File folder = new File(destination, "foo");
+		this.artifactoryRepository.download("foo/bar.jar", this.tempDir, true);
+		File folder = new File(this.tempDir, "foo");
 		assertThat(new File(folder, "bar.jar")).exists().isFile();
 		assertThat(new File(folder, "bar.jar.md5")).doesNotExist();
 		assertThat(new File(folder, "bar.jar.sha1")).doesNotExist();

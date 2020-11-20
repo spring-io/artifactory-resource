@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.util.FileCopyUtils;
 

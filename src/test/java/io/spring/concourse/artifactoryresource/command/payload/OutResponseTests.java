@@ -19,13 +19,11 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -35,21 +33,20 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class OutResponseTests {
+class OutResponseTests {
 
 	@Autowired
 	private JacksonTester<OutResponse> json;
 
 	@Test
-	public void createWhenVersionIsNullThrowsException() throws Exception {
+	void createWhenVersionIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InResponse(null, null))
 				.withMessage("Version must not be null");
 	}
 
 	@Test
-	public void writeSerializesJson() throws Exception {
+	void writeSerializesJson() throws Exception {
 		List<Metadata> metadata = new ArrayList<>();
 		metadata.add(new Metadata("foo", "bar"));
 		metadata.add(new Metadata("bin", "bag"));
@@ -58,7 +55,7 @@ public class OutResponseTests {
 	}
 
 	@Test
-	public void writeWhenMetadataIsNullSerializesJson() throws Exception {
+	void writeWhenMetadataIsNullSerializesJson() throws Exception {
 		OutResponse response = new OutResponse(new Version("1234"), null);
 		assertThat(this.json.write(response)).isEqualToJson("out-response-without-metadata.json");
 	}

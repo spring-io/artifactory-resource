@@ -16,13 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,27 +30,26 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class VersionTests {
+class VersionTests {
 
 	@Autowired
 	private JacksonTester<Version> json;
 
 	@Test
-	public void createWhenBuildNumberIsEmptyThrowsException() {
+	void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Version(""))
 				.withMessage("Build Number must not be empty");
 	}
 
 	@Test
-	public void writeSerializesJson() throws Exception {
+	void writeSerializesJson() throws Exception {
 		Version version = new Version("5678");
 		assertThat(this.json.write(version)).isEqualTo("version.json");
 	}
 
 	@Test
-	public void readDeserializesJson() throws Exception {
+	void readDeserializesJson() throws Exception {
 		Version version = this.json.readObject("version.json");
 		assertThat(version.getBuildNumber()).isEqualTo("5678");
 	}

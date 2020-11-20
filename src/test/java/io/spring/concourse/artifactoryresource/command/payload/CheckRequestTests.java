@@ -16,13 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,21 +30,20 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class CheckRequestTests {
+class CheckRequestTests {
 
 	@Autowired
 	private JacksonTester<CheckRequest> json;
 
 	@Test
-	public void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CheckRequest(null, new Version("1234")))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void readWhenMissingVersionDeserializesJson() throws Exception {
+	void readWhenMissingVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
@@ -55,7 +52,7 @@ public class CheckRequestTests {
 	}
 
 	@Test
-	public void readWhenHasVersionDeserializesJson() throws Exception {
+	void readWhenHasVersionDeserializesJson() throws Exception {
 		CheckRequest request = this.json.readObject("check-request-with-version.json");
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");

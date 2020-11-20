@@ -19,7 +19,7 @@ package io.spring.concourse.artifactoryresource.command;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.DefaultApplicationArguments;
 
@@ -36,19 +36,19 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class CommandProcessorTests {
+class CommandProcessorTests {
 
 	private static final String[] NO_ARGS = {};
 
 	@Test
-	public void runWhenNoArgumentThrowsException() throws Exception {
+	void runWhenNoArgumentThrowsException() throws Exception {
 		CommandProcessor processor = new CommandProcessor(Collections.singletonList(mock(Command.class)));
 		assertThatIllegalStateException().isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
 				.withMessage("No command argument specified");
 	}
 
 	@Test
-	public void runWhenUnknownCommandThrowsException() throws Exception {
+	void runWhenUnknownCommandThrowsException() throws Exception {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
 		CommandProcessor processor = new CommandProcessor(Collections.singletonList(fooCommand));
@@ -57,7 +57,7 @@ public class CommandProcessorTests {
 	}
 
 	@Test
-	public void runDelegatesToCommand() throws Exception {
+	void runDelegatesToCommand() throws Exception {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
 		Command barCommand = mock(Command.class);

@@ -20,8 +20,8 @@ import io.spring.concourse.artifactoryresource.command.payload.CheckRequest;
 import io.spring.concourse.artifactoryresource.command.payload.CheckResponse;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class CheckCommandTests {
+class CheckCommandTests {
 
 	@Mock
 	private SystemInput systemInput;
@@ -50,14 +50,14 @@ public class CheckCommandTests {
 
 	private CheckCommand command;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.command = new CheckCommand(this.systemInput, this.systemOutput, this.handler);
 	}
 
 	@Test
-	public void runCallsHandler() throws Exception {
+	void runCallsHandler() throws Exception {
 		CheckRequest request = mock(CheckRequest.class);
 		CheckResponse response = mock(CheckResponse.class);
 		given(this.systemInput.read(CheckRequest.class)).willReturn(request);

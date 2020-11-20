@@ -36,17 +36,14 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFil
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.BuildNumberGenerator;
 import io.spring.concourse.artifactoryresource.io.Checksum;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,22 +54,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class ApplicationIT {
+class ApplicationIT {
 
-	@ClassRule
-	public static ArtifactoryServerConnection connection = new ArtifactoryServerConnection();
+	@RegisterExtension
+	static ArtifactoryServerConnection connection = new ArtifactoryServerConnection();
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Autowired
 	private Artifactory artifactory;
 
 	@Test
-	public void integrationTest() throws Exception {
+	void integrationTest() throws Exception {
 		String buildNumber = generateBuildNumber();
 		File file = createLargeFile();
 		ArtifactoryRepository repository = getServer().repository("example-repo-local");
@@ -99,7 +95,7 @@ public class ApplicationIT {
 	}
 
 	private File createLargeFile() throws IOException, FileNotFoundException {
-		File file = this.temporaryFolder.newFile();
+		File file = new File(this.tempDir, "temp");
 		FileOutputStream stream = new FileOutputStream(file);
 		int size = 0;
 		Random random = new Random();
@@ -128,9 +124,8 @@ public class ApplicationIT {
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
 			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, File expectedContent) throws Exception {
-		this.temporaryFolder.create();
 		List<DeployedArtifact> results = artifactoryBuildRuns.getDeployedArtifacts(buildNumber);
-		File folder = this.temporaryFolder.newFolder();
+		File folder = this.tempDir;
 		for (DeployedArtifact result : results) {
 			artifactoryRepository.download(result, folder, true);
 		}
@@ -141,7 +136,7 @@ public class ApplicationIT {
 	}
 
 	private ArtifactoryServer getServer() {
-		return ApplicationIT.connection.getArtifactoryServer(this.artifactory);
+		return connection.getArtifactoryServer(this.artifactory);
 	}
 
 }

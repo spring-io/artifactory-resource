@@ -17,7 +17,7 @@
 package io.spring.concourse.artifactoryresource.system;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
@@ -26,10 +26,10 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SystemOutputTests {
+class SystemOutputTests {
 
 	@Test
-	public void writeSerializesJson() throws Exception {
+	void writeSerializesJson() throws Exception {
 		MockSystemStreams systemStreams = new MockSystemStreams("");
 		SystemOutput output = new SystemOutput(systemStreams, new ObjectMapper());
 		output.write(new String[] { "foo" });

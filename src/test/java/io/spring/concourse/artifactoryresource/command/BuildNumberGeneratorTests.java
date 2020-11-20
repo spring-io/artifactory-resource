@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,10 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class BuildNumberGeneratorTests {
+class BuildNumberGeneratorTests {
 
 	@Test
-	public void generateBuildNumberUsesFormattedInstant() throws Exception {
+	void generateBuildNumberUsesFormattedInstant() throws Exception {
 		Instant fixedInstant = LocalDateTime.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
 				.toInstant(ZoneOffset.UTC);
 		Clock clock = Clock.fixed(fixedInstant, ZoneOffset.UTC);
@@ -44,7 +44,7 @@ public class BuildNumberGeneratorTests {
 	}
 
 	@Test
-	public void generateBuildNumberWorksWithRealClock() throws Exception {
+	void generateBuildNumberWorksWithRealClock() throws Exception {
 		String buildNumber = new BuildNumberGenerator().generateBuildNumber();
 		assertThat(buildNumber).isNotNull().hasSize(26);
 	}

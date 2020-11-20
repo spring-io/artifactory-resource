@@ -23,9 +23,8 @@ import java.net.URL;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import org.assertj.core.api.Condition;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
@@ -40,17 +39,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MavenMetadataGeneratorTests {
+class MavenMetadataGeneratorTests {
 
 	private static final byte[] NO_BYTES = {};
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private MavenMetadataGenerator generator = new MavenMetadataGenerator(new DirectoryScanner());
 
 	@Test
-	public void generateWhenUsingNonSnapshotDoesNotCreateMetadata() throws Exception {
+	void generateWhenUsingNonSnapshotDoesNotCreateMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.RELEASE");
 		this.generator.generate(directory, false);
 		File file = new File(directory.toString() + "/com/example/project/my-project/1.0.0.RELEASE/maven-metadata.xml");
@@ -58,7 +57,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenUsingSnapshotCreatesMetadata() throws Exception {
+	void generateWhenUsingSnapshotCreatesMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, false);
 		File file = new File(
@@ -68,7 +67,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenUsingSnapshotTimestampCreatesMetadata() throws Exception {
+	void generateWhenUsingSnapshotTimestampCreatesMetadata() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT", "1.0.0.BUILD-20170626.200218-328");
 		this.generator.generate(directory, false);
 		File file = new File(
@@ -78,7 +77,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	@Test
-	public void generateWhenCreatingChecksumsCreatesChecksums() throws Exception {
+	void generateWhenCreatingChecksumsCreatesChecksums() throws Exception {
 		Directory directory = createStructure("1.0.0.BUILD-SNAPSHOT");
 		this.generator.generate(directory, true);
 		File folder = new File(directory.toString() + "/com/example/project/my-project/1.0.0.BUILD-SNAPSHOT/");
@@ -91,7 +90,7 @@ public class MavenMetadataGeneratorTests {
 	}
 
 	private Directory createStructure(String folderVersion, String fileVersion) throws IOException {
-		Directory root = new Directory(this.temporaryFolder.newFolder());
+		Directory root = new Directory(this.tempDir);
 		String prefix = "com/example/project/my-project/";
 		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".pom");
 		add(root, prefix + folderVersion + "/my-project-" + fileVersion + ".jar");

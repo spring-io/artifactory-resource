@@ -31,12 +31,9 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousInt
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.json.JSONException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +45,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.util.FileCopyUtils;
@@ -66,9 +62,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @RestClientTest(HttpArtifactory.class)
-public class HttpArtifactoryBuildRunsTests {
+class HttpArtifactoryBuildRunsTests {
 
 	private static final Pattern AQL_PATTERN = Pattern.compile("items.find\\((.+)\\)");
 
@@ -83,22 +78,19 @@ public class HttpArtifactoryBuildRunsTests {
 
 	private ArtifactoryBuildRuns artifactoryBuildRuns;
 
-	@ClassRule
-	public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.artifactoryBuildRuns = this.artifactory.server("https://repo.example.com", "admin", "password")
 				.buildRuns("my-build");
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterEach
+	void tearDown() throws Exception {
 		this.customizer.getExpectationManagers().clear();
 	}
 
 	@Test
-	public void addAddsBuildInfo() throws Exception {
+	void addAddsBuildInfo() throws Exception {
 		this.server.expect(requestTo("https://repo.example.com/api/build")).andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
@@ -114,7 +106,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void getAllWhenBuildDoesNotExistReturnsEmptyList() {
+	void getAllWhenBuildDoesNotExistReturnsEmptyList() {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
@@ -122,7 +114,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void getAllReturnsBuildRuns() throws Exception {
+	void getAllReturnsBuildRuns() throws Exception {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
@@ -132,7 +124,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void getRawBuildInfoReturnsBuildInfo() throws Exception {
+	void getRawBuildInfoReturnsBuildInfo() throws Exception {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
@@ -141,7 +133,7 @@ public class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	public void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
+	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN)).andExpect(aqlContent("my-build", "1234"))

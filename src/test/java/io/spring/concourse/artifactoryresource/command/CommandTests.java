@@ -16,7 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ApplicationArguments;
 
@@ -28,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class CommandTests {
+class CommandTests {
 
 	@Test
-	public void getNameUsesConvention() throws Exception {
+	void getNameUsesConvention() throws Exception {
 		assertThat(new ExampleCommand().getName()).isEqualTo("example");
 	}
 

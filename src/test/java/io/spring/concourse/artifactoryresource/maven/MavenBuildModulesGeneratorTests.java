@@ -23,7 +23,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableByteArrayArtifact;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,14 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MavenBuildModulesGeneratorTests {
+class MavenBuildModulesGeneratorTests {
 
 	private static final byte[] NO_CONTENT = {};
 
 	private MavenBuildModulesGenerator generator = new MavenBuildModulesGenerator();
 
 	@Test
-	public void getBuildModulesReturnsBuildModules() {
+	void getBuildModulesReturnsBuildModules() {
 		List<DeployableArtifact> deployableArtifacts = new ArrayList<>();
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.pom"));
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.jar"));
@@ -63,7 +63,7 @@ public class MavenBuildModulesGeneratorTests {
 	}
 
 	@Test
-	public void getBuildModulesWhenContainingSpecificExtensionsFiltersArtifacts() throws Exception {
+	void getBuildModulesWhenContainingSpecificExtensionsFiltersArtifacts() throws Exception {
 		List<DeployableArtifact> deployableArtifacts = new ArrayList<>();
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.pom"));
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.asc"));
@@ -75,7 +75,7 @@ public class MavenBuildModulesGeneratorTests {
 	}
 
 	@Test
-	public void getBuildModulesWhenContainingUnexpectedLayoutReturnsEmptyList() throws Exception {
+	void getBuildModulesWhenContainingUnexpectedLayoutReturnsEmptyList() throws Exception {
 		List<DeployableArtifact> deployableArtifacts = new ArrayList<>();
 		deployableArtifacts.add(artifact("/foo-1.0.0.zip"));
 		List<BuildModule> buildModules = this.generator.getBuildModules(deployableArtifacts);

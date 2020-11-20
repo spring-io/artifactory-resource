@@ -16,13 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,21 +30,20 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class MetadataTests {
+class MetadataTests {
 
 	@Autowired
 	private JacksonTester<Metadata> json;
 
 	@Test
-	public void createWhenMisstingNameThrowsException() throws Exception {
+	void createWhenMisstingNameThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Metadata("", "value"))
 				.withMessage("Name must not be empty");
 	}
 
 	@Test
-	public void writeSerializesJson() throws Exception {
+	void writeSerializesJson() throws Exception {
 		assertThat(this.json.write(new Metadata("foo", "bar"))).isEqualToJson("metadata.json");
 	}
 

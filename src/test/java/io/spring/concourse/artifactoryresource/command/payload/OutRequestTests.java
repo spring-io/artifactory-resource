@@ -19,13 +19,11 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.ArtifactSet;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -35,9 +33,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class OutRequestTests {
+class OutRequestTests {
 
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
@@ -48,31 +45,31 @@ public class OutRequestTests {
 	private JacksonTester<OutRequest> json;
 
 	@Test
-	public void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(null, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void createWhenParamsIsNullThrowsException() throws Exception {
+	void createWhenParamsIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(this.source, null))
 				.withMessage("Params must not be null");
 	}
 
 	@Test
-	public void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
+	void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
 				"1234", "", null, null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
 	}
 
 	@Test
-	public void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
+	void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
 				null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
 	}
 
 	@Test
-	public void readDeserializesJson() throws Exception {
+	void readDeserializesJson() throws Exception {
 		OutRequest request = this.json.readObject("out-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
@@ -96,7 +93,7 @@ public class OutRequestTests {
 	}
 
 	@Test
-	public void readWhenHasNoArtifactSetPropertiesUsesEmptyCollection() throws Exception {
+	void readWhenHasNoArtifactSetPropertiesUsesEmptyCollection() throws Exception {
 		OutRequest request = this.json.readObject("out-request-without-artifact-set-properties.json");
 		assertThat(request.getParams().getArtifactSet().get(0).getProperties()).isEmpty();
 	}

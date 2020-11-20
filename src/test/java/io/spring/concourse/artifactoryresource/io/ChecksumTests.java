@@ -20,9 +20,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.FileCopyUtils;
@@ -36,7 +35,7 @@ import static org.assertj.core.api.Assertions.entry;
  *
  * @author Phillip Webb
  */
-public class ChecksumTests {
+class ChecksumTests {
 
 	private static final String SOURCE = "foo";
 
@@ -44,44 +43,44 @@ public class ChecksumTests {
 
 	private static final String MD5 = "acbd18db4cc2f85cedef654fccc4a4d8";
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void getFileExtensionReturnsExtension() {
+	void getFileExtensionReturnsExtension() {
 		assertThat(Checksum.MD5.getFileExtension()).isEqualTo(".md5");
 		assertThat(Checksum.SHA1.getFileExtension()).isEqualTo(".sha1");
 	}
 
 	@Test
-	public void validateWhenNullThrowsException() {
+	void validateWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.SHA1.validate(null))
 				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
-	public void validateWhenEmptyThrowsException() {
+	void validateWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.MD5.validate(""))
 				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
-	public void validateWhenTooLongThrowsException() {
+	void validateWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
-	public void validateWhenTooShortThrowsException() {
+	void validateWhenTooShortThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
 				.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
-	public void generateChecksumFilesGeneratesChecksumFiles() throws Exception {
-		File file = this.temp.newFile();
+	void generateChecksumFilesGeneratesChecksumFiles() throws Exception {
+		File file = new File(this.tempDir, "test");
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
 		assertThat(new File(file.getParentFile(), file.getName() + ".sha1")).hasContent(SHA1);
@@ -89,8 +88,8 @@ public class ChecksumTests {
 	}
 
 	@Test
-	public void generateChecksumFileWhenChecksumFileDoesNotGenerate() throws Exception {
-		File file = this.temp.newFile("test.md5");
+	void generateChecksumFileWhenChecksumFileDoesNotGenerate() throws Exception {
+		File file = new File(this.tempDir, "test.md5");
 		FileCopyUtils.copy(SOURCE, new FileWriter(file));
 		Checksum.generateChecksumFiles(file);
 		assertThat(new File(file.getParentFile(), file.getName() + ".sha1")).doesNotExist();
@@ -98,31 +97,31 @@ public class ChecksumTests {
 	}
 
 	@Test
-	public void isChecksumFileWhenChecksumFileReturnsTrue() {
+	void isChecksumFileWhenChecksumFileReturnsTrue() {
 		assertThat(Checksum.isChecksumFile("foo.md5")).isTrue();
 		assertThat(Checksum.isChecksumFile("foo/bar.MD5")).isTrue();
 		assertThat(Checksum.isChecksumFile("foo.sha1")).isTrue();
 	}
 
 	@Test
-	public void isChecksumFileWhenNotChecksumFileReturnsFalse() {
+	void isChecksumFileWhenNotChecksumFileReturnsFalse() {
 		assertThat(Checksum.isChecksumFile("foo.xml")).isFalse();
 	}
 
 	@Test
-	public void getFileExtensionsReturnsExtensions() {
+	void getFileExtensionsReturnsExtensions() {
 		assertThat(Checksum.getFileExtensions()).containsOnly(".md5", ".sha1");
 	}
 
 	@Test
-	public void calculateAllFromResourceReturnsChecksums() {
+	void calculateAllFromResourceReturnsChecksums() {
 		ByteArrayResource resource = new ByteArrayResource(SOURCE.getBytes());
 		Map<Checksum, String> checksums = Checksum.calculateAll(resource);
 		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5), entry(Checksum.SHA1, SHA1));
 	}
 
 	@Test
-	public void calculateAllFromStringReturnsChecksums() {
+	void calculateAllFromStringReturnsChecksums() {
 		Map<Checksum, String> checksums = Checksum.calculateAll(SOURCE);
 		assertThat(checksums).containsOnly(entry(Checksum.MD5, MD5), entry(Checksum.SHA1, SHA1));
 	}

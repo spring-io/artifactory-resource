@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SystemStreamsTests {
+class SystemStreamsTests {
 
 	@Test
-	public void reconfigureSystemChangesOutToErr() {
+	void reconfigureSystemChangesOutToErr() {
 		doWithSystemStreams(() -> {
 			ByteArrayOutputStream errBytes = new ByteArrayOutputStream();
 			PrintStream err = new PrintStream(errBytes);
@@ -47,7 +47,7 @@ public class SystemStreamsTests {
 	}
 
 	@Test
-	public void reconfigureSystemProvidesAccessToOriginalSystemOut() throws Exception {
+	void reconfigureSystemProvidesAccessToOriginalSystemOut() throws Exception {
 		doWithSystemStreams(() -> {
 			ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
 			PrintStream out = new PrintStream(outBytes);
@@ -60,7 +60,7 @@ public class SystemStreamsTests {
 	}
 
 	@Test
-	public void reconfigureSystemProvidesAccessToOriginalSystemIn() throws Exception {
+	void reconfigureSystemProvidesAccessToOriginalSystemIn() throws Exception {
 		doWithSystemStreams(() -> {
 			ByteArrayInputStream inBytes = new ByteArrayInputStream("foo".getBytes());
 			System.setIn(inBytes);

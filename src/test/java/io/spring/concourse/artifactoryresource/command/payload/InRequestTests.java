@@ -16,13 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,9 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
 @JsonTest
-public class InRequestTests {
+class InRequestTests {
 
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
@@ -46,19 +43,19 @@ public class InRequestTests {
 	private JacksonTester<InRequest> json;
 
 	@Test
-	public void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(null, this.version, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	public void createWhenVersionIsNullThrowsException() throws Exception {
+	void createWhenVersionIsNullThrowsException() throws Exception {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(this.source, null, this.params))
 				.withMessage("Version must not be null");
 	}
 
 	@Test
-	public void createWhenParamsIsNullUsesDefauls() throws Exception {
+	void createWhenParamsIsNullUsesDefauls() throws Exception {
 		InRequest request = new InRequest(this.source, this.version, null);
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 		assertThat(request.getParams().isSaveBuildInfo()).isFalse();
@@ -68,7 +65,7 @@ public class InRequestTests {
 	}
 
 	@Test
-	public void readDeserializesJson() throws Exception {
+	void readDeserializesJson() throws Exception {
 		InRequest request = this.json.readObject("in-request.json");
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
@@ -82,7 +79,7 @@ public class InRequestTests {
 	}
 
 	@Test
-	public void readWhenMissingGenerateMavenMetadataDeserializesJson() throws Exception {
+	void readWhenMissingGenerateMavenMetadataDeserializesJson() throws Exception {
 		InRequest request = this.json.readObject("in-request-without-generate-maven-metadata.json");
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 	}

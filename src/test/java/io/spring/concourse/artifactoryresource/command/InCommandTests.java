@@ -23,18 +23,15 @@ import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.DefaultApplicationArguments;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,11 +48,10 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
-public class InCommandTests {
+class InCommandTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Mock
 	private SystemInput systemInput;
@@ -71,28 +67,27 @@ public class InCommandTests {
 
 	private InCommand command;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.command = new InCommand(this.systemInput, this.systemOutput, this.handler);
 	}
 
 	@Test
-	public void runCallsHandler() throws Exception {
+	void runCallsHandler() throws Exception {
 		InRequest request = mock(InRequest.class);
 		InResponse response = mock(InResponse.class);
 		given(this.systemInput.read(InRequest.class)).willReturn(request);
 		given(this.handler.handle(eq(request), any())).willReturn(response);
-		File tempFolder = this.temporaryFolder.newFolder();
-		String dir = StringUtils.cleanPath(tempFolder.getPath());
+		String dir = StringUtils.cleanPath(this.tempDir.getPath());
 		this.command.run(new DefaultApplicationArguments(new String[] { "in", dir }));
 		verify(this.handler).handle(eq(request), this.directoryCaptor.capture());
 		verify(this.systemOutput).write(response);
-		assertThat(this.directoryCaptor.getValue().getFile()).isEqualTo(tempFolder);
+		assertThat(this.directoryCaptor.getValue().getFile()).isEqualTo(this.tempDir);
 	}
 
 	@Test
-	public void runWhenFolderArgIsMissingThrowsException() throws Exception {
+	void runWhenFolderArgIsMissingThrowsException() throws Exception {
 		InRequest request = mock(InRequest.class);
 		given(this.systemInput.read(InRequest.class)).willReturn(request);
 		assertThatIllegalStateException()

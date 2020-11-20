@@ -29,9 +29,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.spring.concourse.artifactoryresource.io.FileSet.Category;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -44,51 +43,51 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class FileSetTests {
+class FileSetTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void ofWhenArrayIsNullThrowsException() {
+	void ofWhenArrayIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FileSet.of((File[]) null))
 				.withMessage("Files must not be null");
 	}
 
 	@Test
-	public void ofWhenListIsNullThrowsException() {
+	void ofWhenListIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FileSet.of((List<File>) null))
 				.withMessage("Files must not be null");
 	}
 
 	@Test
-	public void ofOrdersOnParentPath() throws Exception {
+	void ofOrdersOnParentPath() throws Exception {
 		assertThatFileSetIsOrdered("bar/bar.jar", "foo/bar.jar");
 	}
 
 	@Test
-	public void ofWhenIdenticalPathOrdersOnExtension() throws Exception {
+	void ofWhenIdenticalPathOrdersOnExtension() throws Exception {
 		assertThatFileSetIsOrdered("foo/bar.jar", "foo/bar.war");
 	}
 
 	@Test
-	public void ofWhenPomToNonPomOrdersPomLast() throws Exception {
+	void ofWhenPomToNonPomOrdersPomLast() throws Exception {
 		assertThatFileSetIsOrdered("foo.jar", "foo.pom");
 	}
 
 	@Test
-	public void ofWhenIdenticalPathAndExceptionOrdersOnName() throws Exception {
+	void ofWhenIdenticalPathAndExceptionOrdersOnName() throws Exception {
 		assertThat(fileSetOf("foo/bar.jar", "foo/bar-a.jar", "foo/bar-b.jar"))
 				.satisfies(filesNamed("bar.jar", "bar-a.jar", "bar-b.jar"));
 	}
 
 	@Test
-	public void ofWhenNoFileExtensionOrdersOnName() throws Exception {
+	void ofWhenNoFileExtensionOrdersOnName() throws Exception {
 		assertThatFileSetIsOrdered("foo/bar", "foo/bar.jar");
 	}
 
 	@Test
-	public void ofOrdersFilesCorrectly() throws Exception {
+	void ofOrdersFilesCorrectly() throws Exception {
 		List<String> names = new ArrayList<>();
 		names.add("com/example/project/foo/2.0.0/foo-2.0.0-sources.jar");
 		names.add("com/example/project/foo/2.0.0/foo-2.0.0.jar");
@@ -107,7 +106,7 @@ public class FileSetTests {
 	}
 
 	@Test
-	public void ofWhenHasShorterHiddenFileOrdersFilesCorrectly() throws Exception {
+	void ofWhenHasShorterHiddenFileOrdersFilesCorrectly() throws Exception {
 		List<String> names = new ArrayList<>();
 		String folder = "com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/";
 		names.add(folder + ".foo.bar");
@@ -123,7 +122,7 @@ public class FileSetTests {
 	}
 
 	@Test // gh-4
-	public void ofWhenUsingTypicalOutputWorksInSort() throws Exception {
+	void ofWhenUsingTypicalOutputWorksInSort() throws Exception {
 		List<String> names = readNames(getClass().getResourceAsStream("typical.txt"));
 		FileSet fileSet = fileSetOf(names).filter(this::filter);
 		assertThat(fileSet).satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.jar",
@@ -140,13 +139,13 @@ public class FileSetTests {
 	}
 
 	@Test
-	public void filterFiltersFiles() {
+	void filterFiltersFiles() {
 		FileSet fileSet = fileSetOf("test.jar", "test.md5").filter(this::filter);
 		assertThat(fileSet).satisfies(filesNamed("test.jar"));
 	}
 
 	@Test
-	public void batchedByCategoryReturnsBatchedFiles() throws Exception {
+	void batchedByCategoryReturnsBatchedFiles() throws Exception {
 		List<String> names = readNames(getClass().getResourceAsStream("typical.txt"));
 		FileSet fileSet = fileSetOf(names).filter(this::filter);
 		MultiValueMap<Category, File> batched = fileSet.batchedByCategory();
@@ -205,7 +204,7 @@ public class FileSetTests {
 	}
 
 	private File makeFile(String path) {
-		String tempPath = this.temporaryFolder.getRoot().getAbsolutePath();
+		String tempPath = this.tempDir.getAbsolutePath();
 		return new File(StringUtils.cleanPath(tempPath) + "/" + StringUtils.cleanPath(path));
 	}
 

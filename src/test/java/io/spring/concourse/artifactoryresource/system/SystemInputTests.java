@@ -17,8 +17,8 @@
 package io.spring.concourse.artifactoryresource.system;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.mock.env.MockEnvironment;
 
@@ -31,24 +31,24 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class SystemInputTests {
+class SystemInputTests {
 
 	private MockEnvironment environment;
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	void setUp() throws Exception {
 		this.environment = new MockEnvironment();
 	}
 
 	@Test
-	public void readWhenNoDataTimesout() throws Exception {
+	void readWhenNoDataTimesout() throws Exception {
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""), new ObjectMapper(), 10);
 		assertThatIllegalStateException().isThrownBy(() -> input.read(String[].class))
 				.withMessage("Timeout waiting for input");
 	}
 
 	@Test
-	public void readDeserializesJson() throws Exception {
+	void readDeserializesJson() throws Exception {
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams("[\"foo\",\"bar\"]"),
 				new ObjectMapper());
 		String[] result = input.read(String[].class);
@@ -56,7 +56,7 @@ public class SystemInputTests {
 	}
 
 	@Test
-	public void readResolvesPlaceholders() throws Exception {
+	void readResolvesPlaceholders() throws Exception {
 		this.environment.setProperty("bar", "hello-world");
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams("[\"foo\",\"${bar}\"]"),
 				new ObjectMapper());

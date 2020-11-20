@@ -32,10 +32,9 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -50,12 +49,12 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class InHandlerTests {
+class InHandlerTests {
 
 	private static final String BUILD_INFO_JSON = "{}";
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Mock
 	private Artifactory artifactory;
@@ -76,8 +75,8 @@ public class InHandlerTests {
 
 	private InHandler handler;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.deployedArtifacts = createDeployedArtifacts();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
@@ -97,9 +96,9 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDownloadArtifactsDownloadsArtifacts() throws Exception {
+	void handleWhenDownloadArtifactsDownloadsArtifacts() throws Exception {
 		InRequest request = createRequest(false, false, true);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
 			verify(this.artifactoryRepository).download(deployedArtifact, directory.getFile(), true);
@@ -108,9 +107,9 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums() throws Exception {
+	void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums() throws Exception {
 		InRequest request = createRequest(false, false, true, false);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
 		for (DeployedArtifact deployedArtifact : this.deployedArtifacts) {
 			verify(this.artifactoryRepository).download(deployedArtifact, directory.getFile(), false);
@@ -119,9 +118,9 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() throws Exception {
+	void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() throws Exception {
 		InRequest request = createRequest(false, false, false);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
 		verifyZeroInteractions(this.artifactoryRepository);
 		verifyZeroInteractions(this.mavenMetadataGenerator);
@@ -129,33 +128,33 @@ public class InHandlerTests {
 	}
 
 	@Test
-	public void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata() throws Exception {
+	void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata() throws Exception {
 		InRequest request = createRequest(true, false, true);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
 		verify(this.mavenMetadataGenerator).generate(directory, true);
 	}
 
 	@Test
-	public void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata() throws Exception {
+	void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata() throws Exception {
 		InRequest request = createRequest(false, false, true);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
 		verifyZeroInteractions(this.mavenMetadataGenerator);
 	}
 
 	@Test
-	public void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums() throws Exception {
+	void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums() throws Exception {
 		InRequest request = createRequest(true, false, true, false);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
 		verify(this.mavenMetadataGenerator).generate(directory, false);
 	}
 
 	@Test
-	public void handleWhenSaveBuildInfoSavesBuildInfo() throws Exception {
+	void handleWhenSaveBuildInfoSavesBuildInfo() throws Exception {
 		InRequest request = createRequest(false, true, true);
-		Directory directory = new Directory(this.temporaryFolder.newFolder());
+		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
 		File buildInfo = new File(directory.getFile(), "build-info.json");
 		assertThat(buildInfo).exists().hasContent(BUILD_INFO_JSON);

@@ -18,7 +18,7 @@ package io.spring.concourse.artifactoryresource.command;
 
 import io.spring.concourse.artifactoryresource.artifactory.BuildModulesGenerator;
 import io.spring.concourse.artifactoryresource.maven.MavenBuildModulesGenerator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -29,32 +29,32 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ModuleLayoutsTests {
+class ModuleLayoutsTests {
 
 	private ModuleLayouts moduleLayouts = new ModuleLayouts();
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsNullReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsNullReturnsMaven() throws Exception {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator(null)).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsEmptyReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsEmptyReturnsMaven() throws Exception {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsMavenReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsMavenReturnsMaven() throws Exception {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("mAvEN")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsNoneReturnsNone() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsNoneReturnsNone() throws Exception {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("none")).isSameAs(BuildModulesGenerator.NONE);
 	}
 
 	@Test
-	public void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException() throws Exception {
 		assertThatIllegalStateException().isThrownBy(() -> this.moduleLayouts.getBuildModulesGenerator("foo"))
 				.withMessage("Unknown module layout 'foo'");
 	}

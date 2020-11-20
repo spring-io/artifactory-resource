@@ -16,7 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.maven;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -26,10 +26,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class MavenCoordinatesTests {
+class MavenCoordinatesTests {
 
 	@Test
-	public void fromPathReturnsCoordinates() throws Exception {
+	void fromPathReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
 				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
@@ -40,7 +40,7 @@ public class MavenCoordinatesTests {
 	}
 
 	@Test
-	public void fromPathWhenHasClassifierReturnsCoordinates() throws Exception {
+	void fromPathWhenHasClassifierReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
 				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
@@ -51,7 +51,7 @@ public class MavenCoordinatesTests {
 	}
 
 	@Test
-	public void fromPathWhenReleaseReturnsCoordinates() throws Exception {
+	void fromPathWhenReleaseReturnsCoordinates() throws Exception {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath(
 				"/com/example/project/" + "my-project/" + "1.0.0.RELEASE/" + "my-project-1.0.0.RELEASE-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
@@ -62,7 +62,7 @@ public class MavenCoordinatesTests {
 	}
 
 	@Test
-	public void fromPathWhenIsBadThrowsNiceException() {
+	void fromPathWhenIsBadThrowsNiceException() {
 		// gh-5
 		assertThatIllegalStateException()
 				.isThrownBy(() -> MavenCoordinates.fromPath("org/springframework/cloud/skipper/acceptance/app/"

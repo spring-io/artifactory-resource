@@ -19,8 +19,8 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.net.URI;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
@@ -37,19 +37,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class HttpArtifactoryTests {
+class HttpArtifactoryTests {
 
 	private RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	private HttpArtifactory artifactory;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.artifactory = new HttpArtifactory(this.builder);
 	}
 
 	@Test
-	public void serverWhenNoUsernameReturnsServer() {
+	void serverWhenNoUsernameReturnsServer() {
 		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate, "interceptors");
@@ -57,7 +57,7 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
-	public void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
+	void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
 		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password");
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
@@ -66,7 +66,7 @@ public class HttpArtifactoryTests {
 	}
 
 	@Test
-	public void serverDoesNotBuffer() {
+	void serverDoesNotBuffer() {
 		// gh-50
 		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");

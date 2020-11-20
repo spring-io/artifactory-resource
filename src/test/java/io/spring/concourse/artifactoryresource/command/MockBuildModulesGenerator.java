@@ -33,7 +33,7 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArt
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MockBuildModulesGenerator implements BuildModulesGenerator {
+class MockBuildModulesGenerator implements BuildModulesGenerator {
 
 	@Override
 	public List<BuildModule> getBuildModules(List<DeployableArtifact> deployableArtifacts) {
