@@ -34,14 +34,17 @@ import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link InHandler}.
@@ -49,6 +52,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class InHandlerTests {
 
 	private static final String BUILD_INFO_JSON = "{}";
@@ -77,7 +82,6 @@ class InHandlerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.deployedArtifacts = createDeployedArtifacts();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
@@ -122,8 +126,8 @@ class InHandlerTests {
 		InRequest request = createRequest(false, false, false);
 		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
-		verifyZeroInteractions(this.artifactoryRepository);
-		verifyZeroInteractions(this.mavenMetadataGenerator);
+		verifyNoInteractions(this.artifactoryRepository);
+		verifyNoInteractions(this.mavenMetadataGenerator);
 		assertThat(response.getVersion()).isEqualTo(request.getVersion());
 	}
 
@@ -140,7 +144,7 @@ class InHandlerTests {
 		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
-		verifyZeroInteractions(this.mavenMetadataGenerator);
+		verifyNoInteractions(this.mavenMetadataGenerator);
 	}
 
 	@Test

@@ -38,14 +38,16 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.FileSet;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -57,7 +59,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link OutHandler}.
@@ -65,6 +67,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class OutHandlerTests {
 
 	private static final byte[] NO_BYTES = {};
@@ -104,11 +108,8 @@ class OutHandlerTests {
 	@Captor
 	private ArgumentCaptor<List<BuildModule>> modulesCaptor;
 
-	private AutoCloseable closeable;
-
 	@BeforeEach
 	void setup() {
-		this.closeable = MockitoAnnotations.openMocks(this);
 		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
@@ -116,11 +117,6 @@ class OutHandlerTests {
 		given(this.moduleLayouts.getBuildModulesGenerator(anyString())).willReturn(new MockBuildModulesGenerator());
 		this.handler = new OutHandler(this.artifactory, this.buildNumberGenerator, this.moduleLayouts,
 				this.directoryScanner);
-	}
-
-	@AfterEach
-	void tearDown() throws Exception {
-		this.closeable.close();
 	}
 
 	@Test
@@ -157,7 +153,7 @@ class OutHandlerTests {
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), any(), any());
-		verifyZeroInteractions(this.buildNumberGenerator);
+		verifyNoInteractions(this.buildNumberGenerator);
 	}
 
 	@Test

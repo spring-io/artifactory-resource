@@ -50,7 +50,7 @@ public class CheckHandler {
 	public CheckResponse handle(CheckRequest request) {
 		Source source = request.getSource();
 		List<BuildRun> runs = getArtifactoryServer(source).buildRuns(source.getBuildName()).getAll();
-		if (request.getVersion() == null || StringUtils.isEmpty(request.getVersion().getBuildNumber())) {
+		if (request.getVersion() == null || !StringUtils.hasText(request.getVersion().getBuildNumber())) {
 			return getLatest(runs);
 		}
 		return getAfter(runs, request.getVersion());

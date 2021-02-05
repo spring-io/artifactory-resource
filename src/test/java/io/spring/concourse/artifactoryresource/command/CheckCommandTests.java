@@ -22,8 +22,9 @@ import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.DefaultApplicationArguments;
 
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.verify;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class CheckCommandTests {
 
 	@Mock
@@ -52,7 +54,6 @@ class CheckCommandTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.command = new CheckCommand(this.systemInput, this.systemOutput, this.handler);
 	}
 
