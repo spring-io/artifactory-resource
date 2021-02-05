@@ -16,6 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +89,8 @@ class InRequestTests {
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
-		assertThat(request.getSource().getProxyHost()).isEqualTo("proxy.example.com");
-		assertThat(request.getSource().getProxyPort()).isEqualTo(8080);
+		assertThat(request.getSource().getProxy())
+				.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 	}
 

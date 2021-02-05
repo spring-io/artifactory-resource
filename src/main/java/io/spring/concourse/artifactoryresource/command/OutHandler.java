@@ -125,12 +125,10 @@ public class OutHandler {
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
 		logger.debug("Using artifactory server " + source.getUri());
-		if (StringUtils.hasText(source.getProxyHost())) {
-			logger.debug("Artifactory server configured to use proxy: {}:{}", source.getProxyHost(),
-					source.getProxyPort());
+		if (source.getProxy() != null) {
+			logger.debug("Artifactory server configured to use proxy: {}", source.getProxy());
 		}
-		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(),
-				source.getProxyHost(), source.getProxyPort());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(), source.getProxy());
 	}
 
 	private String getOrGenerateBuildNumber(Params params) {

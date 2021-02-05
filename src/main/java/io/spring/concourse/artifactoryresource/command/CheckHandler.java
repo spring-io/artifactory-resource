@@ -58,8 +58,7 @@ public class CheckHandler {
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
-		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(),
-				source.getProxyHost(), source.getProxyPort());
+		return this.artifactory.server(source.getUri(), source.getUsername(), source.getPassword(), source.getProxy());
 	}
 
 	private CheckResponse getAfter(List<BuildRun> runs, Version version) {

@@ -16,6 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,25 +45,31 @@ class SourceTests {
 	@Test
 	void createWhenUriIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("", "username", "password", "my-build", null, 0))
+				.isThrownBy(() -> new Source("", "username", "password", "my-build", null, null))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
 	void createWhenUsernameIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "", "password", "my-build", null, 0);
+		new Source("https://repo.example.com", "", "password", "my-build", null, null);
 	}
 
 	@Test
 	void createWhenPasswordIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "username", "", "my-build", null, 0);
+		new Source("https://repo.example.com", "username", "", "my-build", null, null);
 	}
 
 	@Test
 	void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", "", null, 0))
+				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", "", null, null))
 				.withMessage("Build Name must not be empty");
+	}
+
+	@Test
+	void createWhenHasProxyHostWithoutProxyPortThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Source("https://repo.example.com", "username",
+				"password", "my-build", "proxy.example.com", null)).withMessage("Proxy port must be provided");
 	}
 
 	@Test
@@ -78,8 +88,7 @@ class SourceTests {
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
 		assertThat(source.getBuildName()).isEqualTo("my-build");
-		assertThat(source.getProxyHost()).isEqualTo("proxy.example.com");
-		assertThat(source.getProxyPort()).isEqualTo(8080);
+		assertThat(source.getProxy()).isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
 	}
 
 }

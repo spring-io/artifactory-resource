@@ -65,7 +65,7 @@ class CheckHandlerTests {
 	@BeforeEach
 	void setup() {
 		List<BuildRun> runs = createBuildRuns();
-		given(this.artifactory.server("https://ci.example.com", "admin", "password", null, 0))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryBuildRuns.getAll()).willReturn(runs);
@@ -85,7 +85,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsMissingRespondsWithLatest() {
 		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), null);
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), null);
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
@@ -94,7 +94,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentRespondsWithListOfVersions() {
 		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("2"));
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), new Version("2"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("2", "3", "4");
@@ -103,7 +103,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() {
 		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("4"));
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), new Version("4"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
@@ -112,7 +112,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenNoVersionsFoundRespondsWithLatest() {
 		CheckRequest request = new CheckRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, 0), new Version("5"));
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), new Version("5"));
 		CheckResponse response = this.handler.handle(request);
 		Stream<String> buildsNumbers = response.getVersions().stream().map(Version::getBuildNumber);
 		assertThat(buildsNumbers.toArray()).containsExactly("4");
