@@ -16,7 +16,6 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
@@ -77,7 +76,6 @@ class HttpArtifactoryTests {
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
 				HttpMethod.GET);
-		HttpURLConnection connection = (HttpURLConnection) ReflectionTestUtils.getField(request, "connection");
 		assertThat(request).extracting("connection").extracting("instProxy").isEqualTo(proxy);
 	}
 
