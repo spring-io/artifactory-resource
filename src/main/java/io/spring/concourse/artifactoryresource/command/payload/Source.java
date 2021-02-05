@@ -21,12 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * The source payload containing shared configuration.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 public class Source {
 
@@ -39,15 +41,24 @@ public class Source {
 	@JsonProperty("build_name")
 	private final String buildName;
 
+	@JsonProperty("proxy_host")
+	private final String proxyHost;
+
+	@JsonProperty("proxy_port")
+	private final int proxyPort;
+
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri, @JsonProperty("username") String username,
-			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName) {
+			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName,
+			@JsonProperty("proxy_host") String proxyHost, @JsonProperty("proxy_port") int proxyPort) {
 		Assert.hasText(uri, "URI must not be empty");
 		Assert.hasText(buildName, "Build Name must not be empty");
 		this.uri = uri;
 		this.username = username;
 		this.password = password;
 		this.buildName = buildName;
+		this.proxyHost = proxyHost;
+		this.proxyPort = proxyPort;
 	}
 
 	public String getUri() {
@@ -66,9 +77,22 @@ public class Source {
 		return this.buildName;
 	}
 
+	public String getProxyHost() {
+		return this.proxyHost;
+	}
+
+	public int getProxyPort() {
+		return this.proxyPort;
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName).toString();
+		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName);
+		if (StringUtils.hasText(this.proxyHost)) {
+			creator.append("proxyHost", this.proxyHost);
+			creator.append("proxyPort", this.proxyPort);
+		}
+		return creator.toString();
 	}
 
 }

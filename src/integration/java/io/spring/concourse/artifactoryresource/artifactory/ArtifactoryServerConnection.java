@@ -93,7 +93,7 @@ public class ArtifactoryServerConnection implements BeforeAllCallback, AfterAllC
 		@Override
 		public ArtifactoryServer getArtifactoryServer(ExtensionContext context, Artifactory artifactory) {
 			DockerPort port = getDockerPort(context);
-			return artifactory.server(artifactoryUri(port), "admin", "password");
+			return artifactory.server(artifactoryUri(port), "admin", "password", null, 0);
 		}
 
 		private DockerPort getDockerPort(ExtensionContext context) {
@@ -131,7 +131,7 @@ public class ArtifactoryServerConnection implements BeforeAllCallback, AfterAllC
 
 		@Override
 		public ArtifactoryServer getArtifactoryServer(ExtensionContext extension, Artifactory artifactory) {
-			return artifactory.server(this.uri, "admin", "password");
+			return artifactory.server(this.uri, "admin", "password", null, 0);
 		}
 
 		@Override

@@ -21,6 +21,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  * @see HttpArtifactory
  */
 public interface Artifactory {
@@ -30,8 +31,10 @@ public interface Artifactory {
 	 * @param uri the server URI
 	 * @param username the connection username
 	 * @param password the connection password
+	 * @param proxyHost the proxy host name
+	 * @param proxyPort the proxy port
 	 * @return an {@link ArtifactoryServer}
 	 */
-	ArtifactoryServer server(String uri, String username, String password);
+	ArtifactoryServer server(String uri, String username, String password, String proxyHost, int proxyPort);
 
 }

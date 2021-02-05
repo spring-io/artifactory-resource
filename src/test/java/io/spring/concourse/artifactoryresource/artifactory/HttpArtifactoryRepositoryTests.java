@@ -77,7 +77,7 @@ class HttpArtifactoryRepositoryTests {
 
 	@BeforeEach
 	void setup() {
-		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password")
+		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password", null, 0)
 				.repository("libs-snapshot-local");
 	}
 
