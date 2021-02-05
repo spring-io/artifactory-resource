@@ -63,7 +63,7 @@ public class ArtifactoryServerConnection implements BeforeAllCallback, AfterAllC
 
 	private void before(ExtensionContext context) throws Exception {
 		this.delegate = getDelegate();
-		this.serverFactory = (artifactory) -> (delegate).getArtifactoryServer(context, artifactory);
+		this.serverFactory = (artifactory) -> (this.delegate).getArtifactoryServer(context, artifactory);
 	}
 
 	@Override
@@ -136,7 +136,6 @@ public class ArtifactoryServerConnection implements BeforeAllCallback, AfterAllC
 
 		@Override
 		public void after(ExtensionContext context) {
-
 		}
 
 	}
