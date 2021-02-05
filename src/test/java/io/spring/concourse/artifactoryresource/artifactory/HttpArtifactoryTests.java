@@ -65,9 +65,8 @@ class HttpArtifactoryTests {
 		assertThat(request.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
 	}
 
-	@Test
+	@Test // gh-50
 	void serverDoesNotBuffer() {
-		// gh-50
 		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate

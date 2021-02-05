@@ -61,9 +61,8 @@ class MavenCoordinatesTests {
 		assertThat(coordinates.getSnapshotVersion()).isEqualTo("1.0.0.RELEASE");
 	}
 
-	@Test
+	@Test // gh-5
 	void fromPathWhenIsBadThrowsNiceException() {
-		// gh-5
 		assertThatIllegalStateException()
 				.isThrownBy(() -> MavenCoordinates.fromPath("org/springframework/cloud/skipper/acceptance/app/"
 						+ "skipper-server-with-drivers/maven-metadata-local.xml"))
