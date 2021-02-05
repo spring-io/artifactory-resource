@@ -47,7 +47,7 @@ class SystemStreamsTests {
 	}
 
 	@Test
-	void reconfigureSystemProvidesAccessToOriginalSystemOut() throws Exception {
+	void reconfigureSystemProvidesAccessToOriginalSystemOut() {
 		doWithSystemStreams(() -> {
 			ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
 			PrintStream out = new PrintStream(outBytes);
@@ -60,7 +60,7 @@ class SystemStreamsTests {
 	}
 
 	@Test
-	void reconfigureSystemProvidesAccessToOriginalSystemIn() throws Exception {
+	void reconfigureSystemProvidesAccessToOriginalSystemIn() {
 		doWithSystemStreams(() -> {
 			ByteArrayInputStream inBytes = new ByteArrayInputStream("foo".getBytes());
 			System.setIn(inBytes);

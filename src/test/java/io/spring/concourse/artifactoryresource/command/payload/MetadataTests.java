@@ -37,7 +37,7 @@ class MetadataTests {
 	private JacksonTester<Metadata> json;
 
 	@Test
-	void createWhenMisstingNameThrowsException() throws Exception {
+	void createWhenMisstingNameThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Metadata("", "value"))
 				.withMessage("Name must not be empty");
 	}

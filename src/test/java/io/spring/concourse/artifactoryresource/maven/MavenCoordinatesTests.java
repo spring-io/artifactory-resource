@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class MavenCoordinatesTests {
 
 	@Test
-	void fromPathReturnsCoordinates() throws Exception {
+	void fromPathReturnsCoordinates() {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
 				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
@@ -40,7 +40,7 @@ class MavenCoordinatesTests {
 	}
 
 	@Test
-	void fromPathWhenHasClassifierReturnsCoordinates() throws Exception {
+	void fromPathWhenHasClassifierReturnsCoordinates() {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath("/com/example/project/" + "my-project/"
 				+ "1.0.0.BUILD-SNAPSHOT/" + "my-project-1.0.0.BUILD-20171005.194031-1-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");
@@ -51,7 +51,7 @@ class MavenCoordinatesTests {
 	}
 
 	@Test
-	void fromPathWhenReleaseReturnsCoordinates() throws Exception {
+	void fromPathWhenReleaseReturnsCoordinates() {
 		MavenCoordinates coordinates = MavenCoordinates.fromPath(
 				"/com/example/project/" + "my-project/" + "1.0.0.RELEASE/" + "my-project-1.0.0.RELEASE-sources.jar");
 		assertThat(coordinates.getGroupId()).isEqualTo("com.example.project");

@@ -41,14 +41,14 @@ class CommandProcessorTests {
 	private static final String[] NO_ARGS = {};
 
 	@Test
-	void runWhenNoArgumentThrowsException() throws Exception {
+	void runWhenNoArgumentThrowsException() {
 		CommandProcessor processor = new CommandProcessor(Collections.singletonList(mock(Command.class)));
 		assertThatIllegalStateException().isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
 				.withMessage("No command argument specified");
 	}
 
 	@Test
-	void runWhenUnknownCommandThrowsException() throws Exception {
+	void runWhenUnknownCommandThrowsException() {
 		Command fooCommand = mock(Command.class);
 		given(fooCommand.getName()).willReturn("foo");
 		CommandProcessor processor = new CommandProcessor(Collections.singletonList(fooCommand));

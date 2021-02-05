@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CommandTests {
 
 	@Test
-	void getNameUsesConvention() throws Exception {
+	void getNameUsesConvention() {
 		assertThat(new ExampleCommand().getName()).isEqualTo("example");
 	}
 

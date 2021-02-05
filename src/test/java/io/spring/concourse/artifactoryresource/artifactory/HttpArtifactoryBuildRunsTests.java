@@ -85,12 +85,12 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 		this.customizer.getExpectationManagers().clear();
 	}
 
 	@Test
-	void addAddsBuildInfo() throws Exception {
+	void addAddsBuildInfo() {
 		this.server.expect(requestTo("https://repo.example.com/api/build")).andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
@@ -114,7 +114,7 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	void getAllReturnsBuildRuns() throws Exception {
+	void getAllReturnsBuildRuns() {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
@@ -124,7 +124,7 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	void getRawBuildInfoReturnsBuildInfo() throws Exception {
+	void getRawBuildInfoReturnsBuildInfo() {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
@@ -133,7 +133,7 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() throws Exception {
+	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() {
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN)).andExpect(aqlContent("my-build", "1234"))

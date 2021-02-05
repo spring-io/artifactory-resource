@@ -33,7 +33,7 @@ class ApplicationTests {
 	private Application application;
 
 	@Test
-	void applicationLoads() throws Exception {
+	void applicationLoads() {
 		assertThat(this.application).isNotNull();
 	}
 

@@ -38,23 +38,23 @@ class SourceTests {
 	private JacksonTester<Source> json;
 
 	@Test
-	void createWhenUriIsEmptyThrowsException() throws Exception {
+	void createWhenUriIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build"))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
-	void createWhenUsernameIsEmptyDoesNotThrowException() throws Exception {
+	void createWhenUsernameIsEmptyDoesNotThrowException() {
 		new Source("https://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
-	void createWhenPasswordIsEmptyDoesNotThrowException() throws Exception {
+	void createWhenPasswordIsEmptyDoesNotThrowException() {
 		new Source("https://repo.example.com", "username", "", "my-build");
 	}
 
 	@Test
-	void createWhenBuildNameIsEmptyThrowsException() throws Exception {
+	void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", ""))
 				.withMessage("Build Name must not be empty");

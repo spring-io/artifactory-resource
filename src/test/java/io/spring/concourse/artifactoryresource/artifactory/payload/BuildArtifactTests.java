@@ -46,25 +46,25 @@ public class BuildArtifactTests {
 	public JacksonTester<BuildArtifact> json;
 
 	@Test
-	public void createWhenTypeIsEmptyThrowsException() throws Exception {
+	public void createWhenTypeIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
 				.withMessage("Type must not be empty");
 	}
 
 	@Test
-	public void createWhenSha1IsEmptyThrowsException() throws Exception {
+	public void createWhenSha1IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
 				.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
-	public void createWhenMd5IsEmptyThrowsException() throws Exception {
+	public void createWhenMd5IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
 				.withMessage("MD5 must not be empty");
 	}
 
 	@Test
-	public void createWhenNameIsEmptyThrowsException() throws Exception {
+	public void createWhenNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
 				.withMessage("Name must not be empty");
 	}

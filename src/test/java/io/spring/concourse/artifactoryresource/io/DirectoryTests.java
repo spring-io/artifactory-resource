@@ -41,19 +41,19 @@ class DirectoryTests {
 	File tempDir;
 
 	@Test
-	void createWhenPathIsNullThrowsException() throws Exception {
+	void createWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((String) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	void createWhenFileIsNullThrowsException() throws Exception {
+	void createWhenFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((File) null))
 				.withMessage("File must not be null");
 	}
 
 	@Test
-	void createWhenFileDoesNotExistThrowsException() throws Exception {
+	void createWhenFileDoesNotExistThrowsException() {
 		this.tempDir.delete();
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(this.tempDir))
 				.withMessageContaining("does not exist");
@@ -67,27 +67,27 @@ class DirectoryTests {
 	}
 
 	@Test
-	void isEmptyWhenEmptyReturnsTrue() throws Exception {
+	void isEmptyWhenEmptyReturnsTrue() {
 		Directory directory = new Directory(this.tempDir);
 		assertThat(directory.isEmpty()).isTrue();
 	}
 
 	@Test
-	void isEmptyWhenNotEmptyReturnsFalse() throws Exception {
+	void isEmptyWhenNotEmptyReturnsFalse() {
 		new File(this.tempDir, "nested").mkdirs();
 		Directory directory = new Directory(this.tempDir);
 		assertThat(directory.isEmpty()).isFalse();
 	}
 
 	@Test
-	void getFileReturnsFile() throws Exception {
+	void getFileReturnsFile() {
 		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		assertThat(directory.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	void toStringReturnsFilePath() throws Exception {
+	void toStringReturnsFilePath() {
 		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		String expected = StringUtils.cleanPath(file.getPath());
@@ -95,7 +95,7 @@ class DirectoryTests {
 	}
 
 	@Test
-	void getSubDirectoryWhenPathIsNullReturnsThis() throws Exception {
+	void getSubDirectoryWhenPathIsNullReturnsThis() {
 		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory(null);
@@ -103,7 +103,7 @@ class DirectoryTests {
 	}
 
 	@Test
-	void getSubDirectoryWhenPathIsEmptyReturnsThis() throws Exception {
+	void getSubDirectoryWhenPathIsEmptyReturnsThis() {
 		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		Directory subdirectory = directory.getSubDirectory("");
@@ -111,7 +111,7 @@ class DirectoryTests {
 	}
 
 	@Test
-	void getSubDirectoryGetsSubDirectory() throws Exception {
+	void getSubDirectoryGetsSubDirectory() {
 		File file = this.tempDir;
 		Directory directory = new Directory(file);
 		File nested = new File(file, "nested");
@@ -121,7 +121,7 @@ class DirectoryTests {
 	}
 
 	@Test
-	void createFromArgsUsesArgument() throws Exception {
+	void createFromArgsUsesArgument() {
 		File file = this.tempDir;
 		String path = StringUtils.cleanPath(file.getPath());
 		ApplicationArguments args = new DefaultApplicationArguments(new String[] { "in", path });

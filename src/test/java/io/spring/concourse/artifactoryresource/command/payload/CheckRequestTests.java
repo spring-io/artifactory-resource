@@ -37,7 +37,7 @@ class CheckRequestTests {
 	private JacksonTester<CheckRequest> json;
 
 	@Test
-	void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CheckRequest(null, new Version("1234")))
 				.withMessage("Source must not be null");
 	}

@@ -40,7 +40,7 @@ class InResponseTests {
 	private JacksonTester<InResponse> json;
 
 	@Test
-	void createWhenVersionIsNullThrowsException() throws Exception {
+	void createWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InResponse(null, null))
 				.withMessage("Version must not be null");
 	}

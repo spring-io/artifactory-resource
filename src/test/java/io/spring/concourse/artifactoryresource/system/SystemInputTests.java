@@ -36,12 +36,12 @@ class SystemInputTests {
 	private MockEnvironment environment;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		this.environment = new MockEnvironment();
 	}
 
 	@Test
-	void readWhenNoDataTimesout() throws Exception {
+	void readWhenNoDataTimesout() {
 		SystemInput input = new SystemInput(this.environment, new MockSystemStreams(""), new ObjectMapper(), 10);
 		assertThatIllegalStateException().isThrownBy(() -> input.read(String[].class))
 				.withMessage("Timeout waiting for input");

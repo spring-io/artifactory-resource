@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MavenVersionTypeTests {
 
 	@Test
-	void fromVersionWhenTimestampReturnsTimestampSnapshot() throws Exception {
+	void fromVersionWhenTimestampReturnsTimestampSnapshot() {
 		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-20171005.194031-1"))
 				.isEqualTo(MavenVersionType.TIMESTAMP_SNAPSHOT);
 		assertThat(MavenVersionType.fromVersion("0.0.1-20171005.194031-1"))
@@ -36,13 +36,13 @@ class MavenVersionTypeTests {
 	}
 
 	@Test
-	void fromVersionWhenSnapshotReturnsSnapshot() throws Exception {
+	void fromVersionWhenSnapshotReturnsSnapshot() {
 		assertThat(MavenVersionType.fromVersion("0.0.1.BUILD-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
 		assertThat(MavenVersionType.fromVersion("0.0.1-SNAPSHOT")).isEqualTo(MavenVersionType.SNAPSHOT);
 	}
 
 	@Test
-	void fromVersionWhenFixedReturnsFixed() throws Exception {
+	void fromVersionWhenFixedReturnsFixed() {
 		assertThat(MavenVersionType.fromVersion("0.0.1.RELEASE")).isEqualTo(MavenVersionType.FIXED);
 		assertThat(MavenVersionType.fromVersion("0.0.1")).isEqualTo(MavenVersionType.FIXED);
 

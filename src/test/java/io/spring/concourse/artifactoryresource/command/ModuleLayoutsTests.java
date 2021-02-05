@@ -34,27 +34,27 @@ class ModuleLayoutsTests {
 	private ModuleLayouts moduleLayouts = new ModuleLayouts();
 
 	@Test
-	void getBuildModulesGeneratorWhenLayoutIsNullReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsNullReturnsMaven() {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator(null)).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	void getBuildModulesGeneratorWhenLayoutIsEmptyReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsEmptyReturnsMaven() {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	void getBuildModulesGeneratorWhenLayoutIsMavenReturnsMaven() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsMavenReturnsMaven() {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("mAvEN")).isInstanceOf(MavenBuildModulesGenerator.class);
 	}
 
 	@Test
-	void getBuildModulesGeneratorWhenLayoutIsNoneReturnsNone() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsNoneReturnsNone() {
 		assertThat(this.moduleLayouts.getBuildModulesGenerator("none")).isSameAs(BuildModulesGenerator.NONE);
 	}
 
 	@Test
-	void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException() throws Exception {
+	void getBuildModulesGeneratorWhenLayoutIsUnknownThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> this.moduleLayouts.getBuildModulesGenerator("foo"))
 				.withMessage("Unknown module layout 'foo'");
 	}

@@ -82,7 +82,7 @@ class CheckHandlerTests {
 	}
 
 	@Test
-	void handleWhenVersionIsMissingRespondsWithLatest() throws Exception {
+	void handleWhenVersionIsMissingRespondsWithLatest() {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				null);
 		CheckResponse response = this.handler.handle(request);
@@ -91,7 +91,7 @@ class CheckHandlerTests {
 	}
 
 	@Test
-	void handleWhenVersionIsPresentRespondsWithListOfVersions() throws Exception {
+	void handleWhenVersionIsPresentRespondsWithListOfVersions() {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("2"));
 		CheckResponse response = this.handler.handle(request);
@@ -100,7 +100,7 @@ class CheckHandlerTests {
 	}
 
 	@Test
-	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() throws Exception {
+	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("4"));
 		CheckResponse response = this.handler.handle(request);
@@ -109,7 +109,7 @@ class CheckHandlerTests {
 	}
 
 	@Test
-	void handleWhenNoVersionsFoundRespondsWithLatest() throws Exception {
+	void handleWhenNoVersionsFoundRespondsWithLatest() {
 		CheckRequest request = new CheckRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("5"));
 		CheckResponse response = this.handler.handle(request);

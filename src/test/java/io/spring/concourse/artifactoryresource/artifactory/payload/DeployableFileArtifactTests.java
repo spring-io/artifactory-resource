@@ -39,7 +39,7 @@ public class DeployableFileArtifactTests extends AbstractDeployableArtifactTests
 	File tempDir;
 
 	@Test
-	public void createWhenParentIsNotParentThrowsException() throws Exception {
+	public void createWhenParentIsNotParentThrowsException() {
 		File parent = new File(this.tempDir, "parent");
 		File file = new File(this.tempDir, "test");
 		assertThatIllegalArgumentException().isThrownBy(() -> new DeployableFileArtifact(parent, file))

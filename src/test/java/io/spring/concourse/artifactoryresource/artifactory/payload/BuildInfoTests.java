@@ -59,21 +59,21 @@ public class BuildInfoTests {
 	private JacksonTester<BuildInfo> json;
 
 	@Test
-	public void createWhenBuildNameIsEmptyThrowsException() throws Exception {
+	public void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
-	public void createWhenBuildNumberIsEmptyThrowsException() throws Exception {
+	public void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, MODULES))
 				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test
-	public void createWhenModulesIsNullUsesEmptyList() throws Exception {
+	public void createWhenModulesIsNullUsesEmptyList() {
 		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, null);
 		assertThat(buildInfo.getModules()).isNotNull().isEmpty();
 	}

@@ -100,7 +100,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenDownloadArtifactsDownloadsArtifacts() throws Exception {
+	void handleWhenDownloadArtifactsDownloadsArtifacts() {
 		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
@@ -111,7 +111,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums() throws Exception {
+	void handleWhenDownloadChecksumsFalseDownloadsArtifactsWithoutChecksums() {
 		InRequest request = createRequest(false, false, true, false);
 		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
@@ -122,7 +122,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() throws Exception {
+	void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() {
 		InRequest request = createRequest(false, false, false);
 		Directory directory = new Directory(this.tempDir);
 		InResponse response = this.handler.handle(request, directory);
@@ -132,7 +132,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata() throws Exception {
+	void handleWhenHasGenerateMavenMetadataParamGeneratesMetadata() {
 		InRequest request = createRequest(true, false, true);
 		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
@@ -140,7 +140,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata() throws Exception {
+	void handleWhenHasNoGenerateMavenMetadataParamDoesNotGenerateMetadata() {
 		InRequest request = createRequest(false, false, true);
 		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
@@ -148,7 +148,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums() throws Exception {
+	void handleWhenHasNoDownloadChecksumParamGeneratesMetadataButNotChecksums() {
 		InRequest request = createRequest(true, false, true, false);
 		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);
@@ -156,7 +156,7 @@ class InHandlerTests {
 	}
 
 	@Test
-	void handleWhenSaveBuildInfoSavesBuildInfo() throws Exception {
+	void handleWhenSaveBuildInfoSavesBuildInfo() {
 		InRequest request = createRequest(false, true, true);
 		Directory directory = new Directory(this.tempDir);
 		this.handler.handle(request, directory);

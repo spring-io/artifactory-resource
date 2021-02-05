@@ -45,13 +45,13 @@ public class BuildModuleTests {
 	private JacksonTester<BuildModule> json;
 
 	@Test
-	public void createWhenIdIsEmptyThrowsException() throws Exception {
+	public void createWhenIdIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildModule("", null))
 				.withMessage("ID must not be empty");
 	}
 
 	@Test
-	public void createWhenArtifactsIsEmptyUsesEmptyList() throws Exception {
+	public void createWhenArtifactsIsEmptyUsesEmptyList() {
 		BuildModule module = new BuildModule(ID, null);
 		assertThat(module.getArtifacts()).isNotNull().isEmpty();
 	}

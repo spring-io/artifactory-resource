@@ -45,25 +45,25 @@ class OutRequestTests {
 	private JacksonTester<OutRequest> json;
 
 	@Test
-	void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(null, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	void createWhenParamsIsNullThrowsException() throws Exception {
+	void createWhenParamsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(this.source, null))
 				.withMessage("Params must not be null");
 	}
 
 	@Test
-	void createParamsWhenFolderIsEmptyThrowsException() throws Exception {
+	void createParamsWhenFolderIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
 				"1234", "", null, null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
 	}
 
 	@Test
-	void createParamsWhenRepoIsEmptyThrowsException() throws Exception {
+	void createParamsWhenRepoIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
 				null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
 	}

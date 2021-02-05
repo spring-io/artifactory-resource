@@ -38,7 +38,7 @@ public class ContinuousIntegrationAgentTests {
 	private JacksonTester<ContinuousIntegrationAgent> json;
 
 	@Test
-	public void createWhenNameIsEmptyThrowsException() throws Exception {
+	public void createWhenNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ContinuousIntegrationAgent("", null))
 				.withMessage("Name must not be empty");
 	}

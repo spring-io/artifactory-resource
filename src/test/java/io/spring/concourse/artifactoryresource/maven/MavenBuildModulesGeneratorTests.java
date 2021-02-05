@@ -63,7 +63,7 @@ class MavenBuildModulesGeneratorTests {
 	}
 
 	@Test
-	void getBuildModulesWhenContainingSpecificExtensionsFiltersArtifacts() throws Exception {
+	void getBuildModulesWhenContainingSpecificExtensionsFiltersArtifacts() {
 		List<DeployableArtifact> deployableArtifacts = new ArrayList<>();
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.pom"));
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.asc"));
@@ -75,7 +75,7 @@ class MavenBuildModulesGeneratorTests {
 	}
 
 	@Test
-	void getBuildModulesWhenContainingUnexpectedLayoutReturnsEmptyList() throws Exception {
+	void getBuildModulesWhenContainingUnexpectedLayoutReturnsEmptyList() {
 		List<DeployableArtifact> deployableArtifacts = new ArrayList<>();
 		deployableArtifacts.add(artifact("/foo-1.0.0.zip"));
 		List<BuildModule> buildModules = this.generator.getBuildModules(deployableArtifacts);

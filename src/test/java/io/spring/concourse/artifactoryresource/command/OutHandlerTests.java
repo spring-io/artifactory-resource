@@ -120,7 +120,7 @@ class OutHandlerTests {
 	}
 
 	@Test
-	void handleWhenEmptyThrowsException() throws Exception {
+	void handleWhenEmptyThrowsException() {
 		OutRequest request = createRequest("1234");
 		Directory directory = new Directory(this.tempDir);
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, directory))

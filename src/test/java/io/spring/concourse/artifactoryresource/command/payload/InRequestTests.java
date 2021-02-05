@@ -43,19 +43,19 @@ class InRequestTests {
 	private JacksonTester<InRequest> json;
 
 	@Test
-	void createWhenSourceIsNullThrowsException() throws Exception {
+	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(null, this.version, this.params))
 				.withMessage("Source must not be null");
 	}
 
 	@Test
-	void createWhenVersionIsNullThrowsException() throws Exception {
+	void createWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(this.source, null, this.params))
 				.withMessage("Version must not be null");
 	}
 
 	@Test
-	void createWhenParamsIsNullUsesDefauls() throws Exception {
+	void createWhenParamsIsNullUsesDefauls() {
 		InRequest request = new InRequest(this.source, this.version, null);
 		assertThat(request.getParams().isGenerateMavenMetadata()).isTrue();
 		assertThat(request.getParams().isSaveBuildInfo()).isFalse();

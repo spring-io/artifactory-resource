@@ -61,33 +61,33 @@ class FileSetTests {
 	}
 
 	@Test
-	void ofOrdersOnParentPath() throws Exception {
+	void ofOrdersOnParentPath() {
 		assertThatFileSetIsOrdered("bar/bar.jar", "foo/bar.jar");
 	}
 
 	@Test
-	void ofWhenIdenticalPathOrdersOnExtension() throws Exception {
+	void ofWhenIdenticalPathOrdersOnExtension() {
 		assertThatFileSetIsOrdered("foo/bar.jar", "foo/bar.war");
 	}
 
 	@Test
-	void ofWhenPomToNonPomOrdersPomLast() throws Exception {
+	void ofWhenPomToNonPomOrdersPomLast() {
 		assertThatFileSetIsOrdered("foo.jar", "foo.pom");
 	}
 
 	@Test
-	void ofWhenIdenticalPathAndExceptionOrdersOnName() throws Exception {
+	void ofWhenIdenticalPathAndExceptionOrdersOnName() {
 		assertThat(fileSetOf("foo/bar.jar", "foo/bar-a.jar", "foo/bar-b.jar"))
 				.satisfies(filesNamed("bar.jar", "bar-a.jar", "bar-b.jar"));
 	}
 
 	@Test
-	void ofWhenNoFileExtensionOrdersOnName() throws Exception {
+	void ofWhenNoFileExtensionOrdersOnName() {
 		assertThatFileSetIsOrdered("foo/bar", "foo/bar.jar");
 	}
 
 	@Test
-	void ofOrdersFilesCorrectly() throws Exception {
+	void ofOrdersFilesCorrectly() {
 		List<String> names = new ArrayList<>();
 		names.add("com/example/project/foo/2.0.0/foo-2.0.0-sources.jar");
 		names.add("com/example/project/foo/2.0.0/foo-2.0.0.jar");
@@ -106,7 +106,7 @@ class FileSetTests {
 	}
 
 	@Test
-	void ofWhenHasShorterHiddenFileOrdersFilesCorrectly() throws Exception {
+	void ofWhenHasShorterHiddenFileOrdersFilesCorrectly() {
 		List<String> names = new ArrayList<>();
 		String folder = "com/example/project/spring-boot-actuator-autoconfigure/2.0.0.BUILD-SNAPSHOT/";
 		names.add(folder + ".foo.bar");
