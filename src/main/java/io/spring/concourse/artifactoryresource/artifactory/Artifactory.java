@@ -16,11 +16,14 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.net.Proxy;
+
 /**
  * Interface providing access to Artifactory.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  * @see HttpArtifactory
  */
 public interface Artifactory {
@@ -30,8 +33,9 @@ public interface Artifactory {
 	 * @param uri the server URI
 	 * @param username the connection username
 	 * @param password the connection password
+	 * @param proxy the proxy to use or {@code null}
 	 * @return an {@link ArtifactoryServer}
 	 */
-	ArtifactoryServer server(String uri, String username, String password);
+	ArtifactoryServer server(String uri, String username, String password, Proxy proxy);
 
 }

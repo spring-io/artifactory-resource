@@ -16,6 +16,10 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +33,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link InRequest}.
  *
  * @author Phillip Webb
+ * @author Gabriel Petrovay
  */
 @JsonTest
 class InRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, 0);
 
 	private Version version = new Version("1234");
 
@@ -76,6 +81,17 @@ class InRequestTests {
 		assertThat(request.getParams().isDownloadArtifacts()).isFalse();
 		assertThat(request.getParams().isDownloadChecksums()).isFalse();
 		assertThat(request.getParams().getThreads()).isEqualTo(8);
+	}
+
+	@Test
+	void readDeserializesJsonWithProxy() throws Exception {
+		InRequest request = this.json.readObject("in-request-with-proxy.json");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
+		assertThat(request.getSource().getUsername()).isEqualTo("admin");
+		assertThat(request.getSource().getPassword()).isEqualTo("password");
+		assertThat(request.getSource().getProxy())
+				.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
+		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 	}
 
 	@Test

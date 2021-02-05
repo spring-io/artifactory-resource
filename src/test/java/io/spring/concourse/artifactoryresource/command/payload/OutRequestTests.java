@@ -16,6 +16,9 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
 import java.util.List;
 
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest.ArtifactSet;
@@ -32,11 +35,12 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link OutRequest}.
  *
  * @author Phillip Webb
+ * @author Gabriel Petrovay
  */
 @JsonTest
 class OutRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null);
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
 			null, null, null, null, null, null);
@@ -90,6 +94,20 @@ class OutRequestTests {
 		assertThat(artifactSet.get(0).getExclude()).containsExactly("**/foo.zip");
 		assertThat(artifactSet.get(0).getProperties()).hasSize(2).containsEntry("zip-type", "docs")
 				.containsEntry("zip-deployed", "false");
+	}
+
+	@Test
+	void readDeserializesJsonWithProxy() throws Exception {
+		OutRequest request = this.json.readObject("out-request-with-proxy.json");
+		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");
+		assertThat(request.getSource().getUsername()).isEqualTo("admin");
+		assertThat(request.getSource().getPassword()).isEqualTo("password");
+		assertThat(request.getSource().getProxy())
+				.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
+		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
+		assertThat(request.getParams().getRepo()).isEqualTo("libs-snapshot-local");
+		assertThat(request.getParams().getFolder()).isEqualTo("dist");
+		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
 	}
 
 	@Test

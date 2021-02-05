@@ -83,7 +83,7 @@ class InHandlerTests {
 	@BeforeEach
 	void setup() {
 		this.deployedArtifacts = createDeployedArtifacts();
-		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
@@ -175,8 +175,8 @@ class InHandlerTests {
 
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
 			boolean downloadChecksums, int threads) {
-		InRequest request = new InRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
-				new Version("1234"),
+		InRequest request = new InRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), new Version("1234"),
 				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, threads));
 		return request;
 	}

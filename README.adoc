@@ -37,6 +37,8 @@ resource_types:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
 * `build_name`: *Required.* The name of the build
+* `proxy_host`: The fully qualified domain name of the HTTP proxy through which the artifactory server is reachable
+* `proxy_port`: The proxy port (*required* when `proxy_host` is specified)
 
 [source,yaml]
 .Source configuration

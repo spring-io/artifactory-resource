@@ -110,7 +110,7 @@ class OutHandlerTests {
 
 	@BeforeEach
 	void setup() {
-		given(this.artifactory.server("https://ci.example.com", "admin", "password"))
+		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
 		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
@@ -343,7 +343,7 @@ class OutHandlerTests {
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet,
 			int threads) {
-		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
+		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", stripSnapshotTimestamps, disableChecksumUploads, artifactSet,
 						threads));

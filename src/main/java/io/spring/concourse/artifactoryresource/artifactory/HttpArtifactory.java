@@ -17,16 +17,15 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.net.URI;
 import java.util.function.Supplier;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -36,6 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 @Service
 public class HttpArtifactory implements Artifactory {
@@ -47,31 +47,28 @@ public class HttpArtifactory implements Artifactory {
 	}
 
 	@Override
-	public ArtifactoryServer server(String uri, String username, String password) {
+	public ArtifactoryServer server(String uri, String username, String password, Proxy proxy) {
 		if (!uri.endsWith("/")) {
 			uri += '/';
 		}
-		return new HttpArtifactoryServer(uri,
-				this.restTemplateBuilder.requestFactory(getRequestFactorySupplier(username, password)));
+		RestTemplateBuilder restTemplateBuilder = this.restTemplateBuilder
+				.requestFactory(getRequestFactorySupplier(username, password, proxy));
+		return new HttpArtifactoryServer(uri, restTemplateBuilder);
 	}
 
-	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password) {
-		Supplier<ClientHttpRequestFactory> requestFactorySupplier = this::getNonBufferingClientHttpRequestFactory;
+	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password,
+			Proxy proxy) {
+		Supplier<ClientHttpRequestFactory> supplier = () -> getRequestFactory(proxy);
 		if (StringUtils.hasText(username)) {
-			requestFactorySupplier = new BasicAuthClientHttpRequestFactorySupplier(requestFactorySupplier, username,
-					password);
+			supplier = new BasicAuthClientHttpRequestFactorySupplier(supplier, username, password);
 		}
-		return requestFactorySupplier;
+		return supplier;
 	}
 
-	private ClientHttpRequestFactory getNonBufferingClientHttpRequestFactory() {
-		ClientHttpRequestFactory factory = new ClientHttpRequestFactorySupplier().get();
-		if (factory instanceof SimpleClientHttpRequestFactory) {
-			((SimpleClientHttpRequestFactory) factory).setBufferRequestBody(false);
-		}
-		if (factory instanceof HttpComponentsClientHttpRequestFactory) {
-			((HttpComponentsClientHttpRequestFactory) factory).setBufferRequestBody(false);
-		}
+	private ClientHttpRequestFactory getRequestFactory(Proxy proxy) {
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		factory.setBufferRequestBody(false);
+		factory.setProxy(proxy);
 		return factory;
 	}
 

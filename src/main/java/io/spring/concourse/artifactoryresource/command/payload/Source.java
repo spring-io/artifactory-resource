@@ -16,17 +16,23 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * The source payload containing shared configuration.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Gabriel Petrovay
  */
 public class Source {
 
@@ -36,18 +42,26 @@ public class Source {
 
 	private final String password;
 
-	@JsonProperty("build_name")
 	private final String buildName;
+
+	private final Proxy proxy;
 
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri, @JsonProperty("username") String username,
-			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName) {
+			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName,
+			@JsonProperty("proxy_host") String proxyHost, @JsonProperty("proxy_port") Integer proxyPort) {
 		Assert.hasText(uri, "URI must not be empty");
 		Assert.hasText(buildName, "Build Name must not be empty");
 		this.uri = uri;
 		this.username = username;
 		this.password = password;
 		this.buildName = buildName;
+		this.proxy = (StringUtils.hasText(proxyHost)) ? createProxy(proxyHost, proxyPort) : null;
+	}
+
+	private Proxy createProxy(String host, Integer port) {
+		Assert.notNull(port, "Proxy port must be provided");
+		return new Proxy(Type.HTTP, new InetSocketAddress(host, port));
 	}
 
 	public String getUri() {
@@ -66,9 +80,17 @@ public class Source {
 		return this.buildName;
 	}
 
+	public Proxy getProxy() {
+		return this.proxy;
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName).toString();
+		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName);
+		if (this.proxy != null) {
+			creator.append("proxy", this.proxy);
+		}
+		return creator.toString();
 	}
 
 }

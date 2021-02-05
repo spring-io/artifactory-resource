@@ -1,0 +1,8 @@
+{
+	"uri": "https://repo.example.com",
+	"username": "admin",
+	"password": "password",
+	"build_name": "my-build",
+	"proxy_host": "proxy.example.com",
+	"proxy_port": 8080
+}
