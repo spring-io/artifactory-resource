@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -53,6 +54,7 @@ import io.spring.concourse.artifactoryresource.io.FileSet.Category;
 import io.spring.concourse.artifactoryresource.io.PathFilter;
 import io.spring.concourse.artifactoryresource.maven.MavenCoordinates;
 import io.spring.concourse.artifactoryresource.maven.MavenVersionType;
+import io.spring.concourse.artifactoryresource.openpgp.ArmoredAsciiSigner;
 import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +115,12 @@ public class OutHandler {
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, buildTimestamp,
 				source, params, directory);
+		if (StringUtils.hasText(params.getSigningKey())) {
+			Map<String, String> properties = new LinkedHashMap<>();
+			addBuildProperties(buildNumber, buildTimestamp, source, properties);
+			batchedArtifacts = signArtifacts(batchedArtifacts, params.getSigningKey(), params.getSigningPassphrase(),
+					Collections.unmodifiableMap(properties));
+		}
 		int size = batchedArtifacts.values().stream().mapToInt(List::size).sum();
 		Assert.state(size > 0, "No artifacts found to deploy");
 		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", size, source.getUri(), buildNumber,
@@ -200,6 +208,19 @@ public class OutHandler {
 		String stripped = path.replace(coordinates.getSnapshotVersion(), coordinates.getVersion());
 		logger.debug("Stripped timestamp version {} to {}", path, stripped);
 		return stripped;
+	}
+
+	private MultiValueMap<Category, DeployableArtifact> signArtifacts(
+			MultiValueMap<Category, DeployableArtifact> batchedArtifacts, String signingKey, String signingPassphrase,
+			Map<String, String> properties) {
+		try {
+			console.log("Signing artifacts");
+			ArmoredAsciiSigner signer = ArmoredAsciiSigner.get(signingKey, signingPassphrase);
+			return new DeployableArtifactsSigner(signer, properties).sign(batchedArtifacts);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to sign artifacts", ex);
+		}
 	}
 
 	private void deployArtifacts(ArtifactoryServer artifactoryServer, Params params,

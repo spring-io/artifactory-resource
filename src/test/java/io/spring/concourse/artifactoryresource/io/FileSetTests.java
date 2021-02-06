@@ -166,6 +166,21 @@ class FileSetTests {
 						"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1-sources.jar"));
 	}
 
+	@Test
+	void batchedByCategoryWithAscFilesReturnsBatchedFiles() throws Exception {
+		List<String> names = readNames(getClass().getResourceAsStream("typical.txt"));
+		List<String> signedNames = new ArrayList<>();
+		for (String name : names) {
+			signedNames.add(name);
+			signedNames.add(name + ".asc");
+		}
+		FileSet fileSet = fileSetOf(signedNames).filter(this::filter);
+		MultiValueMap<Category, File> batched = fileSet.batchedByCategory();
+		List<File> signatureFiles = batched.get(Category.SIGNATURE);
+		assertThat(signatureFiles).hasSize(names.size());
+		assertThat(signatureFiles).allSatisfy((file) -> file.getName().endsWith(".asc"));
+	}
+
 	private boolean filter(File file) {
 		String name = file.getName().toLowerCase();
 		return (!name.endsWith(".md5") && !name.endsWith("sha1") && !name.equalsIgnoreCase("maven-metadata.xml"));

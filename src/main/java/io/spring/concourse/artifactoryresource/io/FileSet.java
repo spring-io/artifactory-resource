@@ -147,6 +147,9 @@ public final class FileSet implements Iterable<File> {
 		if (file.getName().endsWith(".pom")) {
 			return Category.POM;
 		}
+		if (file.getName().endsWith(".asc")) {
+			return Category.SIGNATURE;
+		}
 		if (isMavenMetaData(file)) {
 			return Category.MAVEN_METADATA;
 		}
@@ -184,6 +187,11 @@ public final class FileSet implements Iterable<File> {
 		 * The POM file.
 		 */
 		POM("pom file"),
+
+		/**
+		 * An ASC signature file.
+		 */
+		SIGNATURE("signature"),
 
 		/**
 		 * Maven metadata.

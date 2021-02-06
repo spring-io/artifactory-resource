@@ -175,6 +175,8 @@ Build modules will be also automatically added when dealing with a Maven style d
 * `strip_snapshot_timestamps`: If snapshot timestamps should be removed to allow artifactory to generate them (defaults to `true`).
 * `disable_checksum_uploads`: If checksum based uploads should be disabled (useful to prevent artifactory from associating the wrong resource with a snapshot version).
 * `threads`: Number of threads to use when deploying artifacts (defaults to `1`).
+* `signing_key`: A PGP/GPG signing key that will be used to sign artifacts (can be the key content or a reference to a file containing the key).
+* `signing_passphrase`: The passphrase used to unlock the key.
 * `artifact_set`: Additional configuration for a subset of the artifacts (see below).
 
 The `artifact_set` parameter can be used to apply specific additional configuration to a subset of artifacts.

@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.io.DirectoryScanner;
 import io.spring.concourse.artifactoryresource.io.FileSet;
+import io.spring.concourse.artifactoryresource.openpgp.ArmoredAsciiSigner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -332,6 +334,30 @@ class OutHandlerTests {
 		assertThat(this.optionsCaptor.getAllValues()).containsOnly(DeployOption.DISABLE_CHECKSUM_UPLOADS);
 	}
 
+	@Test
+	void handleWhenSigningSignsArtifacts() throws IOException {
+		String signingKey = new String(
+				FileCopyUtils.copyToByteArray(ArmoredAsciiSigner.class.getResourceAsStream("test-private.txt")),
+				StandardCharsets.UTF_8);
+		List<ArtifactSet> artifactSet = new ArrayList<>();
+		artifactSet.add(new ArtifactSet(Arrays.asList("**/*.jar"), null, Collections.singletonMap("extra", "test")));
+		OutRequest request = createRequest("1234", null, null, false, false, artifactSet, 1, signingKey, "password");
+		Directory directory = createDirectory();
+		configureMockScanner(directory);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository, times(2)).deploy(this.artifactCaptor.capture(),
+				this.optionsCaptor.capture());
+		DeployableArtifact deployedJar = this.artifactCaptor.getAllValues().get(0);
+		DeployableArtifact deployedAsc = this.artifactCaptor.getAllValues().get(1);
+		assertThat(deployedJar.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
+		assertThat(deployedJar.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234").containsEntry("extra", "test").containsKey("build.timestamp");
+		assertThat(deployedAsc.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar.asc");
+		assertThat(deployedAsc.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234").containsKey("build.timestamp").doesNotContainKey("extra");
+		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
+	}
+
 	private OutRequest createRequest(String buildNumber) {
 		return createRequest(buildNumber, null, null);
 	}
@@ -343,10 +369,17 @@ class OutHandlerTests {
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet,
 			int threads) {
+		return createRequest(buildNumber, include, exclude, stripSnapshotTimestamps, disableChecksumUploads,
+				artifactSet, threads, null, null);
+	}
+
+	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
+			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet, int threads,
+			String signingKey, String signingPassphrase) {
 		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", stripSnapshotTimestamps, disableChecksumUploads, artifactSet,
-						threads));
+						threads, signingKey, signingPassphrase));
 	}
 
 	private Directory createDirectory() throws IOException {

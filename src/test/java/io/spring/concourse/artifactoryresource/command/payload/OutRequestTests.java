@@ -43,7 +43,7 @@ class OutRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null);
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
-			null, null, null, null, null, null);
+			null, null, null, null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -63,13 +63,14 @@ class OutRequestTests {
 	@Test
 	void createParamsWhenFolderIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
-				"1234", "", null, null, null, null, null, null, null, null)).withMessage("Folder must not be empty");
+				"1234", "", null, null, null, null, null, null, null, null, null, null))
+				.withMessage("Folder must not be empty");
 	}
 
 	@Test
 	void createParamsWhenRepoIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
-				null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
+				null, null, null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
 	}
 
 	@Test
@@ -88,6 +89,8 @@ class OutRequestTests {
 		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		assertThat(request.getParams().isDisableChecksumUploads()).isEqualTo(true);
 		assertThat(request.getParams().getThreads()).isEqualTo(8);
+		assertThat(request.getParams().getSigningKey()).isNull();
+		assertThat(request.getParams().getSigningPassphrase()).isNull();
 		List<ArtifactSet> artifactSet = request.getParams().getArtifactSet();
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");
@@ -108,6 +111,13 @@ class OutRequestTests {
 		assertThat(request.getParams().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");
 		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
+	}
+
+	@Test
+	void readDeserializesJsonWithSigning() throws Exception {
+		OutRequest request = this.json.readObject("out-request-with-signing.json");
+		assertThat(request.getParams().getSigningKey()).isEqualTo("sign.txt");
+		assertThat(request.getParams().getSigningPassphrase()).isEqualTo("secret");
 	}
 
 	@Test
