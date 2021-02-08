@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -82,7 +83,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				deployUsingContent(artifact);
 			}
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			throw new RuntimeException(
 					"Error deploying artifact " + artifact.getPath() + " with checksums " + artifact.getChecksums(),
 					ex);
@@ -95,8 +96,31 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private void deployUsingContent(DeployableArtifact artifact) throws IOException {
-		RequestEntity<Resource> request = deployRequest(artifact).body(artifact.getContent());
-		this.restTemplate.exchange(request, Void.class);
+		int attempt = 0;
+		while (true) {
+			try {
+				attempt++;
+				RequestEntity<Resource> request = deployRequest(artifact).body(artifact.getContent());
+				this.restTemplate.exchange(request, Void.class);
+				return;
+			}
+			catch (RestClientResponseException ex) {
+				int statusCode = ex.getRawStatusCode();
+				boolean flaky = statusCode == 400 || statusCode == 404;
+				if (!flaky || attempt > 3) {
+					throw ex;
+				}
+				trySleep(200);
+			}
+		}
+	}
+
+	private void trySleep(int time) {
+		try {
+			Thread.sleep(200);
+		}
+		catch (InterruptedException ex) {
+		}
 	}
 
 	private BodyBuilder deployRequest(DeployableArtifact artifact) throws IOException {

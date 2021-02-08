@@ -157,6 +157,41 @@ class HttpArtifactoryRepositoryTests {
 		this.server.verify();
 	}
 
+	@Test
+	void deployWhenFlaky400AndLaterAttemptWorksDeploys() {
+		deployWhenFlaky(false, HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void deployWhenFlaky400AndLaterAttemptsFailThrowsException() {
+		deployWhenFlaky(false, HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
+	void deployWhenFlaky404AndLaterAttemptWorksDeploys() {
+		deployWhenFlaky(false, HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void deployWhenFlaky404AndLaterAttemptsFailThrowsException() {
+		deployWhenFlaky(false, HttpStatus.NOT_FOUND);
+	}
+
+	private void deployWhenFlaky(boolean fail, HttpStatus flakyStatus) {
+		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
+		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andExpect(header("content-length", String.valueOf(artifact.getSize())))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
+		this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
+		this.server.expect(requestTo(url)).andRespond(withStatus(fail ? flakyStatus : HttpStatus.OK));
+		this.artifactoryRepository.deploy(artifact);
+		this.server.verify();
+	}
+
 	private RequestMatcher noChecksumHeader() {
 		return (request) -> assertThat(request.getHeaders().keySet()).doesNotContain("X-Checksum-Deploy");
 	}
