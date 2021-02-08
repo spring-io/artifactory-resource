@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,9 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			}
 		}
 		catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException(
+					"Error deploying artifact " + artifact.getPath() + " with checksums " + artifact.getChecksums(),
+					ex);
 		}
 	}
 
