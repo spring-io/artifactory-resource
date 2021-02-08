@@ -325,6 +325,20 @@ class OutHandlerTests {
 	}
 
 	@Test
+	void handleWhenStripSnapshotTimestampsRemovesDuplicates() throws Exception {
+		OutRequest request = createRequest("1234", null, null, true, false, null, 1);
+		Directory directory = createDirectory();
+		configureMockScanner(directory, Collections.emptyList(), "1.0.0.BUILD-SNAPSHOT",
+				"1.0.0.BUILD-20171005.194031-1", "1.0.0.BUILD-20171005.194031-2");
+		this.handler.handle(request, directory);
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture());
+		DeployableArtifact deployed = this.artifactCaptor.getValue();
+		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/1.0.0.BUILD-SNAPSHOT/foo-1.0.0.BUILD-SNAPSHOT.jar");
+		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
+				.containsEntry("build.number", "1234").containsKey("build.timestamp");
+	}
+
+	@Test
 	void handleWhenDisableChecksumUploadDoesNotUseChecksumUpload() throws Exception {
 		OutRequest request = createRequest("1234", null, null, false, true, null, 1);
 		Directory directory = createDirectory();
@@ -396,11 +410,13 @@ class OutHandlerTests {
 	}
 
 	private void configureMockScanner(Directory directory, List<File> extraFiles, String version,
-			String snapshotVersion) throws IOException {
+			String snapshotVersion, String... extraSnapshotVersions) throws IOException {
 		directory = createStructure(directory, "folder", "com", "example", "foo", version);
 		List<File> files = new ArrayList<>();
-		File file = new File(directory.getFile(), "foo-" + snapshotVersion + ".jar");
-		files.add(file);
+		files.add(new File(directory.getFile(), "foo-" + snapshotVersion + ".jar"));
+		for (String extraSnapshotVersion : extraSnapshotVersions) {
+			files.add(new File(directory.getFile(), "foo-" + extraSnapshotVersion + ".jar"));
+		}
 		files.addAll(extraFiles);
 		createEmptyFiles(files);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of(files));

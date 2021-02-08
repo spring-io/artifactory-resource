@@ -155,6 +155,7 @@ public class OutHandler {
 		FileSet fileSet = this.directoryScanner.scan(root, params.getInclude(), params.getExclude())
 				.filter(getChecksumFilter()).filter(getMetadataFilter(params));
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = new LinkedMultiValueMap<>();
+		Set<String> paths = new HashSet<>();
 		fileSet.batchedByCategory().forEach((category, files) -> {
 			files.forEach((file) -> {
 				String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
@@ -164,7 +165,9 @@ public class OutHandler {
 				if (params.isStripSnapshotTimestamps()) {
 					path = stripSnapshotTimestamp(path);
 				}
-				batchedArtifacts.add(category, new DeployableFileArtifact(path, file, properties, null));
+				if (paths.add(path)) {
+					batchedArtifacts.add(category, new DeployableFileArtifact(path, file, properties, null));
+				}
 			});
 		});
 		return batchedArtifacts;
