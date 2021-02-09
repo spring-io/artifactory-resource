@@ -100,6 +100,16 @@ class OutRequestTests {
 	}
 
 	@Test
+	void readDeserializesJsonWithSensibleStripTimestampDefaults() throws Exception {
+		OutRequest requestNone = this.json.readObject("out-request-strip-timestamps-with-module-layout-none.json");
+		assertThat(requestNone.getParams().getModuleLayout()).isEqualTo("none");
+		assertThat(requestNone.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
+		OutRequest requestMaven = this.json.readObject("out-request-strip-timestamps-with-module-layout-maven.json");
+		assertThat(requestMaven.getParams().getModuleLayout()).isEqualTo("maven");
+		assertThat(requestMaven.getParams().isStripSnapshotTimestamps()).isEqualTo(true);
+	}
+
+	@Test
 	void readDeserializesJsonWithProxy() throws Exception {
 		OutRequest request = this.json.readObject("out-request-with-proxy.json");
 		assertThat(request.getSource().getUri()).isEqualTo("https://repo.example.com");

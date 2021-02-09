@@ -1,0 +1,15 @@
+{
+	"source": {
+		"uri": "https://repo.example.com",
+		"username": "admin",
+		"password": "password",
+		"build_name": "my-build"
+	},
+	"params": {
+		"build_number": "1234",
+		"repo": "libs-snapshot-local",
+		"folder": "dist",
+		"module_layout" : "maven",
+		"build_uri": "https://ci.example.com"
+	}
+}

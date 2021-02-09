@@ -85,7 +85,7 @@ public class OutRequest {
 		@JsonProperty("build_uri")
 		private final String buildUri;
 
-		private final boolean stripSnapshotTimestamps;
+		private final Boolean stripSnapshotTimestamps;
 
 		private final boolean disableChecksumUploads;
 
@@ -119,7 +119,7 @@ public class OutRequest {
 					: Collections.emptyList();
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
-			this.stripSnapshotTimestamps = (stripSnapshotTimestamps != null) ? stripSnapshotTimestamps : true;
+			this.stripSnapshotTimestamps = stripSnapshotTimestamps;
 			this.disableChecksumUploads = (disableChecksumUploads != null) ? disableChecksumUploads : false;
 			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
 					: Collections.emptyList();
@@ -161,7 +161,10 @@ public class OutRequest {
 		}
 
 		public boolean isStripSnapshotTimestamps() {
-			return this.stripSnapshotTimestamps;
+			if (this.stripSnapshotTimestamps != null) {
+				return this.stripSnapshotTimestamps;
+			}
+			return !StringUtils.hasText(this.moduleLayout) || "maven".equalsIgnoreCase(this.moduleLayout);
 		}
 
 		public boolean isDisableChecksumUploads() {
