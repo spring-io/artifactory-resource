@@ -71,7 +71,6 @@ public class OutRequest {
 
 		private final String repo;
 
-		@JsonProperty("build_number")
 		private final String buildNumber;
 
 		private final String folder;
@@ -82,7 +81,6 @@ public class OutRequest {
 
 		private final String moduleLayout;
 
-		@JsonProperty("build_uri")
 		private final String buildUri;
 
 		private final Boolean stripSnapshotTimestamps;

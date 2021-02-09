@@ -56,7 +56,7 @@ public class BuildInfo {
 	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,
 			@JsonProperty("agent") ContinuousIntegrationAgent continuousIntegrationAgent,
 			@JsonProperty("started") Date started, @JsonProperty("url") String buildUri,
-			@JsonProperty("") List<BuildModule> modules) {
+			@JsonProperty("modules") List<BuildModule> modules) {
 		Assert.hasText(buildName, "BuildName must not be empty");
 		Assert.hasText(buildNumber, "BuildNumber must not be empty");
 		this.buildName = buildName;
