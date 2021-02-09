@@ -1,0 +1,29 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: vito/oci-build-task
+inputs:
+- name: git-repo
+- name: built-artifact
+outputs:
+- name: image
+caches:
+- path: artifactory-resource-image-cache
+params:
+  DOCKERFILE: git-repo/Dockerfile
+  BUILD_ARG_jar: built-artifact/artifactory-resource.jar
+  BUILD_ARG_root: git-repo
+  DOCKER_HUB_AUTH: ((docker-hub-auth))
+  REGISTRY_MIRRORS: ((docker-hub-mirror))
+run:
+  path: /bin/sh
+  args:
+  - "-c"
+  - |
+    mkdir -p /root/.docker
+    cat > /root/.docker/config.json <<EOF
+    { "auths": { "https://index.docker.io/v1/": { "auth": "$DOCKER_HUB_AUTH" }}}
+    EOF
+    build

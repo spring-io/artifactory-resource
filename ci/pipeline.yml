@@ -1,6 +1,13 @@
+resource_types:
+- name: registry-image
+  type: registry-image
+  source:
+    repository: concourse/registry-image-resource
+    tag: 1.1.0
 resources:
 - name: git-repo
   type: git
+  icon: github
   source:
     uri: https://github.com/spring-io/artifactory-resource
     username: ((github-username))
@@ -9,90 +16,103 @@ resources:
     ignore_paths: ["ci/images/*"]
 - name: ci-images-git-repo
   type: git
+  icon: github
   source:
     uri: https://github.com/spring-io/artifactory-resource
     branch: master
     paths: ["ci/images/*"]
-- name: artifactory-resource-ci-image
-  type: docker-image
+- name: ci-image
+  type: registry-image
+  icon: docker
   source:
-    repository: springci/artifactory-resource-ci-image
+    repository: springci/artifactory-resource-ci
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: master
 - name: artifactory-resource-image
-  type: docker-image
+  type: registry-image
+  icon: docker
   source:
     repository: springio/artifactory-resource
     username: ((docker-hub-username))
     password: ((docker-hub-password))
 - name: github-release
   type: github-release
+  icon: briefcase-download
   source:
     owner: spring-io
     repository: artifactory-resource
     access_token: ((github-ci-release-token))
 jobs:
-- name: build-artifactory-resource-ci-image
+- name: build-ci-image
   plan:
   - get: ci-images-git-repo
     trigger: true
-  - put: artifactory-resource-ci-image
+  - get: git-repo
+  - task: build-ci-image
+    privileged: true
+    file: git-repo/ci/tasks/build-ci-image.yml
+    output_mapping:
+      image: ci-image
+    vars:
+      ci-image-name: ci-image
+  - put: ci-image
     params:
-      build: ci-images-git-repo/ci/images
-      dockerfile: ci-images-git-repo/ci/images/artifactory-resource-ci-image/Dockerfile
+      image: ci-image/image.tar
 - name: build
   public: true
   plan:
-  - get: artifactory-resource-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: true
   - task: build
-    image: artifactory-resource-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/build.yml
+  - load_var: artifact-version
+    file: built-artifact/version
+    reveal: true
+  - task: build-artifactory-resource-image
+    privileged: true
+    file: git-repo/ci/tasks/build-artifactory-resource-image.yml
+    output_mapping:
+      image: artifactory-resource-image
   - put: artifactory-resource-image
     params:
-      build: .
-      dockerfile: git-repo/Dockerfile
-      tag: built-artifact/version
-      build_args:
-        root: git-repo
-        jar:  built-artifact/artifactory-resource.jar
+      version: ((.:artifact-version))
+      image: artifactory-resource-image/image.tar
 - name: release
   plan:
-  - get: artifactory-resource-ci-image
+  - get: ci-image
   - get: git-repo
     passed: [build]
     trigger: false
   - task: release
-    image: artifactory-resource-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/release.yml
-  - task: generate-release-notes
-    file: git-repo/ci/tasks/generate-release-notes.yml
-    params:
-      GITHUB_USERNAME: ((github-username))
-      GITHUB_TOKEN: ((github-ci-release-token))
+  - load_var: artifact-version
+    file: built-artifact/version
+    reveal: true
+  - task: build-artifactory-resource-image
+    privileged: true
+    file: git-repo/ci/tasks/build-artifactory-resource-image.yml
+    output_mapping:
+      image: artifactory-resource-image
+  - task: generate-changelog
+    file: git-repo/ci/tasks/generate-changelog.yml
   - put: git-repo
     params:
       repository: release-git-repo
   - put: artifactory-resource-image
     params:
-      build: .
-      dockerfile: git-repo/Dockerfile
-      tag: built-artifact/version
-      build_args:
-        root: git-repo
-        jar:  built-artifact/artifactory-resource.jar
+      version: ((.:artifact-version))
+      image: artifactory-resource-image/image.tar
   - put: github-release
     params:
-      name: generated-release-notes/tag
-      tag: generated-release-notes/tag
-      body: generated-release-notes/release-notes.md
+      name: generated-changelog/tag
+      tag: generated-changelog/tag
+      body: generated-changelog/changelog.md
 groups:
-- name: "Build"
-  jobs:
-  - build
-  - release
-- name: "CI Images"
-  jobs:
-  - build-artifactory-resource-ci-image
+- name: "builds"
+  jobs: ["build", "release"]
+- name: "ci-image"
+  jobs: ["build-ci-image"]
