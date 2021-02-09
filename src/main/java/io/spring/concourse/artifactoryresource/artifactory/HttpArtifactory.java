@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.URI;
 import java.util.function.Supplier;
+
+import io.spring.concourse.artifactoryresource.http.ConcourseSslContextFactory;
+import io.spring.concourse.artifactoryresource.http.SimpleSslClientHttpRequestFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
@@ -66,7 +69,9 @@ public class HttpArtifactory implements Artifactory {
 	}
 
 	private ClientHttpRequestFactory getRequestFactory(Proxy proxy) {
-		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		SimpleClientHttpRequestFactory factory = (ConcourseSslContextFactory.isAvailable())
+				? new SimpleSslClientHttpRequestFactory(new ConcourseSslContextFactory())
+				: new SimpleClientHttpRequestFactory();
 		factory.setBufferRequestBody(false);
 		factory.setProxy(proxy);
 		return factory;
