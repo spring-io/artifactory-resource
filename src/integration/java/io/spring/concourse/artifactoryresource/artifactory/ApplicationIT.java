@@ -113,8 +113,8 @@ class ApplicationIT {
 			throws Exception {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
-		artifactoryBuildRuns.add(buildNumber, "ci.example.com", buildTimestamp,
-				new ContinuousIntegrationAgent("Concourse", null), Collections.singletonList(modules));
+		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), buildTimestamp,
+				"ci.example.com", null, Collections.singletonList(modules));
 	}
 
 	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber) {

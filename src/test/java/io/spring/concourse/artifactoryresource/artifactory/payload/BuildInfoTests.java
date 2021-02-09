@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
@@ -55,32 +56,35 @@ public class BuildInfoTests {
 	private static final List<BuildModule> MODULES = Collections.singletonList(
 			new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", Collections.singletonList(ARTIFACT)));
 
+	private static final Map<String, String> PROPERTIES = Collections.singletonMap("made-by", "concourse");
+
 	@Autowired
 	private JacksonTester<BuildInfo> json;
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES))
+				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
 				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
 	public void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, MODULES))
+				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
 				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test
 	public void createWhenModulesIsNullUsesEmptyList() {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, null);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, null);
 		assertThat(buildInfo.getModules()).isNotNull().isEmpty();
 	}
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, MODULES);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES,
+				MODULES);
 		assertThat(this.json.write(buildInfo)).isEqualToJson("build-info.json");
 	}
 

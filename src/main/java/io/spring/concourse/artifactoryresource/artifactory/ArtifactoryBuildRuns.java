@@ -18,6 +18,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
@@ -37,24 +38,27 @@ public interface ArtifactoryBuildRuns {
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
-	 * @param buildUri the build URL
 	 * @param buildTimestamp the build timestamp
+	 * @param buildUri the build URL
+	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, String buildUri, Date buildTimestamp, List<BuildModule> modules) {
-		add(buildNumber, buildUri, buildTimestamp, null, modules);
+	default void add(String buildNumber, Date buildTimestamp, String buildUri, Map<String, String> properties,
+			List<BuildModule> modules) {
+		add(buildNumber, null, buildTimestamp, buildUri, properties, modules);
 	}
 
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
+	 * @param continuousIntegrationAgent the CI Agent
 	 * @param buildTimestamp the build timestamp
 	 * @param buildUri the build URL
-	 * @param continuousIntegrationAgent the CI Agent
+	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, String buildUri, Date buildTimestamp,
-			ContinuousIntegrationAgent continuousIntegrationAgent, List<BuildModule> modules);
+	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Date buildTimestamp,
+			String buildUri, Map<String, String> properties, List<BuildModule> modules);
 
 	/**
 	 * Return all previous build runs.

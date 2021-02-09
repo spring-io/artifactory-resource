@@ -19,10 +19,14 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.util.Assert;
@@ -50,12 +54,18 @@ public class BuildInfo {
 	@JsonProperty("url")
 	private final String buildUri;
 
+	@JsonProperty("properties")
+	@JsonInclude(Include.NON_NULL)
+	private final Map<String, String> properties;
+
+	@JsonProperty("modules")
 	private List<BuildModule> modules;
 
 	@JsonCreator
 	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,
 			@JsonProperty("agent") ContinuousIntegrationAgent continuousIntegrationAgent,
 			@JsonProperty("started") Date started, @JsonProperty("url") String buildUri,
+			@JsonProperty("properties") Map<String, String> properties,
 			@JsonProperty("modules") List<BuildModule> modules) {
 		Assert.hasText(buildName, "BuildName must not be empty");
 		Assert.hasText(buildNumber, "BuildNumber must not be empty");
@@ -64,6 +74,8 @@ public class BuildInfo {
 		this.continuousIntegrationAgent = continuousIntegrationAgent;
 		this.started = (started != null) ? started : new Date();
 		this.buildUri = buildUri;
+		this.properties = (properties != null) ? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
+				: Collections.emptyMap();
 		this.modules = (modules != null) ? Collections.unmodifiableList(new ArrayList<>(modules))
 				: Collections.emptyList();
 	}

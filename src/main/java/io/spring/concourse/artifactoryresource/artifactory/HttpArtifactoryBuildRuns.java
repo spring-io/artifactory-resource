@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
@@ -60,9 +61,10 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public void add(String buildNumber, String buildUri, Date buildTimestamp,
-			ContinuousIntegrationAgent continuousIntegrationAgent, List<BuildModule> modules) {
-		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, buildTimestamp, buildUri, modules));
+	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Date buildTimestamp,
+			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
+		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, buildTimestamp, buildUri, properties,
+				modules));
 	}
 
 	private void add(BuildInfo buildInfo) {

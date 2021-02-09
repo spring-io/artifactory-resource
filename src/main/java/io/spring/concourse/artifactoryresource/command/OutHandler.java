@@ -18,6 +18,8 @@ package io.spring.concourse.artifactoryresource.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -25,6 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -59,6 +62,8 @@ import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -298,8 +303,37 @@ public class OutHandler {
 		logger.debug("Adding build run {}", buildNumber);
 		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);
-		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, params.getBuildUri(), buildTimestamp,
-				modules);
+		Map<String, String> properties = loadProperties(params.getBuildProperties());
+		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, buildTimestamp, params.getBuildUri(),
+				properties, modules);
+	}
+
+	private Map<String, String> loadProperties(String propertiesFile) {
+		if (StringUtils.hasText(propertiesFile)) {
+			try {
+				FileSystemResource resource = new FileSystemResource(propertiesFile);
+				return loadProperties(new EncodedResource(resource, StandardCharsets.UTF_8));
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Unable to read build properties from file '" + propertiesFile + "'");
+			}
+		}
+		return null;
+	}
+
+	private Map<String, String> loadProperties(EncodedResource encodedResource) throws IOException {
+		Map<String, String> properties = new LinkedHashMap<>();
+		try (Reader reader = encodedResource.getReader()) {
+			new Properties() {
+
+				@Override
+				public synchronized Object put(Object key, Object value) {
+					return properties.put((String) key, (String) value);
+				}
+
+			}.load(reader);
+		}
+		return properties;
 	}
 
 }

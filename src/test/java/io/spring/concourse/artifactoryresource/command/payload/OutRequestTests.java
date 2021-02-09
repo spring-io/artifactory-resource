@@ -43,7 +43,7 @@ class OutRequestTests {
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null);
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
-			null, null, null, null, null, null, null, null);
+			null, null, null, null, null, null, null, null, null);
 
 	@Autowired
 	private JacksonTester<OutRequest> json;
@@ -63,14 +63,14 @@ class OutRequestTests {
 	@Test
 	void createParamsWhenFolderIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
-				"1234", "", null, null, null, null, null, null, null, null, null, null))
+				"1234", "", null, null, null, null, null, null, null, null, null, null, null))
 				.withMessage("Folder must not be empty");
 	}
 
 	@Test
 	void createParamsWhenRepoIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
-				null, null, null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
+				null, null, null, null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
 	}
 
 	@Test
@@ -86,6 +86,7 @@ class OutRequestTests {
 		assertThat(request.getParams().getExclude()).containsExactly("foo", "bar");
 		assertThat(request.getParams().getModuleLayout()).isEqualTo("maven");
 		assertThat(request.getParams().getBuildUri()).isEqualTo("https://ci.example.com");
+		assertThat(request.getParams().getBuildProperties()).isEqualTo("build.properties");
 		assertThat(request.getParams().isStripSnapshotTimestamps()).isEqualTo(false);
 		assertThat(request.getParams().isDisableChecksumUploads()).isEqualTo(true);
 		assertThat(request.getParams().getThreads()).isEqualTo(8);

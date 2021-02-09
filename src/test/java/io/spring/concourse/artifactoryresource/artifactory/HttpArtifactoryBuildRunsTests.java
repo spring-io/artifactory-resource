@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,7 +102,8 @@ class HttpArtifactoryBuildRunsTests {
 		List<BuildModule> modules = Collections
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
-		this.artifactoryBuildRuns.add("5678", "https://ci.example.com", started, agent, modules);
+		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
+		this.artifactoryBuildRuns.add("5678", agent, started, "https://ci.example.com", properties, modules);
 		this.server.verify();
 	}
 

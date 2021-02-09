@@ -18,6 +18,7 @@
 		"folder": "dist",
 		"module_layout" : "maven",
 		"build_uri": "https://ci.example.com",
+		"build_properties" : "build.properties",
 		"strip_snapshot_timestamps": false,
 		"disable_checksum_uploads": true,
 		"threads": 8,

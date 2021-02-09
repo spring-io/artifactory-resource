@@ -83,6 +83,8 @@ public class OutRequest {
 
 		private final String buildUri;
 
+		private final String buildProperties;
+
 		private final Boolean stripSnapshotTimestamps;
 
 		private final boolean disableChecksumUploads;
@@ -100,6 +102,7 @@ public class OutRequest {
 				@JsonProperty("build_number") String buildNumber, @JsonProperty("folder") String folder,
 				@JsonProperty("include") List<String> include, @JsonProperty("exclude") List<String> exclude,
 				@JsonProperty("module_layout") String moduleLayout, @JsonProperty("build_uri") String buildUri,
+				@JsonProperty("build_properties") String buildProperties,
 				@JsonProperty("strip_snapshot_timestamps") Boolean stripSnapshotTimestamps,
 				@JsonProperty("disable_checksum_uploads") Boolean disableChecksumUploads,
 				@JsonProperty("artifact_set") List<ArtifactSet> artifactSet, @JsonProperty("threads") Integer threads,
@@ -117,6 +120,7 @@ public class OutRequest {
 					: Collections.emptyList();
 			this.moduleLayout = moduleLayout;
 			this.buildUri = buildUri;
+			this.buildProperties = buildProperties;
 			this.stripSnapshotTimestamps = stripSnapshotTimestamps;
 			this.disableChecksumUploads = (disableChecksumUploads != null) ? disableChecksumUploads : false;
 			this.artifactSet = (artifactSet != null) ? Collections.unmodifiableList(new ArrayList<>(artifactSet))
@@ -156,6 +160,10 @@ public class OutRequest {
 
 		public String getBuildUri() {
 			return this.buildUri;
+		}
+
+		public String getBuildProperties() {
+			return this.buildProperties;
 		}
 
 		public boolean isStripSnapshotTimestamps() {

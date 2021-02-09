@@ -172,6 +172,7 @@ Build modules will be also automatically added when dealing with a Maven style d
 * `exclude`: A list of Ant style patterns for the files to exclude.
 * `module_layout`: The module layout (`maven` or `none`) used to generate `build-info` module information (defaults to `maven`).
 * `build_uri`: The URL back to the concourse build (e.g. `+++https://my.concourse.url/builds/${BUILD_ID}+++`).
+* `build_properties`: A path to a UTF-8 file containing properties that should be copied into the `Build-Info` `properties` section.
 * `strip_snapshot_timestamps`: If snapshot timestamps should be removed to allow artifactory to generate them (defaults to `true`).
 * `disable_checksum_uploads`: If checksum based uploads should be disabled (useful to prevent artifactory from associating the wrong resource with a snapshot version).
 * `threads`: Number of threads to use when deploying artifacts (defaults to `1`).
@@ -182,7 +183,7 @@ Build modules will be also automatically added when dealing with a Maven style d
 The `artifact_set` parameter can be used to apply specific additional configuration to a subset of artifacts.
 You create sets based on `include` and `exclude` Ant patterns, then apply any of the following additional configuration:
 
-* `properties`: A map of name/value pairs that will be added as artifactory properties.
+* `properties`: A map of name/value pairs that will be added as https://www.jfrog.com/confluence/display/JFROG/Using+Properties+in+Deployment+and+Resolution[properties to the deployed artifacts].
 
 Here's a typical example:
 
