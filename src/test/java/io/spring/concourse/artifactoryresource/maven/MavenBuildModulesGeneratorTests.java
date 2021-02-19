@@ -71,7 +71,7 @@ class MavenBuildModulesGeneratorTests {
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.sha"));
 		List<BuildModule> buildModules = this.generator.getBuildModules(deployableArtifacts);
 		assertThat(buildModules.get(0).getArtifacts()).extracting(BuildArtifact::getName)
-				.containsExactly("foo-1.0.0.pom");
+				.containsExactly("foo-1.0.0.pom", "foo-1.0.0.asc");
 	}
 
 	@Test
