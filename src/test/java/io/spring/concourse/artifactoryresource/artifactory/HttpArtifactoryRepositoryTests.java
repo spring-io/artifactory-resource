@@ -39,6 +39,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -164,7 +165,9 @@ class HttpArtifactoryRepositoryTests {
 
 	@Test
 	void deployWhenFlaky400AndLaterAttemptsFailThrowsException() {
-		deployWhenFlaky(false, HttpStatus.BAD_REQUEST);
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> deployWhenFlaky(true, HttpStatus.BAD_REQUEST))
+				.withMessageStartingWith("Error deploying artifact");
 	}
 
 	@Test
@@ -174,22 +177,27 @@ class HttpArtifactoryRepositoryTests {
 
 	@Test
 	void deployWhenFlaky404AndLaterAttemptsFailThrowsException() {
-		deployWhenFlaky(false, HttpStatus.NOT_FOUND);
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> deployWhenFlaky(true, HttpStatus.NOT_FOUND))
+				.withMessageStartingWith("Error deploying artifact");
 	}
 
 	private void deployWhenFlaky(boolean fail, HttpStatus flakyStatus) {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andExpect(header("content-length", String.valueOf(artifact.getSize())))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
-		this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
-		this.server.expect(requestTo(url)).andRespond(withStatus(fail ? flakyStatus : HttpStatus.OK));
-		this.artifactoryRepository.deploy(artifact);
-		this.server.verify();
+		try {
+			this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
+					.andExpect(header("X-Checksum-Deploy", "true"))
+					.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+					.andExpect(header("content-length", String.valueOf(artifact.getSize())))
+					.andRespond(withStatus(HttpStatus.NOT_FOUND));
+			this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
+			this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
+			this.server.expect(requestTo(url)).andRespond(withStatus(fail ? flakyStatus : HttpStatus.OK));
+			this.artifactoryRepository.deploy(artifact);
+		}
+		finally {
+			this.server.verify();
+		}
 	}
 
 	private RequestMatcher noChecksumHeader() {

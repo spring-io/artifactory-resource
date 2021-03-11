@@ -27,6 +27,7 @@ import java.util.Map;
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.io.Checksum;
+import io.spring.concourse.artifactoryresource.system.ConsoleLogger;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -48,6 +49,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Madhura Bhave
  */
 public class HttpArtifactoryRepository implements ArtifactoryRepository {
+
+	private static final ConsoleLogger console = new ConsoleLogger();
 
 	private static final Object[] NO_VARIABLES = {};
 
@@ -107,19 +110,21 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			catch (RestClientResponseException ex) {
 				int statusCode = ex.getRawStatusCode();
 				boolean flaky = statusCode == 400 || statusCode == 404;
-				if (!flaky || attempt > 3) {
+				if (!flaky || attempt >= 3) {
 					throw ex;
 				}
-				trySleep(200);
+				console.log("Deploy failed with {} response. Retrying in 5s.", statusCode);
+				trySleep(5000);
 			}
 		}
 	}
 
 	private void trySleep(int time) {
 		try {
-			Thread.sleep(200);
+			Thread.sleep(time);
 		}
 		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
