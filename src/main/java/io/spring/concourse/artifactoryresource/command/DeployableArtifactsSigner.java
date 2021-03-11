@@ -44,6 +44,8 @@ import org.springframework.util.MultiValueMap;
  */
 class DeployableArtifactsSigner {
 
+	private static final String FILE_EXTENSION = ".asc";
+
 	private static final File temp;
 
 	static {
@@ -75,7 +77,10 @@ class DeployableArtifactsSigner {
 				batchedArtifacts);
 		batchedAndSigned.put(Category.SIGNATURE, signed);
 		return batchedAndSigned;
+	}
 
+	static boolean isSignatureFile(String name) {
+		return name.toLowerCase().endsWith(FILE_EXTENSION);
 	}
 
 	private class SignedDeployableArtifact implements DeployableArtifact {
@@ -108,7 +113,7 @@ class DeployableArtifactsSigner {
 
 		@Override
 		public String getPath() {
-			return this.artifact.getPath() + ".asc";
+			return this.artifact.getPath() + FILE_EXTENSION;
 		}
 
 		@Override

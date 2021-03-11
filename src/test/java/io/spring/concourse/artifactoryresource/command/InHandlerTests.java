@@ -122,6 +122,18 @@ class InHandlerTests {
 	}
 
 	@Test
+	void handleWhenDownloadChecksumsTrueAndAscFileDownloadsArtifactsWithoutChecksums() {
+		DeployedArtifact deployedArtifact = new DeployedArtifact("libs-snapshot-local", "foo.asc", "com/example");
+		this.deployedArtifacts.clear();
+		this.deployedArtifacts.add(deployedArtifact);
+		InRequest request = createRequest(false, false, true);
+		Directory directory = new Directory(this.tempDir);
+		InResponse response = this.handler.handle(request, directory);
+		verify(this.artifactoryRepository).download(deployedArtifact, directory.getFile(), false);
+		assertThat(response.getVersion()).isEqualTo(request.getVersion());
+	}
+
+	@Test
 	void handleWhenDownloadArtifactsFalseDoesNotDownloadArtifacts() {
 		InRequest request = createRequest(false, false, false);
 		Directory directory = new Directory(this.tempDir);
