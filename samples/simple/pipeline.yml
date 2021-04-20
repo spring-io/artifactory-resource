@@ -8,7 +8,7 @@ resources:
     type: git
     source:
       uri: https://github.com/spring-io/artifactory-resource
-      branch: master
+      branch: main
   - name: artifactory
     type: artifactory-resource
     source:

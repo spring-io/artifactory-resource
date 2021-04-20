@@ -12,14 +12,14 @@ resources:
     uri: https://github.com/spring-io/artifactory-resource
     username: ((github-username))
     password: ((github-password))
-    branch: master
+    branch: main
     ignore_paths: ["ci/images/*"]
 - name: ci-images-git-repo
   type: git
   icon: github
   source:
     uri: https://github.com/spring-io/artifactory-resource
-    branch: master
+    branch: main
     paths: ["ci/images/*"]
 - name: ci-image
   type: registry-image
@@ -28,7 +28,7 @@ resources:
     repository: springci/artifactory-resource-ci
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: master
+    tag: main
 - name: artifactory-resource-image
   type: registry-image
   icon: docker

@@ -91,7 +91,7 @@ resources:
   type: git
   source:
     uri: https://git.example.com/my-org/my-project
-    branch: master
+    branch: main
 - name: artifactory
   type: artifactory-resource
   source:
