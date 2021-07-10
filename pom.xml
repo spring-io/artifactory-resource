@@ -18,6 +18,15 @@
 		<artifactory.version>6.9.0</artifactory.version>
 		<spring-javaformat.version>0.0.27</spring-javaformat.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.palantir.conjure.java.runtime</groupId>
+				<artifactId>conjure-java-jackson-serialization</artifactId>
+				<version>6.16.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
@@ -229,18 +238,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>palantir</id>
-			<url>https://dl.bintray.com/palantir/releases</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<profiles>
 		<profile>
 			<id>run-local-artifactory</id>
