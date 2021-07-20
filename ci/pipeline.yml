@@ -45,6 +45,7 @@ resources:
     access_token: ((github-ci-release-token))
 jobs:
 - name: build-ci-image
+  serial: true
   plan:
   - get: ci-images-git-repo
     trigger: true
@@ -60,6 +61,7 @@ jobs:
     params:
       image: ci-image/image.tar
 - name: build
+  serial: true
   public: true
   plan:
   - get: ci-image
@@ -81,6 +83,7 @@ jobs:
       version: ((.:artifact-version))
       image: artifactory-resource-image/image.tar
 - name: release
+  serial: true
   plan:
   - get: ci-image
   - get: git-repo
