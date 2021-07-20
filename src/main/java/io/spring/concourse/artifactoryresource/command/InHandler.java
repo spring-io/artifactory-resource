@@ -140,7 +140,7 @@ public class InHandler {
 
 	private void download(ArtifactoryServer artifactoryServer, File destination, boolean downloadChecksums, String repo,
 			DeployedArtifact artifact) {
-		console.log("Downloading {} from {}", artifact.getPath(), repo);
+		console.log("Downloading {}/{} from {}", artifact.getPath(), artifact.getName(), repo);
 		artifactoryServer.repository(repo).download(artifact, destination,
 				downloadChecksums && !DeployableArtifactsSigner.isSignatureFile(artifact.getName()));
 	}
