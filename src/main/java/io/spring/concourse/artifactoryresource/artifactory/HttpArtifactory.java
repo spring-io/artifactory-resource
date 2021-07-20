@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.URI;
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import io.spring.concourse.artifactoryresource.http.ConcourseSslContextFactory;
@@ -55,7 +56,8 @@ public class HttpArtifactory implements Artifactory {
 			uri += '/';
 		}
 		RestTemplateBuilder restTemplateBuilder = this.restTemplateBuilder
-				.requestFactory(getRequestFactorySupplier(username, password, proxy));
+				.requestFactory(getRequestFactorySupplier(username, password, proxy))
+				.setConnectTimeout(Duration.ofMinutes(1)).setReadTimeout(Duration.ofMinutes(5));
 		return new HttpArtifactoryServer(uri, restTemplateBuilder);
 	}
 
