@@ -4,6 +4,7 @@ image_resource:
   type: registry-image
   source:
     repository: vito/oci-build-task
+    tag: '0.8.0'
 inputs:
 - name: git-repo
 - name: built-artifact
