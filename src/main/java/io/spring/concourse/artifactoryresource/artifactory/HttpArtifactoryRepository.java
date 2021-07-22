@@ -89,7 +89,10 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			try {
 				deployUsingChecksum(artifact);
 			}
-			catch (HttpClientErrorException ex) {
+			catch (Exception ex) {
+				if (!(ex instanceof HttpClientErrorException || isCausedBySocketException(ex))) {
+					throw ex;
+				}
 				deployUsingContent(artifact);
 			}
 		}
@@ -117,8 +120,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			catch (RestClientResponseException | ResourceAccessException ex) {
 				int statusCode = (ex instanceof RestClientResponseException)
 						? ((RestClientResponseException) ex).getRawStatusCode() : -1;
-				boolean flaky = (statusCode == 400 || statusCode == 404)
-						|| (ex instanceof ResourceAccessException && ex.getCause() instanceof SocketException);
+				boolean flaky = (statusCode == 400 || statusCode == 404) || isCausedBySocketException(ex);
 				if (!flaky || attempt >= 3) {
 					throw ex;
 				}
@@ -127,6 +129,16 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				trySleep(this.retryDelay);
 			}
 		}
+	}
+
+	private boolean isCausedBySocketException(Throwable ex) {
+		while (ex != null) {
+			if (ex instanceof SocketException) {
+				return true;
+			}
+			ex = ex.getCause();
+		}
+		return false;
 	}
 
 	private void trySleep(Duration time) {
