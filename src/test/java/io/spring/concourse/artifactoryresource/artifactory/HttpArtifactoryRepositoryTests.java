@@ -17,6 +17,8 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.File;
+import java.net.SocketException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -37,12 +39,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestMatcher;
+import org.springframework.test.web.client.ResponseCreator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withException;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -78,7 +82,8 @@ class HttpArtifactoryRepositoryTests {
 
 	@BeforeEach
 	void setup() {
-		this.artifactoryRepository = this.artifactory.server("https://repo.example.com", "admin", "password", null)
+		this.artifactoryRepository = this.artifactory
+				.server("https://repo.example.com", "admin", "password", null, Duration.ofMillis(10))
 				.repository("libs-snapshot-local");
 	}
 
@@ -181,7 +186,23 @@ class HttpArtifactoryRepositoryTests {
 				.withMessageStartingWith("Error deploying artifact");
 	}
 
+	@Test
+	void deployWhenFlakySocketExceptionAndLaterAttemptWorksDeploys() {
+		deployWhenFlaky(false, withException(new SocketException()));
+	}
+
+	@Test
+	void deployWhenFlakySocketExceptionAndLaterAttemptsFailThrowsException() {
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> deployWhenFlaky(true, withException(new SocketException())))
+				.withMessageStartingWith("Error deploying artifact");
+	}
+
 	private void deployWhenFlaky(boolean fail, HttpStatus flakyStatus) {
+		deployWhenFlaky(fail, withStatus(flakyStatus));
+	}
+
+	private void deployWhenFlaky(boolean fail, ResponseCreator failResponse) {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		try {
@@ -190,9 +211,9 @@ class HttpArtifactoryRepositoryTests {
 					.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
 					.andExpect(header("content-length", String.valueOf(artifact.getSize())))
 					.andRespond(withStatus(HttpStatus.NOT_FOUND));
-			this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
-			this.server.expect(requestTo(url)).andRespond(withStatus(flakyStatus));
-			this.server.expect(requestTo(url)).andRespond(withStatus(fail ? flakyStatus : HttpStatus.OK));
+			this.server.expect(requestTo(url)).andRespond(failResponse);
+			this.server.expect(requestTo(url)).andRespond(failResponse);
+			this.server.expect(requestTo(url)).andRespond(fail ? failResponse : withStatus(HttpStatus.OK));
 			this.artifactoryRepository.deploy(artifact);
 		}
 		finally {

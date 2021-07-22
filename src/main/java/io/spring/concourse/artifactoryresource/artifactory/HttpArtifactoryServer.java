@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.time.Duration;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,14 +33,17 @@ public class HttpArtifactoryServer implements ArtifactoryServer {
 
 	private final RestTemplate restTemplate;
 
-	public HttpArtifactoryServer(String uri, RestTemplateBuilder restTemplateBuilder) {
+	private final Duration retryDelay;
+
+	public HttpArtifactoryServer(String uri, RestTemplateBuilder restTemplateBuilder, Duration retryDelay) {
 		this.uri = uri;
 		this.restTemplate = restTemplateBuilder.build();
+		this.retryDelay = retryDelay;
 	}
 
 	@Override
 	public ArtifactoryRepository repository(String repositoryName) {
-		return new HttpArtifactoryRepository(this.restTemplate, this.uri, repositoryName);
+		return new HttpArtifactoryRepository(this.restTemplate, this.uri, repositoryName, this.retryDelay);
 	}
 
 	@Override

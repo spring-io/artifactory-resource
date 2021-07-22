@@ -19,9 +19,11 @@ package io.spring.concourse.artifactoryresource.artifactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.Checksums;
@@ -37,6 +39,7 @@ import org.springframework.http.RequestEntity.BodyBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -64,10 +67,14 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 
 	private final String repositoryName;
 
-	public HttpArtifactoryRepository(RestTemplate restTemplate, String uri, String repositoryName) {
+	private final Duration retryDelay;
+
+	public HttpArtifactoryRepository(RestTemplate restTemplate, String uri, String repositoryName,
+			Duration retryDelay) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.repositoryName = repositoryName;
+		this.retryDelay = (retryDelay != null) ? retryDelay : Duration.ofSeconds(5);
 	}
 
 	@Override
@@ -107,21 +114,24 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				this.restTemplate.exchange(request, Void.class);
 				return;
 			}
-			catch (RestClientResponseException ex) {
-				int statusCode = ex.getRawStatusCode();
-				boolean flaky = statusCode == 400 || statusCode == 404;
+			catch (RestClientResponseException | ResourceAccessException ex) {
+				int statusCode = (ex instanceof RestClientResponseException)
+						? ((RestClientResponseException) ex).getRawStatusCode() : -1;
+				boolean flaky = (statusCode == 400 || statusCode == 404)
+						|| (ex instanceof ResourceAccessException && ex.getCause() instanceof SocketException);
 				if (!flaky || attempt >= 3) {
 					throw ex;
 				}
-				console.log("Deploy failed with {} response. Retrying in 5s.", statusCode);
-				trySleep(5000);
+				console.log("Deploy failed with {} response. Retrying in {}ms.", statusCode,
+						this.retryDelay.toMillis());
+				trySleep(this.retryDelay);
 			}
 		}
 	}
 
-	private void trySleep(int time) {
+	private void trySleep(Duration time) {
 		try {
-			Thread.sleep(time);
+			Thread.sleep(time.toMillis());
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();

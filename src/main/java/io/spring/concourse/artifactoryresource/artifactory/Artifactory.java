@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.net.Proxy;
+import java.time.Duration;
 
 /**
  * Interface providing access to Artifactory.
@@ -36,6 +37,19 @@ public interface Artifactory {
 	 * @param proxy the proxy to use or {@code null}
 	 * @return an {@link ArtifactoryServer}
 	 */
-	ArtifactoryServer server(String uri, String username, String password, Proxy proxy);
+	default ArtifactoryServer server(String uri, String username, String password, Proxy proxy) {
+		return server(uri, username, password, proxy, null);
+	}
+
+	/**
+	 * Return an {@link ArtifactoryServer} for the specified connection details.
+	 * @param uri the server URI
+	 * @param username the connection username
+	 * @param password the connection password
+	 * @param proxy the proxy to use or {@code null}
+	 * @param retryDelay the delay between retries
+	 * @return an {@link ArtifactoryServer}
+	 */
+	ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay);
 
 }
