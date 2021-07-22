@@ -1,3 +1,8 @@
+anchors:
+  registry-mirror-vars: &registry-mirror-vars
+    registry-mirror-host: ((registry-mirror-host))
+    registry-mirror-username: ((registry-mirror-username))
+    registry-mirror-password: ((registry-mirror-password))
 resource_types:
 - name: registry-image
   type: registry-image
@@ -57,6 +62,7 @@ jobs:
       image: ci-image
     vars:
       ci-image-name: ci-image
+      <<: *registry-mirror-vars
   - put: ci-image
     params:
       image: ci-image/image.tar
@@ -76,6 +82,8 @@ jobs:
   - task: build-artifactory-resource-image
     privileged: true
     file: git-repo/ci/tasks/build-artifactory-resource-image.yml
+    vars:
+      <<: *registry-mirror-vars
     output_mapping:
       image: artifactory-resource-image
   - put: artifactory-resource-image
@@ -98,10 +106,14 @@ jobs:
   - task: build-artifactory-resource-image
     privileged: true
     file: git-repo/ci/tasks/build-artifactory-resource-image.yml
+    vars:
+      <<: *registry-mirror-vars
     output_mapping:
       image: artifactory-resource-image
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
+    vars:
+      <<: *registry-mirror-vars
   - put: git-repo
     params:
       repository: release-git-repo

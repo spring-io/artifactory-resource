@@ -11,7 +11,7 @@ The pipeline can be deployed using the following command:
 
 [source]
 ----
-$ fly -t artifactory-resource set-pipeline -p artifactory-resource -c ci/pipeline.yml
+$ fly -t artifactory-resource set-pipeline -p artifactory-resource -c ci/pipeline.yml -l ci/parameters.yml
 ----
 
 NOTE: This assumes that you have credhub integration configured with the appropriate
