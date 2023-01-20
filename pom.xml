@@ -92,12 +92,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.1</version>
 					<dependencies>
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>8.29</version>
+							<version>10.6.0</version>
 						</dependency>
 						<dependency>
 							<groupId>io.spring.javaformat</groupId>
