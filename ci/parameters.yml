@@ -1,3 +1,0 @@
-registry-mirror-host: docker.repo.spring.io
-registry-mirror-username: ((artifactory-username))
-registry-mirror-password: ((artifactory-password))
