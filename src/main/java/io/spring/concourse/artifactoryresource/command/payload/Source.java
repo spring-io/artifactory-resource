@@ -21,6 +21,7 @@ import java.net.Proxy;
 import java.net.Proxy.Type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.core.style.ToStringCreator;
@@ -44,6 +45,7 @@ public class Source {
 
 	private final String buildName;
 
+	@JsonIgnore
 	private final Proxy proxy;
 
 	@JsonCreator
