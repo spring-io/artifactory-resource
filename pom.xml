@@ -16,7 +16,7 @@
 		<revision>0.0.18-SNAPSHOT</revision>
 		<java.version>1.8</java.version>
 		<artifactory.version>6.9.0</artifactory.version>
-		<spring-javaformat.version>0.0.27</spring-javaformat.version>
+		<spring-javaformat.version>0.0.35</spring-javaformat.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
