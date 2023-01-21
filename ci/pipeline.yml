@@ -75,9 +75,9 @@ jobs:
   - get: ci-image
   - get: git-repo
     trigger: true
-  - task: build
+  - task: build-project
     image: ci-image
-    file: git-repo/ci/tasks/build.yml
+    file: git-repo/ci/tasks/build-project.yml
   - load_var: artifact-version
     file: built-artifact/version
     reveal: true

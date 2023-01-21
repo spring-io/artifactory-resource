@@ -1,0 +1,16 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: built-artifact
+caches:
+- path: maven
+run:
+  path: bash
+  args:
+    - -ec
+    - |
+      source /docker-lib.sh
+      start_docker $DOCKER_HUB_MIRROR
+      ${PWD}/git-repo/ci/scripts/build-project.sh
