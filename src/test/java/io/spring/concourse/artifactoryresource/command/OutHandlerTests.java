@@ -135,7 +135,7 @@ class OutHandlerTests {
 	}
 
 	@Test
-	void handleWhenNoFilesThrowsException() throws Exception {
+	void handleWhenNoFilesThrowsException() {
 		OutRequest request = createRequest("1234");
 		Directory directory = createDirectory();
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of());
@@ -416,7 +416,7 @@ class OutHandlerTests {
 						artifactSet, threads, signingKey, signingPassphrase));
 	}
 
-	private Directory createDirectory() throws IOException {
+	private Directory createDirectory() {
 		new File(this.tempDir, "folder").mkdirs();
 		return new Directory(this.tempDir);
 	}

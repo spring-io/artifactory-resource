@@ -92,7 +92,7 @@ class ApplicationIT {
 	}
 
 	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Date buildTimestamp,
-			File file) throws Exception {
+			File file) {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
@@ -116,8 +116,7 @@ class ApplicationIT {
 		return file;
 	}
 
-	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Date buildTimestamp)
-			throws Exception {
+	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Date buildTimestamp) {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
 		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), buildTimestamp,
@@ -130,7 +129,7 @@ class ApplicationIT {
 	}
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
-			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, File expectedContent) throws Exception {
+			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, File expectedContent) {
 		List<DeployedArtifact> results = artifactoryBuildRuns.getDeployedArtifacts(buildNumber);
 		File folder = this.tempDir;
 		for (DeployedArtifact result : results) {

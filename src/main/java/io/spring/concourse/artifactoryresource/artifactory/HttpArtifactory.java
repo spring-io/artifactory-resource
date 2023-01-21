@@ -52,9 +52,7 @@ public class HttpArtifactory implements Artifactory {
 
 	@Override
 	public ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay) {
-		if (!uri.endsWith("/")) {
-			uri += '/';
-		}
+		uri = (!uri.endsWith("/")) ? uri + '/' : uri;
 		RestTemplateBuilder restTemplateBuilder = this.restTemplateBuilder
 				.requestFactory(getRequestFactorySupplier(username, password, proxy))
 				.setConnectTimeout(Duration.ofMinutes(1)).setReadTimeout(Duration.ofMinutes(5));

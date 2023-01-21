@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -45,8 +46,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Madhura Bhave
  */
 public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
-
-	private static final Object[] NO_VARIABLES = {};
 
 	private final RestTemplate restTemplate;
 
@@ -68,8 +67,8 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	private void add(BuildInfo buildInfo) {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build").buildAndExpand(NO_VARIABLES).encode()
-				.toUri();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path("api/build").build();
+		URI uri = uriComponents.encode().toUri();
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri).contentType(MediaType.APPLICATION_JSON)
 				.body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
@@ -78,8 +77,9 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public List<BuildRun> getAll() {
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}")
-				.buildAndExpand(this.buildName).encode().toUri();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}")
+				.buildAndExpand(this.buildName);
+		URI uri = uriComponents.encode().toUri();
 		try {
 			return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
 		}
@@ -91,16 +91,16 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public String getRawBuildInfo(String buildNumber) {
 		Assert.hasText(buildNumber, "BuildNumber must not be empty");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}/{buildNumber}")
-				.buildAndExpand(this.buildName, buildNumber).encode().toUri();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
+				.path("api/build/{buildName}/{buildNumber}").buildAndExpand(this.buildName, buildNumber);
+		URI uri = uriComponents.encode().toUri();
 		return this.restTemplate.getForObject(uri, String.class);
 	}
 
 	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").buildAndExpand(NO_VARIABLES)
-				.encode().toUri();
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").build().encode().toUri();
 		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN)
 				.body(buildFetchQuery(this.buildName, buildNumber));
 		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class).getBody().getResults();

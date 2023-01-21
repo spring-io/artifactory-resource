@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConcourseSslContextFactoryTests {
 
 	@Test
-	void getSslContextLoads() throws Exception {
+	void getSslContextLoads() {
 		Resource certificatesResource = new ClassPathResource("ca-certificates.crt", getClass());
 		ConcourseSslContextFactory sslContextFactory = new ConcourseSslContextFactory(certificatesResource);
 		assertThat(sslContextFactory).isNotNull();

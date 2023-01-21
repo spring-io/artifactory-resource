@@ -134,7 +134,7 @@ class ArmoredAsciiSignerTests {
 	}
 
 	@Test
-	void getWithStringSigningKeyWhenPassphraseIsWrongThrowsException() throws IOException {
+	void getWithStringSigningKeyWhenPassphraseIsWrongThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> ArmoredAsciiSigner.get(FIXED, this.signingKeyFile, "bad"))
 				.withMessage("Unable to extract private key");
 	}

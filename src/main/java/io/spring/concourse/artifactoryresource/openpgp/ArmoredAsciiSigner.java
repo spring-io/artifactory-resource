@@ -75,7 +75,7 @@ public final class ArmoredAsciiSigner {
 
 	private final Clock clock;
 
-	private ArmoredAsciiSigner(Clock clock, InputStream signingKeyInputStream, String passphrase) throws IOException {
+	private ArmoredAsciiSigner(Clock clock, InputStream signingKeyInputStream, String passphrase) {
 		PGPSecretKey signingKey = getSigningKey(signingKeyInputStream);
 		this.clock = clock;
 		this.signingKey = signingKey;
@@ -83,7 +83,7 @@ public final class ArmoredAsciiSigner {
 		this.contentSigner = getContentSigner(signingKey.getPublicKey().getAlgorithm());
 	}
 
-	private PGPSecretKey getSigningKey(InputStream inputStream) throws IOException {
+	private PGPSecretKey getSigningKey(InputStream inputStream) {
 		try {
 			try (InputStream decoderStream = PGPUtil.getDecoderStream(inputStream)) {
 				PGPSecretKeyRingCollection keyrings = new PGPSecretKeyRingCollection(decoderStream,
