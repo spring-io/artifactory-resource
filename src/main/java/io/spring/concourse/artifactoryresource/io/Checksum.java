@@ -26,11 +26,10 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
-
-import jakarta.xml.bind.DatatypeConverter;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -173,7 +172,7 @@ public enum Checksum {
 
 	private static String getDigestHex(DigestInputStream inputStream) {
 		byte[] digest = inputStream.getMessageDigest().digest();
-		return DatatypeConverter.printHexBinary(digest).toLowerCase();
+		return HexFormat.of().formatHex(digest);
 	}
 
 }
