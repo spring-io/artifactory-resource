@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -15,8 +13,8 @@
 	<properties>
 		<revision>0.0.18-SNAPSHOT</revision>
 		<java.version>17</java.version>
-		<artifactory.version>6.9.0</artifactory.version>
 		<spring-javaformat.version>0.0.35</spring-javaformat.version>
+		<testcontainers.version>1.17.6</testcontainers.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -70,14 +68,21 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.palantir.docker.compose</groupId>
-			<artifactId>docker-compose-junit-jupiter</artifactId>
-			<version>1.8.0</version>
+			<groupId>org.xmlunit</groupId>
+			<artifactId>xmlunit-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.xmlunit</groupId>
-			<artifactId>xmlunit-core</artifactId>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -105,16 +110,6 @@
 							<version>${spring-javaformat.version}</version>
 						</dependency>
 					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>com.bazaarvoice.maven.plugins</groupId>
-					<artifactId>process-exec-maven-plugin</artifactId>
-					<version>0.8</version>
-				</plugin>
-				<plugin>
-					<groupId>com.googlecode.maven-download-plugin</groupId>
-					<artifactId>download-maven-plugin</artifactId>
-					<version>1.4.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -238,74 +233,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>run-local-artifactory</id>
-			<properties>
-				<artifactoryServer>http://localhost:8081/artifactory</artifactoryServer>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.googlecode.maven-download-plugin</groupId>
-						<artifactId>download-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>install-artifactory</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>wget</goal>
-								</goals>
-								<configuration>
-									<url>https://dl.bintray.com/jfrog/artifactory/jfrog-artifactory-oss-${artifactory.version}.zip</url>
-									<unpack>true</unpack>
-									<outputDirectory>${project.build.directory}/artifactory.zip</outputDirectory>
-									<sha1>ac953c65ffa4cc76707557f4b8a8039f3e851044</sha1>
-									<unpack>true</unpack>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>com.bazaarvoice.maven.plugins</groupId>
-						<artifactId>process-exec-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>start-artifactory</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>start</goal>
-								</goals>
-								<configuration>
-									<name>artifactory</name>
-									<workingDir>artifactory.zip/artifactory-oss-${artifactory.version}/</workingDir>
-									<healthcheckUrl>http://localhost:8081/artifactory/api/system/ping</healthcheckUrl>
-									<waitAfterLaunch>300</waitAfterLaunch>
-									<arguments>
-										<argument>bin/artifactory.sh</argument>
-										<argument>start</argument>
-									</arguments>
-								</configuration>
-							</execution>
-							<execution>
-								<id>stop-artifactory</id>
-								<phase>post-integration-test</phase>
-								<goals>
-									<goal>start</goal>
-								</goals>
-								<configuration>
-									<name>stop-artifactory</name>
-									<workingDir>artifactory.zip/artifactory-oss-${artifactory.version}/</workingDir>
-									<arguments>
-										<argument>bin/artifactory.sh</argument>
-										<argument>stop</argument>
-									</arguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>

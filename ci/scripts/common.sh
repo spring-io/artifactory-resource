@@ -1,7 +1,7 @@
 source /opt/concourse-java.sh
 
 build() {
-	run_maven clean install -Prun-local-artifactory
+	run_maven clean install
 }
 
 setup_symlinks

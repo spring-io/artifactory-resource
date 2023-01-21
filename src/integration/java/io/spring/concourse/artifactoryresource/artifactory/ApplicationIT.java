@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,8 +38,11 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtif
 import io.spring.concourse.artifactoryresource.command.BuildNumberGenerator;
 import io.spring.concourse.artifactoryresource.io.Checksum;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,10 +60,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles("test")
+@Testcontainers(disabledWithoutDocker = true)
 class ApplicationIT {
 
-	@RegisterExtension
-	static ArtifactoryServerConnection connection = new ArtifactoryServerConnection();
+	@Container
+	static GenericContainer<?> container = new GenericContainer<>("docker.bintray.io/jfrog/artifactory-oss:7.12.10")
+			.waitingFor(Wait.forHttp("/artifactory/api/system/ping").withStartupTimeout(Duration.ofMinutes(15)))
+			.withExposedPorts(8081);
 
 	@TempDir
 	File tempDir;
@@ -136,7 +143,8 @@ class ApplicationIT {
 	}
 
 	private ArtifactoryServer getServer() {
-		return connection.getArtifactoryServer(this.artifactory);
+		String uri = "http://%s:%s/artifactory".formatted(container.getHost(), container.getFirstMappedPort());
+		return this.artifactory.server(uri, "admin", "password", null);
 	}
 
 }
