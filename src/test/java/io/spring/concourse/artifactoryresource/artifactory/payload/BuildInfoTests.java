@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class BuildInfoTests {
 
 	private static final ContinuousIntegrationAgent CI_AGENT = new ContinuousIntegrationAgent("Concourse", "3.0.0");
 
-	private static final Date STARTED = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
+	private static final Instant STARTED = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893123Z");
 
 	private static final String BUILD_URI = "https://ci.example.com";
 

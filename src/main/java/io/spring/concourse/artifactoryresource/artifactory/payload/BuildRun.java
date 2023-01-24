@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
 
 /**
  * A reference to a build that has already run.
@@ -32,11 +32,11 @@ public class BuildRun implements Comparable<BuildRun> {
 
 	private String uri;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private Date started;
+	@JsonArtifactoryDateFormat
+	private Instant started;
 
 	@JsonCreator
-	public BuildRun(@JsonProperty("uri") String uri, @JsonProperty("started") Date started) {
+	public BuildRun(@JsonProperty("uri") String uri, @JsonProperty("started") Instant started) {
 		this.uri = uri;
 		this.started = started;
 	}
@@ -49,7 +49,7 @@ public class BuildRun implements Comparable<BuildRun> {
 		return this.uri;
 	}
 
-	public Date getStarted() {
+	public Instant getStarted() {
 		return this.started;
 	}
 

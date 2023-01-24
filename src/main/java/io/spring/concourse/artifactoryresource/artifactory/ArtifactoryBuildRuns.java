@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public interface ArtifactoryBuildRuns {
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, Date buildTimestamp, String buildUri, Map<String, String> properties,
+	default void add(String buildNumber, Instant buildTimestamp, String buildUri, Map<String, String> properties,
 			List<BuildModule> modules) {
 		add(buildNumber, null, buildTimestamp, buildUri, properties, modules);
 	}
@@ -57,7 +57,7 @@ public interface ArtifactoryBuildRuns {
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Date buildTimestamp,
+	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant buildTimestamp,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules);
 
 	/**

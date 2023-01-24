@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,11 @@ public class BuildRunsResponseTests {
 		assertThat(response.getBuildsRuns().get(0).getBuildNumber()).isEqualTo("1234");
 		assertThat(response.getBuildsRuns().get(0).getUri()).isEqualTo("/1234");
 		assertThat(response.getBuildsRuns().get(0).getStarted())
-				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893+0000"));
+				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893Z"));
 		assertThat(response.getBuildsRuns().get(1).getBuildNumber()).isEqualTo("5678");
 		assertThat(response.getBuildsRuns().get(1).getUri()).isEqualTo("/5678");
 		assertThat(response.getBuildsRuns().get(1).getStarted())
-				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000"));
+				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z"));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -101,7 +101,7 @@ class HttpArtifactoryBuildRunsTests {
 		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
 		List<BuildModule> modules = Collections
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
-		Date started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893+0000");
+		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
 		this.artifactoryBuildRuns.add("5678", agent, started, "https://ci.example.com", properties, modules);
 		this.server.verify();

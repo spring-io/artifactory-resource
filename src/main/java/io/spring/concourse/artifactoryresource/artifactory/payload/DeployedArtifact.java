@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
 
 import org.springframework.util.Assert;
 
@@ -42,20 +42,20 @@ public class DeployedArtifact {
 
 	private long size;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-	private Date created;
+	@JsonArtifactoryDateFormat
+	private Instant created;
 
 	@JsonProperty("created-by")
 	private String createdBy;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-	private Date modified;
+	@JsonArtifactoryDateFormat
+	private Instant modified;
 
 	@JsonProperty("modified-by")
 	private String modifiedBy;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-	private Date updated;
+	@JsonArtifactoryDateFormat
+	private Instant updated;
 
 	public DeployedArtifact(String repo, String name, String path) {
 		this(repo, name, path, null, 0, null, null, null, null, null);
@@ -64,9 +64,9 @@ public class DeployedArtifact {
 	@JsonCreator
 	public DeployedArtifact(@JsonProperty("repo") String repo, @JsonProperty("name") String name,
 			@JsonProperty("path") String path, @JsonProperty("type") String type, @JsonProperty("size") long size,
-			@JsonProperty("created") Date created, @JsonProperty("created-by") String createdBy,
-			@JsonProperty("modified") Date modified, @JsonProperty("modified-by") String modifiedBy,
-			@JsonProperty("updated") Date updated) {
+			@JsonProperty("created") Instant created, @JsonProperty("created-by") String createdBy,
+			@JsonProperty("modified") Instant modified, @JsonProperty("modified-by") String modifiedBy,
+			@JsonProperty("updated") Instant updated) {
 		Assert.hasText(repo, "Repo must not be empty");
 		Assert.hasText(name, "Name must not be empty");
 		Assert.hasText(path, "Path must not be empty");
@@ -98,7 +98,7 @@ public class DeployedArtifact {
 		return this.name;
 	}
 
-	public Date getCreated() {
+	public Instant getCreated() {
 		return this.created;
 	}
 
@@ -106,7 +106,7 @@ public class DeployedArtifact {
 		return this.createdBy;
 	}
 
-	public Date getModified() {
+	public Instant getModified() {
 		return this.modified;
 	}
 
@@ -114,7 +114,7 @@ public class DeployedArtifact {
 		return this.modifiedBy;
 	}
 
-	public Date getUpdated() {
+	public Instant getUpdated() {
 		return this.updated;
 	}
 

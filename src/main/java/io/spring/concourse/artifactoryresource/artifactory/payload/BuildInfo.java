@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
 
 import org.springframework.util.Assert;
 
@@ -48,8 +48,8 @@ public class BuildInfo {
 	@JsonProperty("agent")
 	private final ContinuousIntegrationAgent continuousIntegrationAgent;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	private final Date started;
+	@JsonArtifactoryDateFormat
+	private final Instant started;
 
 	@JsonProperty("url")
 	private final String buildUri;
@@ -64,7 +64,7 @@ public class BuildInfo {
 	@JsonCreator
 	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,
 			@JsonProperty("agent") ContinuousIntegrationAgent continuousIntegrationAgent,
-			@JsonProperty("started") Date started, @JsonProperty("url") String buildUri,
+			@JsonProperty("started") Instant started, @JsonProperty("url") String buildUri,
 			@JsonProperty("properties") Map<String, String> properties,
 			@JsonProperty("modules") List<BuildModule> modules) {
 		Assert.hasText(buildName, "BuildName must not be empty");
@@ -72,7 +72,7 @@ public class BuildInfo {
 		this.buildName = buildName;
 		this.buildNumber = buildNumber;
 		this.continuousIntegrationAgent = continuousIntegrationAgent;
-		this.started = (started != null) ? started : new Date();
+		this.started = (started != null) ? started : Instant.now();
 		this.buildUri = buildUri;
 		this.properties = (properties != null) ? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
 				: Collections.emptyMap();
@@ -92,7 +92,7 @@ public class BuildInfo {
 		return this.continuousIntegrationAgent;
 	}
 
-	public Date getStarted() {
+	public Instant getStarted() {
 		return this.started;
 	}
 

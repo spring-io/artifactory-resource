@@ -5,7 +5,7 @@
 		"name": "Concourse",
 		"version": "3.0.0"
 	},
-	"started": "2014-09-30T12:00:19.893+0000",
+	"started": "2014-09-30T12:00:19.893Z",
 	"url": "https://ci.example.com",
 	"properties": {
 		"made-by": "concourse"

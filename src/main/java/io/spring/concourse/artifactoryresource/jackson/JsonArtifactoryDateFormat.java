@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.util;
+package io.spring.concourse.artifactoryresource.jackson;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * Test utility for dealing with artifactory date formats.
+ * Annotation used for artifactory date formatting.
  *
  * @author Phillip Webb
  */
-public final class ArtifactoryDateFormat {
-
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
-
-	private ArtifactoryDateFormat() {
-	}
-
-	public static Instant parse(String date) {
-		return ZonedDateTime.parse(date, FORMATTER).toInstant();
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@JacksonAnnotation
+@JacksonAnnotationsInside
+@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
+public @interface JsonArtifactoryDateFormat {
 
 }

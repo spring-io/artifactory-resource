@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.concourse.artifactoryresource.util;
-
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 /**
- * Test utility for dealing with artifactory date formats.
- *
- * @author Phillip Webb
+ * Jackson support classes.
  */
-public final class ArtifactoryDateFormat {
-
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
-
-	private ArtifactoryDateFormat() {
-	}
-
-	public static Instant parse(String date) {
-		return ZonedDateTime.parse(date, FORMATTER).toInstant();
-	}
-
-}
+package io.spring.concourse.artifactoryresource.jackson;

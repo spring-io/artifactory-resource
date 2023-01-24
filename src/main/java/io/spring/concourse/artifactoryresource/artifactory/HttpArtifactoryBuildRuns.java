@@ -17,8 +17,8 @@
 package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Date buildTimestamp,
+	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant buildTimestamp,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
 		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, buildTimestamp, buildUri, properties,
 				modules));

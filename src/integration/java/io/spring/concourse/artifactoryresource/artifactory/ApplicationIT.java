@@ -21,8 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +80,7 @@ class ApplicationIT {
 		File file = createLargeFile();
 		ArtifactoryRepository repository = getServer().repository("example-repo-local");
 		ArtifactoryBuildRuns buildRuns = getServer().buildRuns("my-build");
-		Date buildTimestamp = new Date();
+		Instant buildTimestamp = Instant.now();
 		deployArtifact(repository, buildNumber, buildTimestamp, file);
 		addBuildRun(buildRuns, buildNumber, buildTimestamp);
 		getBuildRuns(buildRuns, buildNumber);
@@ -91,12 +91,12 @@ class ApplicationIT {
 		return new BuildNumberGenerator().generateBuildNumber();
 	}
 
-	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Date buildTimestamp,
+	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Instant buildTimestamp,
 			File file) {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
-		properties.put("build.timestamp", Long.toString(buildTimestamp.toInstant().toEpochMilli()));
+		properties.put("build.timestamp", Long.toString(buildTimestamp.toEpochMilli()));
 		DeployableArtifact artifact = new DeployableFileArtifact("/foo/bar", file, properties, null);
 		artifactoryRepository.deploy(artifact);
 	}
@@ -116,7 +116,7 @@ class ApplicationIT {
 		return file;
 	}
 
-	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Date buildTimestamp) {
+	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Instant buildTimestamp) {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
 		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), buildTimestamp,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,10 +75,10 @@ class CheckHandlerTests {
 	private List<BuildRun> createBuildRuns() {
 		// The API seems to return things in no specific order
 		List<BuildRun> runs = new ArrayList<>();
-		runs.add(new BuildRun("/2", ArtifactoryDateFormat.parse("2014-01-21T12:01:02.003+0000")));
-		runs.add(new BuildRun("/1", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003+0000")));
-		runs.add(new BuildRun("/4", ArtifactoryDateFormat.parse("2014-01-23T12:01:02.003+0000")));
-		runs.add(new BuildRun("/3", ArtifactoryDateFormat.parse("2014-01-22T12:01:02.003+0000")));
+		runs.add(new BuildRun("/2", ArtifactoryDateFormat.parse("2014-01-21T12:01:02.003Z")));
+		runs.add(new BuildRun("/1", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")));
+		runs.add(new BuildRun("/4", ArtifactoryDateFormat.parse("2014-01-23T12:01:02.003Z")));
+		runs.add(new BuildRun("/3", ArtifactoryDateFormat.parse("2014-01-22T12:01:02.003Z")));
 		return runs;
 	}
 

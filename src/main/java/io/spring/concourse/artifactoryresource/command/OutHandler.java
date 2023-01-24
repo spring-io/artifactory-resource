@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -116,7 +116,7 @@ public class OutHandler {
 		DebugLogging.setEnabled(params.isDebug());
 		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
 		String buildNumber = getOrGenerateBuildNumber(params);
-		Date buildTimestamp = new Date();
+		Instant buildTimestamp = Instant.now();
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, buildTimestamp,
 				source, params, directory);
@@ -153,7 +153,7 @@ public class OutHandler {
 		return buildNumber;
 	}
 
-	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Date buildTimestamp,
+	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Instant buildTimestamp,
 			Source source, Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
@@ -178,7 +178,7 @@ public class OutHandler {
 		return batchedArtifacts;
 	}
 
-	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Date buildTimestamp,
+	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Instant buildTimestamp,
 			Source source, Params params) {
 		Map<String, String> properties = new LinkedHashMap<>();
 		addArtifactSetProperties(path, params, properties);
@@ -201,11 +201,11 @@ public class OutHandler {
 		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
 	}
 
-	private void addBuildProperties(String buildNumber, Date buildTimestamp, Source source,
+	private void addBuildProperties(String buildNumber, Instant buildTimestamp, Source source,
 			Map<String, String> properties) {
 		properties.put("build.name", source.getBuildName());
 		properties.put("build.number", buildNumber);
-		properties.put("build.timestamp", Long.toString(buildTimestamp.toInstant().toEpochMilli()));
+		properties.put("build.timestamp", Long.toString(buildTimestamp.toEpochMilli()));
 	}
 
 	private String stripSnapshotTimestamp(String path) {
@@ -297,7 +297,7 @@ public class OutHandler {
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, String buildNumber,
-			Date buildTimestamp, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
+			Instant buildTimestamp, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
 		List<DeployableArtifact> artifacts = batchedArtifacts.values().stream().flatMap(List::stream)
 				.collect(Collectors.toList());
 		logger.debug("Adding build run {}", buildNumber);
