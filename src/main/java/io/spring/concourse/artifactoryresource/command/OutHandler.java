@@ -116,13 +116,13 @@ public class OutHandler {
 		DebugLogging.setEnabled(params.isDebug());
 		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
 		String buildNumber = getOrGenerateBuildNumber(params);
-		Instant buildTimestamp = Instant.now();
+		Instant started = Instant.now();
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
-		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, buildTimestamp,
-				source, params, directory);
+		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, started, source,
+				params, directory);
 		if (StringUtils.hasText(params.getSigningKey())) {
 			Map<String, String> properties = new LinkedHashMap<>();
-			addBuildProperties(buildNumber, buildTimestamp, source, properties);
+			addBuildProperties(buildNumber, started, source, properties);
 			batchedArtifacts = signArtifacts(batchedArtifacts, params.getSigningKey(), params.getSigningPassphrase(),
 					Collections.unmodifiableMap(properties));
 		}
@@ -131,7 +131,7 @@ public class OutHandler {
 		console.log("Deploying {} artifacts to {} as build {} using {} thread(s)", size, source.getUri(), buildNumber,
 				params.getThreads());
 		deployArtifacts(artifactoryServer, params, batchedArtifacts);
-		addBuildRun(artifactoryServer, source, params, buildNumber, buildTimestamp, batchedArtifacts);
+		addBuildRun(artifactoryServer, source, params, buildNumber, started, batchedArtifacts);
 		logger.debug("Done");
 		return new OutResponse(new Version(buildNumber));
 	}
@@ -153,7 +153,7 @@ public class OutHandler {
 		return buildNumber;
 	}
 
-	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Instant buildTimestamp,
+	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Instant started,
 			Source source, Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
@@ -165,8 +165,8 @@ public class OutHandler {
 			files.forEach((file) -> {
 				String path = DeployableFileArtifact.calculatePath(root.getFile(), file);
 				logger.debug("Including file {} with path {}", file, path);
-				Map<String, String> properties = getDeployableArtifactProperties(path, buildNumber, buildTimestamp,
-						source, params);
+				Map<String, String> properties = getDeployableArtifactProperties(path, buildNumber, started, source,
+						params);
 				if (params.isStripSnapshotTimestamps()) {
 					path = stripSnapshotTimestamp(path);
 				}
@@ -178,11 +178,11 @@ public class OutHandler {
 		return batchedArtifacts;
 	}
 
-	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Instant buildTimestamp,
+	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Instant started,
 			Source source, Params params) {
 		Map<String, String> properties = new LinkedHashMap<>();
 		addArtifactSetProperties(path, params, properties);
-		addBuildProperties(buildNumber, buildTimestamp, source, properties);
+		addBuildProperties(buildNumber, started, source, properties);
 		return properties;
 	}
 
@@ -201,11 +201,11 @@ public class OutHandler {
 		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
 	}
 
-	private void addBuildProperties(String buildNumber, Instant buildTimestamp, Source source,
+	private void addBuildProperties(String buildNumber, Instant started, Source source,
 			Map<String, String> properties) {
 		properties.put("build.name", source.getBuildName());
 		properties.put("build.number", buildNumber);
-		properties.put("build.timestamp", Long.toString(buildTimestamp.toEpochMilli()));
+		properties.put("build.timestamp", Long.toString(started.toEpochMilli()));
 	}
 
 	private String stripSnapshotTimestamp(String path) {
@@ -297,15 +297,15 @@ public class OutHandler {
 	}
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, String buildNumber,
-			Instant buildTimestamp, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
+			Instant started, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
 		List<DeployableArtifact> artifacts = batchedArtifacts.values().stream().flatMap(List::stream)
 				.collect(Collectors.toList());
 		logger.debug("Adding build run {}", buildNumber);
 		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);
 		Map<String, String> properties = loadProperties(params.getBuildProperties());
-		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, buildTimestamp, params.getBuildUri(),
-				properties, modules);
+		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, started, params.getBuildUri(), properties,
+				modules);
 	}
 
 	private Map<String, String> loadProperties(String propertiesFile) {

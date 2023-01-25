@@ -59,7 +59,7 @@ public class BuildInfo {
 	private final Map<String, String> properties;
 
 	@JsonProperty("modules")
-	private List<BuildModule> modules;
+	private final List<BuildModule> modules;
 
 	@JsonCreator
 	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,

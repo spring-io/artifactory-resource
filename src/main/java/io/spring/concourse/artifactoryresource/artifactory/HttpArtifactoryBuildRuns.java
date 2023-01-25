@@ -60,9 +60,9 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant buildTimestamp,
+	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
-		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, buildTimestamp, buildUri, properties,
+		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, started, buildUri, properties,
 				modules));
 	}
 
@@ -107,7 +107,11 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	private String buildFetchQuery(String buildName, String buildNumber) {
-		return "items.find({\"@build.name\": \"" + buildName + "\",\"@build.number\": \"" + buildNumber + "\"" + "})";
+		return """
+				items.find({
+				"@build.name": "%s",
+				"@build.number": "%s"
+				})""".replace("\n", "").formatted(buildName, buildNumber).replace("\n", "");
 	}
 
 }

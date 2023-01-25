@@ -32,30 +32,30 @@ import org.springframework.util.Assert;
  */
 public class DeployedArtifact {
 
-	private String repo;
+	private final String repo;
 
-	private String path;
+	private final String path;
 
-	private String type;
+	private final String type;
 
-	private String name;
+	private final String name;
 
-	private long size;
+	private final long size;
 
 	@JsonArtifactoryDateFormat
-	private Instant created;
+	private final Instant created;
 
 	@JsonProperty("created-by")
-	private String createdBy;
+	private final String createdBy;
 
 	@JsonArtifactoryDateFormat
-	private Instant modified;
+	private final Instant modified;
 
 	@JsonProperty("modified-by")
-	private String modifiedBy;
+	private final String modifiedBy;
 
 	@JsonArtifactoryDateFormat
-	private Instant updated;
+	private final Instant updated;
 
 	public DeployedArtifact(String repo, String name, String path) {
 		this(repo, name, path, null, 0, null, null, null, null, null);

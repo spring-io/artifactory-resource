@@ -38,26 +38,26 @@ public interface ArtifactoryBuildRuns {
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
-	 * @param buildTimestamp the build timestamp
+	 * @param started the time the build was started
 	 * @param buildUri the build URL
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, Instant buildTimestamp, String buildUri, Map<String, String> properties,
+	default void add(String buildNumber, Instant started, String buildUri, Map<String, String> properties,
 			List<BuildModule> modules) {
-		add(buildNumber, null, buildTimestamp, buildUri, properties, modules);
+		add(buildNumber, null, started, buildUri, properties, modules);
 	}
 
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param continuousIntegrationAgent the CI Agent
-	 * @param buildTimestamp the build timestamp
+	 * @param started the time the build was started
 	 * @param buildUri the build URL
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant buildTimestamp,
+	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules);
 
 	/**

@@ -80,9 +80,9 @@ class ApplicationIT {
 		File file = createLargeFile();
 		ArtifactoryRepository repository = getServer().repository("example-repo-local");
 		ArtifactoryBuildRuns buildRuns = getServer().buildRuns("my-build");
-		Instant buildTimestamp = Instant.now();
-		deployArtifact(repository, buildNumber, buildTimestamp, file);
-		addBuildRun(buildRuns, buildNumber, buildTimestamp);
+		Instant started = Instant.now();
+		deployArtifact(repository, buildNumber, started, file);
+		addBuildRun(buildRuns, buildNumber, started);
 		getBuildRuns(buildRuns, buildNumber);
 		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
 	}
@@ -91,12 +91,12 @@ class ApplicationIT {
 		return new BuildNumberGenerator().generateBuildNumber();
 	}
 
-	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Instant buildTimestamp,
+	private void deployArtifact(ArtifactoryRepository artifactoryRepository, String buildNumber, Instant started,
 			File file) {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("build.name", "my-build");
 		properties.put("build.number", buildNumber);
-		properties.put("build.timestamp", Long.toString(buildTimestamp.toEpochMilli()));
+		properties.put("build.timestamp", Long.toString(started.toEpochMilli()));
 		DeployableArtifact artifact = new DeployableFileArtifact("/foo/bar", file, properties, null);
 		artifactoryRepository.deploy(artifact);
 	}
@@ -116,10 +116,10 @@ class ApplicationIT {
 		return file;
 	}
 
-	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Instant buildTimestamp) {
+	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Instant started) {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
-		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), buildTimestamp,
+		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), started,
 				"ci.example.com", null, Collections.singletonList(modules));
 	}
 

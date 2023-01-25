@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class BuildRunsResponse {
 
-	private String uri;
+	private final String uri;
 
-	private List<BuildRun> buildsRuns;
+	private final List<BuildRun> buildsRuns;
 
 	@JsonCreator
 	public BuildRunsResponse(@JsonProperty("uri") String uri,

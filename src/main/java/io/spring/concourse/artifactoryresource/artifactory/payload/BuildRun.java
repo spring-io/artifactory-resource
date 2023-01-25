@@ -30,10 +30,10 @@ import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat
  */
 public class BuildRun implements Comparable<BuildRun> {
 
-	private String uri;
+	private final String uri;
 
 	@JsonArtifactoryDateFormat
-	private Instant started;
+	private final Instant started;
 
 	@JsonCreator
 	public BuildRun(@JsonProperty("uri") String uri, @JsonProperty("started") Instant started) {

@@ -152,8 +152,8 @@ class HttpArtifactoryBuildRunsTests {
 			Matcher matcher = AQL_PATTERN.matcher(body);
 			assertThat(matcher.matches()).isTrue();
 			String actualJson = matcher.group(1);
-			String expectedJson = "{\"@build.name\": \"" + buildName + "\", \"@build.number\": \"" + buildNumber
-					+ "\"}";
+			String expectedJson = """
+					{"@build.name": "%s", "@build.number": "%s"}""".formatted(buildName, buildNumber);
 			assertJson(expectedJson, actualJson);
 		};
 	}
