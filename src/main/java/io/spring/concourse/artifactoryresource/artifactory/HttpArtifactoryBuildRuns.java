@@ -111,7 +111,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 				items.find({
 				"@build.name": "%s",
 				"@build.number": "%s"
-				})""".replace("\n", "").formatted(buildName, buildNumber).replace("\n", "");
+				})""".formatted(buildName, buildNumber).replace("\n", "");
 	}
 
 }

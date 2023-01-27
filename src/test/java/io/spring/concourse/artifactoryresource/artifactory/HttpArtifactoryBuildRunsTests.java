@@ -66,7 +66,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest(HttpArtifactory.class)
 class HttpArtifactoryBuildRunsTests {
 
-	private static final Pattern AQL_PATTERN = Pattern.compile("items.find\\((.+)\\)");
+	private static final Pattern AQL_PATTERN = Pattern.compile("items.find\\((.+)\\)", Pattern.MULTILINE);
 
 	@Autowired
 	private MockRestServiceServer server;
