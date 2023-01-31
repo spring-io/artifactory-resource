@@ -20,7 +20,7 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
+import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
 import org.springframework.util.Assert;
 
@@ -42,19 +42,19 @@ public class DeployedArtifact {
 
 	private final long size;
 
-	@JsonArtifactoryDateFormat
+	@JsonIsoDateFormat
 	private final Instant created;
 
 	@JsonProperty("created-by")
 	private final String createdBy;
 
-	@JsonArtifactoryDateFormat
+	@JsonIsoDateFormat
 	private final Instant modified;
 
 	@JsonProperty("modified-by")
 	private final String modifiedBy;
 
-	@JsonArtifactoryDateFormat
+	@JsonIsoDateFormat
 	private final Instant updated;
 
 	public DeployedArtifact(String repo, String name, String path) {

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * Annotation used for artifactory date formatting.
+ * Annotation used for ISO date formatting as used in Artifatory.
  *
  * @author Phillip Webb
  */
@@ -32,6 +32,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JacksonAnnotation
 @JacksonAnnotationsInside
 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone = "UTC")
-public @interface JsonArtifactoryDateFormat {
+public @interface JsonIsoDateFormat {
 
 }

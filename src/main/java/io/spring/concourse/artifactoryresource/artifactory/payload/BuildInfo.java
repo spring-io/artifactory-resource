@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
+import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
 import org.springframework.util.Assert;
 
@@ -48,7 +48,7 @@ public class BuildInfo {
 	@JsonProperty("agent")
 	private final ContinuousIntegrationAgent continuousIntegrationAgent;
 
-	@JsonArtifactoryDateFormat
+	@JsonIsoDateFormat
 	private final Instant started;
 
 	@JsonProperty("url")

@@ -20,7 +20,7 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.spring.concourse.artifactoryresource.jackson.JsonArtifactoryDateFormat;
+import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
 /**
  * A reference to a build that has already run.
@@ -32,7 +32,7 @@ public class BuildRun implements Comparable<BuildRun> {
 
 	private final String uri;
 
-	@JsonArtifactoryDateFormat
+	@JsonIsoDateFormat
 	private final Instant started;
 
 	@JsonCreator
