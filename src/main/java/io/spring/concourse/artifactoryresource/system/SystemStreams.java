@@ -19,6 +19,9 @@ package io.spring.concourse.artifactoryresource.system;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Provides access to {@code stdin} and {@code stdout} and re-maps {@code System.out} to
  * {@code System.err} to prevent accidental log output.
@@ -27,6 +30,8 @@ import java.io.PrintStream;
  * @author Madhura Bhave
  */
 public class SystemStreams {
+
+	private static final Logger logger = LoggerFactory.getLogger(SystemStreams.class);
 
 	private static SystemStreams instance;
 
@@ -62,6 +67,7 @@ public class SystemStreams {
 	 * @return the system streams instance
 	 */
 	public static SystemStreams reconfigureSystem() {
+		logger.trace("Reconfiguring system system streams");
 		PrintStream out = System.out;
 		System.setOut(System.err);
 		instance = new SystemStreams(System.in, out);

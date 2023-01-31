@@ -16,8 +16,9 @@
 
 package io.spring.concourse.artifactoryresource.command;
 
-import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggingSystem;
+import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility to enable debug logging.
@@ -31,9 +32,9 @@ final class DebugLogging {
 
 	static void setEnabled(boolean enabled) {
 		if (enabled) {
-			LoggingSystem system = LoggingSystem.get(Thread.currentThread().getContextClassLoader());
-			system.setLogLevel("org.springframework", LogLevel.DEBUG);
-			system.setLogLevel("io.spring.concourse.artifactoryresource", LogLevel.DEBUG);
+			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+			ch.qos.logback.classic.Logger logger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+			logger.getAppender("CONSOLE").clearAllFilters();
 		}
 	}
 

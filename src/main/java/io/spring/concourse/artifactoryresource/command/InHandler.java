@@ -56,7 +56,7 @@ import org.springframework.util.MultiValueMap;
 @Component
 public class InHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(OutHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(InHandler.class);
 
 	private static final ConsoleLogger console = new ConsoleLogger();
 
@@ -72,6 +72,7 @@ public class InHandler {
 	public InResponse handle(InRequest request, Directory directory) {
 		Source source = request.getSource();
 		Version version = request.getVersion();
+		logger.debug("Handling in for source '{}' version '{}'", source, version);
 		BuildNumber buildNumber = BuildNumber.of(version.getBuildNumber());
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());

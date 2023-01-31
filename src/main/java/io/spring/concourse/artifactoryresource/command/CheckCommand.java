@@ -20,6 +20,8 @@ import io.spring.concourse.artifactoryresource.command.payload.CheckRequest;
 import io.spring.concourse.artifactoryresource.command.payload.CheckResponse;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CheckCommand implements Command {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
 
 	private final SystemInput systemInput;
 
@@ -47,8 +51,10 @@ public class CheckCommand implements Command {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running '/check' command");
 		CheckRequest request = this.systemInput.read(CheckRequest.class);
 		CheckResponse response = this.handler.handle(request);
+		logger.trace("Writing response {}", response);
 		this.systemOutput.write(response);
 	}
 

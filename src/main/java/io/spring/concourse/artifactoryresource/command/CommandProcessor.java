@@ -19,6 +19,9 @@ package io.spring.concourse.artifactoryresource.command;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -35,6 +38,8 @@ import org.springframework.util.Assert;
 @Profile("!test")
 public class CommandProcessor implements ApplicationRunner {
 
+	private static final Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
+
 	private final List<Command> commands;
 
 	public CommandProcessor(List<Command> commands) {
@@ -44,6 +49,7 @@ public class CommandProcessor implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		List<String> nonOptionArgs = args.getNonOptionArgs();
+		logger.debug("Processing command {}", nonOptionArgs);
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		String request = nonOptionArgs.get(0);
 		this.commands.stream().filter((c) -> c.getName().equals(request)).findFirst()

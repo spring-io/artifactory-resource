@@ -21,6 +21,8 @@ import io.spring.concourse.artifactoryresource.command.payload.InResponse;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.system.SystemInput;
 import io.spring.concourse.artifactoryresource.system.SystemOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class InCommand implements Command {
+
+	private static final Logger logger = LoggerFactory.getLogger(InCommand.class);
 
 	private final SystemInput systemInput;
 
@@ -48,9 +52,11 @@ public class InCommand implements Command {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running '/in' command");
 		InRequest request = this.systemInput.read(InRequest.class);
 		Directory directory = Directory.fromArgs(args);
 		InResponse response = this.handler.handle(request, directory);
+		logger.trace("Writing response {}", response);
 		this.systemOutput.write(response);
 	}
 

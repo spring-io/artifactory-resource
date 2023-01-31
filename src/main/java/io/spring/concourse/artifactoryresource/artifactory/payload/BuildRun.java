@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * A reference to a build that has already run.
  *
@@ -53,6 +55,12 @@ public class BuildRun implements Comparable<BuildRun> {
 	@Override
 	public int compareTo(BuildRun other) {
 		return this.started.compareTo(other.started);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("started", this.started)
+				.toString();
 	}
 
 }

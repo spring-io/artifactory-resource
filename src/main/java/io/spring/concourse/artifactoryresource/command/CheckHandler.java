@@ -28,6 +28,8 @@ import io.spring.concourse.artifactoryresource.command.payload.CheckRequest;
 import io.spring.concourse.artifactoryresource.command.payload.CheckResponse;
 import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
 
@@ -41,6 +43,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CheckHandler {
 
+	private static final Logger logger = LoggerFactory.getLogger(CheckHandler.class);
+
 	private final Artifactory artifactory;
 
 	public CheckHandler(Artifactory artifactory) {
@@ -50,16 +54,19 @@ public class CheckHandler {
 	public CheckResponse handle(CheckRequest request) {
 		Source source = request.getSource();
 		Version version = request.getVersion();
+		logger.debug("Handling check for source '{}' version '{}'", source, version);
 		return new CheckResponse((version != null) ? getNewVersions(source, version) : getCurrentVersion(source));
 	}
 
 	private List<Version> getCurrentVersion(Source source) {
+		logger.debug("Getting current version");
 		String buildNumberPrefix = source.getBuildNumberPrefix();
 		List<BuildRun> all = buildRuns(source).getAll(buildNumberPrefix);
 		return getLatest(all).stream().map(this::asVersion).toList();
 	}
 
 	private List<Version> getNewVersions(Source source, Version version) {
+		logger.debug("Getting new versions");
 		return getRunsStartedOnOrAfter(source, version).stream().sorted().map(this::asVersion).toList();
 	}
 
@@ -67,11 +74,14 @@ public class CheckHandler {
 		ArtifactoryBuildRuns buildRuns = buildRuns(source);
 		String buildNumberPrefix = source.getBuildNumberPrefix();
 		if (version.getStarted() != null) {
+			logger.debug("Getting version started on or after {}", version.getStarted());
 			List<BuildRun> startedOnOrAfter = buildRuns.getStartedOnOrAfter(buildNumberPrefix, version.getStarted());
 			return (!startedOnOrAfter.isEmpty()) ? startedOnOrAfter : getLatest(buildRuns.getAll(buildNumberPrefix));
 		}
+		logger.debug("Getting all versions in order to find version run");
 		List<BuildRun> all = buildRuns.getAll(buildNumberPrefix);
 		BuildRun versionRun = findFirstOrNull(all, (run) -> isVersionMatch(run, version));
+		logger.debug("Found version run {}", versionRun);
 		Predicate<BuildRun> greaterThanOrEqualToVersionRun = (run) -> run.compareTo(versionRun) >= 0;
 		return (versionRun != null) ? all.stream().filter(greaterThanOrEqualToVersionRun).toList() : getLatest(all);
 	}
