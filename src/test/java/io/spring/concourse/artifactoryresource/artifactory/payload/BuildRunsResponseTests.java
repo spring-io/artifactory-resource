@@ -40,15 +40,12 @@ public class BuildRunsResponseTests {
 	@Test
 	public void readDeserializesJson() throws Exception {
 		BuildRunsResponse response = this.json.readObject("build-runs-response.json");
-		assertThat(response.getUri()).isEqualTo("http://localhost:8081/artifactory/api/build/my-build");
-		assertThat(response.getBuildsRuns()).hasSize(2);
-		assertThat(response.getBuildsRuns().get(0).getBuildNumber()).isEqualTo("1234");
-		assertThat(response.getBuildsRuns().get(0).getUri()).isEqualTo("/1234");
-		assertThat(response.getBuildsRuns().get(0).getStarted())
+		assertThat(response.getResults()).hasSize(2);
+		assertThat(response.getResults().get(0).getBuildNumber()).isEqualTo("1234");
+		assertThat(response.getResults().get(0).getStarted())
 				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893Z"));
-		assertThat(response.getBuildsRuns().get(1).getBuildNumber()).isEqualTo("5678");
-		assertThat(response.getBuildsRuns().get(1).getUri()).isEqualTo("/5678");
-		assertThat(response.getBuildsRuns().get(1).getStarted())
+		assertThat(response.getResults().get(1).getBuildNumber()).isEqualTo("5678");
+		assertThat(response.getResults().get(1).getStarted())
 				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z"));
 	}
 

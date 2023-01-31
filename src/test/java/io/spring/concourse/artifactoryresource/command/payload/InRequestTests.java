@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ class InRequestTests {
 
 	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, 0);
 
-	private Version version = new Version("1234");
+	private Version version = new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z"));
 
 	private InRequest.Params params = new InRequest.Params(false, false, false, false, false, null);
 

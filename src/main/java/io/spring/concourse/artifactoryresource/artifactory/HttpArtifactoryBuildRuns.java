@@ -18,7 +18,8 @@ package io.spring.concourse.artifactoryresource.artifactory;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.Collections;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -28,13 +29,13 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactQueryResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactsResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.SearchQueryResponse;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,6 +47,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Madhura Bhave
  */
 public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
+
+	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
+			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
 	private final RestTemplate restTemplate;
 
@@ -77,15 +81,23 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public List<BuildRun> getAll() {
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path("api/build/{buildName}")
-				.buildAndExpand(this.buildName);
-		URI uri = uriComponents.encode().toUri();
-		try {
-			return this.restTemplate.getForObject(uri, BuildRunsResponse.class).getBuildsRuns();
+		return getBuildRuns(null);
+	}
+
+	@Override
+	public List<BuildRun> getStartedOnOrAfter(Instant timestamp) {
+		Assert.notNull(timestamp, "Timestamp must not be null");
+		return getBuildRuns(timestamp);
+	}
+
+	private List<BuildRun> getBuildRuns(Instant startedOnOrAfter) {
+		Json critera = Json.of("name", this.buildName);
+		if (startedOnOrAfter != null) {
+			String formattedStartTime = TIMESTAMP_FORMATTER.format(startedOnOrAfter.atOffset(ZoneOffset.UTC));
+			critera.and("started", Json.of("$gte", formattedStartTime));
 		}
-		catch (HttpClientErrorException ex) {
-			return Collections.emptyList();
-		}
+		String query = "builds.find(%s)".formatted(critera);
+		return search(query, BuildRunsResponse.class).getResults();
 	}
 
 	@Override
@@ -100,18 +112,50 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
-		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").build().encode().toUri();
-		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN)
-				.body(buildFetchQuery(this.buildName, buildNumber));
-		return this.restTemplate.exchange(request, DeployedArtifactQueryResponse.class).getBody().getResults();
+		Json criteria = Json.of("@build.name", this.buildName).and("@build.number", buildNumber);
+		String query = "items.find(%s)".formatted(criteria);
+		return search(query, DeployedArtifactsResponse.class).getResults();
 	}
 
-	private String buildFetchQuery(String buildName, String buildNumber) {
-		return """
-				items.find({
-				"@build.name": "%s",
-				"@build.number": "%s"
-				})""".formatted(buildName, buildNumber).replace("\n", "");
+	private <T extends SearchQueryResponse<?>> T search(String query, Class<T> responseType) {
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").build().encode().toUri();
+		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN).body(query);
+		return this.restTemplate.exchange(request, responseType).getBody();
+	}
+
+	/**
+	 * Simple JSON builder support class.
+	 */
+	static class Json {
+
+		private final StringBuilder json = new StringBuilder();
+
+		Json and(String field, Object value) {
+			this.json.append((!this.json.isEmpty()) ? ", " : "");
+			appendJson(field);
+			this.json.append(" : ");
+			appendJson(value);
+			return this;
+		}
+
+		private void appendJson(Object value) {
+			if (value instanceof Json) {
+				this.json.append(value);
+			}
+			else {
+				this.json.append("\"%s\"".formatted(value));
+			}
+		}
+
+		@Override
+		public String toString() {
+			return "{%s}".formatted(this.json);
+		}
+
+		static Json of(String field, Object value) {
+			return new Json().and(field, value);
+		}
+
 	}
 
 }

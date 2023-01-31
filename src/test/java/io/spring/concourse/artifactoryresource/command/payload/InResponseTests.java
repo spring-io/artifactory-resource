@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,13 +51,15 @@ class InResponseTests {
 		List<Metadata> metadata = new ArrayList<>();
 		metadata.add(new Metadata("foo", "bar"));
 		metadata.add(new Metadata("bin", "bag"));
-		InResponse response = new InResponse(new Version("1234"), metadata);
+		InResponse response = new InResponse(
+				new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")), metadata);
 		assertThat(this.json.write(response)).isEqualToJson("in-response.json");
 	}
 
 	@Test
 	void writeWhenMetadataIsNullSerializesJson() throws Exception {
-		InResponse response = new InResponse(new Version("5678"), null);
+		InResponse response = new InResponse(
+				new Version("5678", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")), null);
 		assertThat(this.json.write(response)).isEqualToJson("in-response-without-metadata.json");
 	}
 

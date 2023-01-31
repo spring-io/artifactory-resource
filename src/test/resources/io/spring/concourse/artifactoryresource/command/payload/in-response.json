@@ -1,6 +1,7 @@
 {
 	"version": {
-		"build_number": "1234"
+		"build_number": "1234",
+		"started": "2014-01-20T12:01:02.003Z"
 	},
 	"metadata": [
 		{

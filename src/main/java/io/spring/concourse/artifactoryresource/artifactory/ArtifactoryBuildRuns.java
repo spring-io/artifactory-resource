@@ -67,6 +67,13 @@ public interface ArtifactoryBuildRuns {
 	List<BuildRun> getAll();
 
 	/**
+	 * Return all builds started on or after the given time.
+	 * @param timestamp the started on or after timestamp
+	 * @return the build runs started after the time
+	 */
+	List<BuildRun> getStartedOnOrAfter(Instant timestamp);
+
+	/**
 	 * Return a string containing the build-info JSON as stored on the server.
 	 * @param buildNumber the build number
 	 * @return a string containing the build-info JSON

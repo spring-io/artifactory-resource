@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package io.spring.concourse.artifactoryresource.command.payload;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,8 @@ class CheckResponseTests {
 	@Test
 	void writeSerializesJson() throws Exception {
 		List<Version> versions = new ArrayList<>();
-		versions.add(new Version("1234"));
-		versions.add(new Version("5678"));
+		versions.add(new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")));
+		versions.add(new Version("5678", ArtifactoryDateFormat.parse("2014-01-21T12:01:02.003Z")));
 		CheckResponse value = new CheckResponse(versions);
 		assertThat(this.json.write(value)).isEqualToJson("check-response.json");
 	}

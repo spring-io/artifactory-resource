@@ -26,20 +26,20 @@ import org.springframework.boot.test.json.JacksonTester;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeployedArtifactQueryResponse}.
+ * Tests for {@link DeployedArtifactsResponse}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
 @JsonTest
-public class DeployedArtifactQueryResponseTests {
+public class DeployedArtifactsResponseTests {
 
 	@Autowired
-	private JacksonTester<DeployedArtifactQueryResponse> json;
+	private JacksonTester<DeployedArtifactsResponse> json;
 
 	@Test
 	public void readDeserializesJson() throws Exception {
-		DeployedArtifactQueryResponse response = this.json.readObject("deployed-artifacts.json");
+		SearchQueryResponse<DeployedArtifact> response = this.json.readObject("deployed-artifacts.json");
 		assertThat(response.getResults()).hasSize(1);
 		DeployedArtifact artifact = response.getResults().get(0);
 		assertThat(artifact.getRepo()).isEqualTo("libs-release-local");

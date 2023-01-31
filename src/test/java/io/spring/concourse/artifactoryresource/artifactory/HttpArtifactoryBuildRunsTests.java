@@ -43,7 +43,6 @@ import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -54,7 +53,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
@@ -65,8 +63,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 @RestClientTest(HttpArtifactory.class)
 class HttpArtifactoryBuildRunsTests {
-
-	private static final Pattern AQL_PATTERN = Pattern.compile("items.find\\((.+)\\)", Pattern.MULTILINE);
 
 	@Autowired
 	private MockRestServiceServer server;
@@ -109,20 +105,50 @@ class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	void getAllWhenBuildDoesNotExistReturnsEmptyList() {
-		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		String url = "https://repo.example.com/api/search/aql";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(withSuccess(
+						getResource("payload/build-runs-missing-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
 		assertThat(runs).hasSize(0);
 	}
 
 	@Test
 	void getAllReturnsBuildRuns() {
-		this.server.expect(requestTo("https://repo.example.com/api/build/my-build")).andExpect(method(HttpMethod.GET))
+		String url = "https://repo.example.com/api/search/aql";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindAllBuildsQuery("my-build"))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
 		assertThat(runs).hasSize(2);
-		assertThat(runs.get(0).getUri()).isEqualTo("/1234");
-		assertThat(runs.get(1).getUri()).isEqualTo("/5678");
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
+		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
+	}
+
+	private RequestMatcher bodyWithFindAllBuildsQuery(String buildName) {
+		return bodyWithQuery("builds", """
+				{"name": "%s"}""".formatted(buildName));
+	}
+
+	@Test
+	void getStartedOnOrAfterReturnsBuilds() {
+		String url = "https://repo.example.com/api/search/aql";
+		String started = "2014-09-30T12:00:19.893Z";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started))
+				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = this.artifactoryBuildRuns.getStartedOnOrAfter(ArtifactoryDateFormat.parse(started));
+		assertThat(runs).hasSize(2);
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
+		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
+	}
+
+	private RequestMatcher bodyWithFindBuildsStartedOnOrAfterQuery(String buildName, String started) {
+		return bodyWithQuery("builds", """
+				{"name": "%s", "started": {"$gte": "%s"}}""".formatted(buildName, started));
 	}
 
 	@Test
@@ -138,7 +164,8 @@ class HttpArtifactoryBuildRunsTests {
 	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() {
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN)).andExpect(aqlContent("my-build", "1234"))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindItemsQuery("my-build", "1234"))
 				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
 		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns.getDeployedArtifacts("1234");
 		assertThat(artifacts).hasSize(1);
@@ -146,15 +173,20 @@ class HttpArtifactoryBuildRunsTests {
 		this.server.verify();
 	}
 
-	private RequestMatcher aqlContent(String buildName, String buildNumber) {
+	private RequestMatcher bodyWithFindItemsQuery(String buildName, String buildNumber) {
+		return bodyWithQuery("items", """
+				{"@build.name": "%s", "@build.number": "%s"}""".formatted(buildName, buildNumber));
+	}
+
+	private RequestMatcher bodyWithQuery(String entity, String expectedCriteria) {
+		Pattern pattern = Pattern.compile(entity + "\\.find\\((.+)\\)", Pattern.DOTALL);
 		return (request) -> {
 			String body = ((MockClientHttpRequest) request).getBodyAsString();
-			Matcher matcher = AQL_PATTERN.matcher(body);
-			assertThat(matcher.matches()).isTrue();
-			String actualJson = matcher.group(1);
-			String expectedJson = """
-					{"@build.name": "%s", "@build.number": "%s"}""".formatted(buildName, buildNumber);
-			assertJson(expectedJson, actualJson);
+			Matcher matcher = pattern.matcher(body);
+			assertThat(body).matches(pattern);
+			assertThat(matcher.matches());
+			String actualCriteria = matcher.group(1);
+			assertJson(expectedCriteria, actualCriteria);
 		};
 	}
 

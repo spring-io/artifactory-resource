@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import io.spring.concourse.artifactoryresource.command.payload.Source;
 import io.spring.concourse.artifactoryresource.command.payload.Version;
 import io.spring.concourse.artifactoryresource.io.Directory;
 import io.spring.concourse.artifactoryresource.maven.MavenMetadataGenerator;
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -188,7 +189,8 @@ class InHandlerTests {
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
 			boolean downloadChecksums, int threads) {
 		InRequest request = new InRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, null), new Version("1234"),
+				new Source("https://ci.example.com", "admin", "password", "my-build", null, null),
+				new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")),
 				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, threads));
 		return request;
 	}

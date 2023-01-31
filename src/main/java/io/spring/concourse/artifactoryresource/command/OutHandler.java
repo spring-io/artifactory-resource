@@ -133,7 +133,7 @@ public class OutHandler {
 		deployArtifacts(artifactoryServer, params, batchedArtifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, started, batchedArtifacts);
 		logger.debug("Done");
-		return new OutResponse(new Version(buildNumber));
+		return new OutResponse(new Version(buildNumber, started));
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {

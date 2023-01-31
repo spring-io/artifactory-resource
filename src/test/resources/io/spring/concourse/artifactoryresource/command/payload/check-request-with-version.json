@@ -6,6 +6,7 @@
 		"build_name": "my-build"
 	},
 	"version": {
-		"build_number": "1234"
+		"build_number": "1234",
+		"created": "2022-11-20T23:33:54.279Z"
 	}
 }

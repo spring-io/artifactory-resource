@@ -22,25 +22,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A single response from an Artifactory Query Language request for deployed artifacts.
+ * A single response from an Artifactory Query Language search.
  *
+ * @param <R> the result type
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class DeployedArtifactQueryResponse {
+public abstract class SearchQueryResponse<R> {
 
-	private final List<DeployedArtifact> results;
+	private final List<R> results;
 
 	private final Range range;
 
 	@JsonCreator
-	public DeployedArtifactQueryResponse(@JsonProperty("results") List<DeployedArtifact> results,
-			@JsonProperty("range") Range range) {
+	protected SearchQueryResponse(@JsonProperty("results") List<R> results, @JsonProperty("range") Range range) {
 		this.results = results;
 		this.range = range;
 	}
 
-	public List<DeployedArtifact> getResults() {
+	public List<R> getResults() {
 		return this.results;
 	}
 
@@ -49,7 +49,7 @@ public class DeployedArtifactQueryResponse {
 	}
 
 	/**
-	 * The range covered in the {@link DeployedArtifactQueryResponse}.
+	 * The range covered in the {@link SearchQueryResponse}.
 	 */
 	public static class Range {
 

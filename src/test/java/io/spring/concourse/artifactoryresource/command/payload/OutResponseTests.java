@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 class OutResponseTests {
 
+	private static final String BUILD_NUMBER = "1234";
+
+	private static final Instant BUILD_TIMESTAMP = ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z");
+
 	@Autowired
 	private JacksonTester<OutResponse> json;
 
@@ -50,13 +56,13 @@ class OutResponseTests {
 		List<Metadata> metadata = new ArrayList<>();
 		metadata.add(new Metadata("foo", "bar"));
 		metadata.add(new Metadata("bin", "bag"));
-		OutResponse response = new OutResponse(new Version("1234"), metadata);
+		OutResponse response = new OutResponse(new Version(BUILD_NUMBER, BUILD_TIMESTAMP), metadata);
 		assertThat(this.json.write(response)).isEqualToJson("out-response.json");
 	}
 
 	@Test
 	void writeWhenMetadataIsNullSerializesJson() throws Exception {
-		OutResponse response = new OutResponse(new Version("1234"), null);
+		OutResponse response = new OutResponse(new Version(BUILD_NUMBER, BUILD_TIMESTAMP), null);
 		assertThat(this.json.write(response)).isEqualToJson("out-response-without-metadata.json");
 	}
 

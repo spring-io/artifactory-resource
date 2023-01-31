@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,9 @@ class CheckRequestTests {
 
 	@Test
 	void createWhenSourceIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new CheckRequest(null, new Version("1234")))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new CheckRequest(null,
+						new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z"))))
 				.withMessage("Source must not be null");
 	}
 

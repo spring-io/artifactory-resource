@@ -19,13 +19,14 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 import java.util.List;
 
 /**
- * A single response from an Artifactory Query Language request for build runs.
+ * A single response from an Artifactory Query Language request for deployed artifacts.
  *
+ * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class BuildRunsResponse extends SearchQueryResponse<BuildRun> {
+public class DeployedArtifactsResponse extends SearchQueryResponse<DeployedArtifact> {
 
-	public BuildRunsResponse(List<BuildRun> results, Range range) {
+	public DeployedArtifactsResponse(List<DeployedArtifact> results, Range range) {
 		super(results, range);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package io.spring.concourse.artifactoryresource.command.payload;
 
+import java.time.Instant;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
@@ -34,19 +38,45 @@ public class Version {
 	@JsonProperty("build_number")
 	private final String buildNumber;
 
+	@JsonIsoDateFormat
+	private Instant started;
+
 	@JsonCreator
-	public Version(@JsonProperty("build_number") String buildNumber) {
+	public Version(@JsonProperty("build_number") String buildNumber, @JsonProperty("started") Instant started) {
 		Assert.hasText(buildNumber, "Build Number must not be empty");
 		this.buildNumber = buildNumber;
+		this.started = started;
 	}
 
 	public String getBuildNumber() {
 		return this.buildNumber;
 	}
 
+	public Instant getStarted() {
+		return this.started;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		Version other = (Version) obj;
+		return Objects.equals(this.buildNumber, other.buildNumber) && Objects.equals(this.started, other.started);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.buildNumber, this.started);
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("buildNumber", this.buildNumber).toString();
+		return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("buildTimestamp", this.started)
+				.toString();
 	}
 
 }
