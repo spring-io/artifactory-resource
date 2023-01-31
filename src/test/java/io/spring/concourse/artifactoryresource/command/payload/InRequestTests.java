@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 class InRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, 0);
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null, null);
 
 	private Version version = new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z"));
 

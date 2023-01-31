@@ -45,19 +45,23 @@ public class Source {
 
 	private final String buildName;
 
+	private final Integer checkLimit;
+
 	@JsonIgnore
 	private final Proxy proxy;
 
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri, @JsonProperty("username") String username,
 			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName,
-			@JsonProperty("proxy_host") String proxyHost, @JsonProperty("proxy_port") Integer proxyPort) {
+			@JsonProperty("check_limit") Integer checkLimit, @JsonProperty("proxy_host") String proxyHost,
+			@JsonProperty("proxy_port") Integer proxyPort) {
 		Assert.hasText(uri, "URI must not be empty");
 		Assert.hasText(buildName, "Build Name must not be empty");
 		this.uri = uri;
 		this.username = username;
 		this.password = password;
 		this.buildName = buildName;
+		this.checkLimit = checkLimit;
 		this.proxy = (StringUtils.hasText(proxyHost)) ? createProxy(proxyHost, proxyPort) : null;
 	}
 
@@ -82,13 +86,18 @@ public class Source {
 		return this.buildName;
 	}
 
+	public Integer getCheckLimit() {
+		return this.checkLimit;
+	}
+
 	public Proxy getProxy() {
 		return this.proxy;
 	}
 
 	@Override
 	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName);
+		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName)
+				.append("checkLimit", this.checkLimit);
 		if (this.proxy != null) {
 			creator.append("proxy", this.proxy);
 		}

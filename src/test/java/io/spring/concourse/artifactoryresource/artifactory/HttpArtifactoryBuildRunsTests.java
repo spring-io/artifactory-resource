@@ -73,12 +73,14 @@ class HttpArtifactoryBuildRunsTests {
 	@Autowired
 	private Artifactory artifactory;
 
+	private ArtifactoryServer artifactoryServer;
+
 	private ArtifactoryBuildRuns artifactoryBuildRuns;
 
 	@BeforeEach
 	void setup() {
-		this.artifactoryBuildRuns = this.artifactory.server("https://repo.example.com", "admin", "password", null)
-				.buildRuns("my-build");
+		this.artifactoryServer = this.artifactory.server("https://repo.example.com", "admin", "password", null);
+		this.artifactoryBuildRuns = this.artifactoryServer.buildRuns("my-build");
 	}
 
 	@AfterEach
@@ -125,6 +127,18 @@ class HttpArtifactoryBuildRunsTests {
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
 		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
+	}
+
+	@Test
+	void getAllWhenHasLimitReturnsBuildRuns() {
+		this.artifactoryBuildRuns = this.artifactoryServer.buildRuns("my-build", 2);
+		String url = "https://repo.example.com/api/search/aql";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andExpect(bodyWithContent(".limit(2)"))
+				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
+		assertThat(runs).hasSize(2);
 	}
 
 	private RequestMatcher bodyWithFindAllBuildsQuery(String buildName) {
@@ -187,6 +201,13 @@ class HttpArtifactoryBuildRunsTests {
 			assertThat(matcher.matches());
 			String actualCriteria = matcher.group(1);
 			assertJson(expectedCriteria, actualCriteria);
+		};
+	}
+
+	private RequestMatcher bodyWithContent(String content) {
+		return (request) -> {
+			String body = ((MockClientHttpRequest) request).getBodyAsString();
+			assertThat(body).contains(content);
 		};
 	}
 

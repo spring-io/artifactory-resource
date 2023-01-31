@@ -83,8 +83,11 @@ class ApplicationIT {
 		Instant started = Instant.now();
 		deployArtifact(repository, buildNumber, started, file);
 		addBuildRun(buildRuns, buildNumber, started);
+		addBuildRun(buildRuns, generateBuildNumber() + "-2", Instant.now());
 		getBuildRuns(buildRuns, buildNumber);
 		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
+		List<BuildRun> limitedResults = getServer().buildRuns("my-build", 1).getAll();
+		assertThat(limitedResults).hasSize(1);
 	}
 
 	private String generateBuildNumber() {
@@ -125,6 +128,7 @@ class ApplicationIT {
 
 	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber) {
 		List<BuildRun> runs = artifactoryBuildRuns.getAll();
+		assertThat(runs).hasSizeGreaterThan(1);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo(buildNumber);
 	}
 

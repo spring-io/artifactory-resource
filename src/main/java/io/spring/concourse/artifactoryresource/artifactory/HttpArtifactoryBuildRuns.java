@@ -57,10 +57,13 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private final String buildName;
 
-	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName) {
+	private final Integer limit;
+
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName, Integer limit) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.buildName = buildName;
+		this.limit = limit;
 	}
 
 	@Override
@@ -97,6 +100,9 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 			critera.and("started", Json.of("$gte", formattedStartTime));
 		}
 		String query = "builds.find(%s)".formatted(critera);
+		if (this.limit != null && this.limit > 0) {
+			query += (".limit(%s)".formatted(this.limit));
+		}
 		return search(query, BuildRunsResponse.class).getResults();
 	}
 

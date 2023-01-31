@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 class OutRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null);
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null, null);
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
 			null, null, null, null, null, null, null, null, null);

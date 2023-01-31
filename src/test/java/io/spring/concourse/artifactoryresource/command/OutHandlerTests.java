@@ -410,7 +410,7 @@ class OutHandlerTests {
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			String buildProperties, boolean stripSnapshotTimestamps, boolean disableChecksumUploads,
 			List<ArtifactSet> artifactSet, int threads, String signingKey, String signingPassphrase) {
-		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null),
+		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", buildProperties, stripSnapshotTimestamps, disableChecksumUploads,
 						artifactSet, threads, signingKey, signingPassphrase));

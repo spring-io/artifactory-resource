@@ -81,7 +81,7 @@ public class CheckHandler {
 	}
 
 	private ArtifactoryBuildRuns buildRuns(Source source) {
-		return artifactoryServer(source).buildRuns(source.getBuildName());
+		return artifactoryServer(source).buildRuns(source.getBuildName(), source.getCheckLimit());
 	}
 
 	private ArtifactoryServer artifactoryServer(Source source) {

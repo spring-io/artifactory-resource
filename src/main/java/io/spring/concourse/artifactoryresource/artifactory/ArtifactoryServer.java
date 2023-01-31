@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package io.spring.concourse.artifactoryresource.artifactory;
+
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 
 /**
  * Interface providing access to a specific artifactory server.
@@ -36,6 +38,16 @@ public interface ArtifactoryServer {
 	 * @param buildName the name of the build
 	 * @return the artifactory build runs
 	 */
-	ArtifactoryBuildRuns buildRuns(String buildName);
+	default ArtifactoryBuildRuns buildRuns(String buildName) {
+		return buildRuns(buildName, null);
+	}
+
+	/**
+	 * Access specific builds runs from the server.
+	 * @param buildName the name of the build
+	 * @param limit the limit to the number of {@link BuildRun} items that can be returned
+	 * @return the artifactory build runs
+	 */
+	ArtifactoryBuildRuns buildRuns(String buildName, Integer limit);
 
 }

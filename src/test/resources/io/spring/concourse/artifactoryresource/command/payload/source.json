@@ -2,5 +2,6 @@
 	"uri": "https://repo.example.com",
 	"username": "admin",
 	"password": "password",
-	"build_name": "my-build"
+	"build_name": "my-build",
+	"check_limit": 1
 }
