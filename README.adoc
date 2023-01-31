@@ -36,7 +36,8 @@ resource_types:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
 * `build_name`: *Required.* The name of the build
-* `check_limit` : _Optional._ The limit to the number of versions returned when performing a check
+* `build_number_prefix`: _Optional._ A prefix to apply to the build number and to limit results when checking
+* `check_limit`: _Optional._ The limit to the number of versions returned when performing a check
 * `proxy_host`: The fully qualified domain name of the HTTP proxy through which the artifactory server is reachable
 * `proxy_port`: The proxy port (*required* when `proxy_host` is specified)
 
@@ -126,8 +127,9 @@ jobs:
 
 === `check`: Check for new builds
 Queries the artifactory repository for builds runs for the given `build_name`.
-Returns a list of associated `build_numbers` ordered by date.
+Returns a list of associated `build_numbers` ordered by start date.
 
+If the `build_number_prefix` is configured on `source`, the results will be restricted to only build numbers starting with that prefix.
 
 
 === `in`: Fetches build artifacts

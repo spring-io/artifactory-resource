@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 @JsonTest
 class OutRequestTests {
 
-	private Source source = new Source("http://localhost:8181", "username", "password", "my-build", null, null, null);
+	private Source source = new Source("http://localhost:8181", "username", "password", "my-build");
 
 	private OutRequest.Params params = new OutRequest.Params(false, "libs-snapshot-local", "1234", "folder", null, null,
 			null, null, null, null, null, null, null, null, null);

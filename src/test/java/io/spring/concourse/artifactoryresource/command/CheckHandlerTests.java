@@ -90,9 +90,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenVersionIsMissingRespondsWithLatest() {
-		given(this.artifactoryBuildRuns.getAll()).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
 				CheckHandlerTests.RUN4, CheckHandlerTests.RUN1));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, null);
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION4);
@@ -100,9 +100,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenVersionIsPresentRespondsWithListOfVersions() {
-		given(this.artifactoryBuildRuns.getStartedOnOrAfter(VERSION2.getStarted()))
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION2.getStarted()))
 				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, VERSION2);
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION2, VERSION3, VERSION4);
@@ -110,9 +110,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() {
-		given(this.artifactoryBuildRuns.getStartedOnOrAfter(VERSION4.getStarted()))
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
 				.willReturn(List.of(CheckHandlerTests.RUN4));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, VERSION4);
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION4);
@@ -120,9 +120,10 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenVersionIsPresentButRemovedFromArtifactoryRespondsWithLatest() {
-		given(this.artifactoryBuildRuns.getStartedOnOrAfter(VERSION4.getStarted())).willReturn(Collections.emptyList());
-		given(this.artifactoryBuildRuns.getAll()).willReturn(List.of(CheckHandlerTests.RUN3));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
+				.willReturn(Collections.emptyList());
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(List.of(CheckHandlerTests.RUN3));
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, VERSION4);
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION3);
@@ -130,9 +131,10 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenVersionIsPresentButAllHaveBeenRemovedFromArtifactoryReturnsEmptyList() {
-		given(this.artifactoryBuildRuns.getStartedOnOrAfter(VERSION4.getStarted())).willReturn(Collections.emptyList());
-		given(this.artifactoryBuildRuns.getAll()).willReturn(Collections.emptyList());
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
+				.willReturn(Collections.emptyList());
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(Collections.emptyList());
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, VERSION4);
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).isEmpty();
@@ -140,9 +142,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenLegacyVersionIsPresentRespondsWithListOfVersions() {
-		given(this.artifactoryBuildRuns.getAll()).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
 				CheckHandlerTests.RUN4, CheckHandlerTests.RUN1));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, new Version("2", null));
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION2, VERSION3, VERSION4);
@@ -150,9 +152,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenLegacyVersionIsPresentAndLatestRespondsWithListOfVersions() {
-		given(this.artifactoryBuildRuns.getAll()).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2,
 				CheckHandlerTests.RUN4, CheckHandlerTests.RUN1));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, new Version("4", null));
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION4);
@@ -160,9 +162,9 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenLegacyVersionIsPresentButRemovedFromArtifactoryRespondsWithLatest() {
-		given(this.artifactoryBuildRuns.getAll())
+		given(this.artifactoryBuildRuns.getAll(null))
 				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN1));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, new Version("4", null));
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).containsExactly(VERSION3);
@@ -170,8 +172,8 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenLegacyVersionIsPresentButAllHaveBeenRemovedFromArtifactoryReturnsEmptyList() {
-		given(this.artifactoryBuildRuns.getAll()).willReturn(Collections.emptyList());
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null);
+		given(this.artifactoryBuildRuns.getAll(null)).willReturn(Collections.emptyList());
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, new Version("4", null));
 		CheckResponse response = this.handler.handle(request);
 		assertThat(response.getVersions()).isEmpty();
@@ -179,9 +181,19 @@ class CheckHandlerTests {
 
 	@Test
 	void handleWhenHasCheckLimitLimitsResults() {
-		given(this.artifactoryBuildRuns.getStartedOnOrAfter(VERSION2.getStarted()))
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION2.getStarted()))
 				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
-		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", 123, null, null);
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, 123, null, null);
+		CheckRequest request = new CheckRequest(source, VERSION4);
+		this.handler.handle(request);
+		verify(this.artifactoryServer).buildRuns("my-build", 123);
+	}
+
+	@Test
+	void handleWhenHasBuildPrefixLimitsResults() {
+		given(this.artifactoryBuildRuns.getStartedOnOrAfter("main-", VERSION2.getStarted()))
+				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "main-", 123, null, null);
 		CheckRequest request = new CheckRequest(source, VERSION4);
 		this.handler.handle(request);
 		verify(this.artifactoryServer).buildRuns("my-build", 123);

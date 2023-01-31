@@ -24,6 +24,7 @@ import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest.Params;
@@ -88,8 +89,9 @@ class InHandlerTests {
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
-		given(this.artifactoryBuildRuns.getDeployedArtifacts("1234")).willReturn(this.deployedArtifacts);
-		given(this.artifactoryBuildRuns.getRawBuildInfo("1234")).willReturn(BUILD_INFO_JSON);
+		given(this.artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of("1234")))
+				.willReturn(this.deployedArtifacts);
+		given(this.artifactoryBuildRuns.getRawBuildInfo(BuildNumber.of("1234"))).willReturn(BUILD_INFO_JSON);
 		this.handler = new InHandler(this.artifactory, this.mavenMetadataGenerator);
 	}
 
@@ -188,8 +190,7 @@ class InHandlerTests {
 
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
 			boolean downloadChecksums, int threads) {
-		InRequest request = new InRequest(
-				new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null),
+		InRequest request = new InRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")),
 				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, threads));
 		return request;

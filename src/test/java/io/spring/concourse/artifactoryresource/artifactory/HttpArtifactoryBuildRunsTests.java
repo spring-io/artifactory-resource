@@ -101,7 +101,8 @@ class HttpArtifactoryBuildRunsTests {
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
-		this.artifactoryBuildRuns.add("5678", agent, started, "https://ci.example.com", properties, modules);
+		this.artifactoryBuildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties,
+				modules);
 		this.server.verify();
 	}
 
@@ -112,7 +113,7 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(withSuccess(
 						getResource("payload/build-runs-missing-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
 		assertThat(runs).hasSize(0);
 	}
 
@@ -123,7 +124,7 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindAllBuildsQuery("my-build"))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
 		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
@@ -137,7 +138,18 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andExpect(bodyWithContent(".limit(2)"))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll();
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
+		assertThat(runs).hasSize(2);
+	}
+
+	@Test
+	void getAllWhenHasBuildNumberPrefixReturnsBuildRuns() {
+		String url = "https://repo.example.com/api/search/aql";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithContent("\"number\" : {\"$match\" : \"my-*\"}"))
+				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = this.artifactoryBuildRuns.getAll("my-");
 		assertThat(runs).hasSize(2);
 	}
 
@@ -154,7 +166,7 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started))
 				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getStartedOnOrAfter(ArtifactoryDateFormat.parse(started));
+		List<BuildRun> runs = this.artifactoryBuildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
 		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
@@ -170,7 +182,7 @@ class HttpArtifactoryBuildRunsTests {
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
-		String buildInfo = this.artifactoryBuildRuns.getRawBuildInfo("5678");
+		String buildInfo = this.artifactoryBuildRuns.getRawBuildInfo(BuildNumber.of("5678"));
 		assertThat(buildInfo).isNotEmpty().contains("my-build");
 	}
 
@@ -181,7 +193,7 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindItemsQuery("my-build", "1234"))
 				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
-		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns.getDeployedArtifacts("1234");
+		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of("1234"));
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.get(0).getModifiedBy()).isEqualTo("spring");
 		this.server.verify();

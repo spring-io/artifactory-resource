@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
@@ -115,7 +116,7 @@ public class OutHandler {
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
 		Assert.state(!directory.isEmpty(), "No artifacts found in empty directory");
-		String buildNumber = getOrGenerateBuildNumber(params);
+		BuildNumber buildNumber = BuildNumber.of(source.getBuildNumberPrefix(), getOrGenerateBuildNumber(params));
 		Instant started = Instant.now();
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(source);
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = getBatchedArtifacts(buildNumber, started, source,
@@ -133,7 +134,7 @@ public class OutHandler {
 		deployArtifacts(artifactoryServer, params, batchedArtifacts);
 		addBuildRun(artifactoryServer, source, params, buildNumber, started, batchedArtifacts);
 		logger.debug("Done");
-		return new OutResponse(new Version(buildNumber, started));
+		return new OutResponse(new Version(buildNumber.toString(), started));
 	}
 
 	private ArtifactoryServer getArtifactoryServer(Source source) {
@@ -153,7 +154,7 @@ public class OutHandler {
 		return buildNumber;
 	}
 
-	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(String buildNumber, Instant started,
+	private MultiValueMap<Category, DeployableArtifact> getBatchedArtifacts(BuildNumber buildNumber, Instant started,
 			Source source, Params params, Directory directory) {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
@@ -178,7 +179,7 @@ public class OutHandler {
 		return batchedArtifacts;
 	}
 
-	private Map<String, String> getDeployableArtifactProperties(String path, String buildNumber, Instant started,
+	private Map<String, String> getDeployableArtifactProperties(String path, BuildNumber buildNumber, Instant started,
 			Source source, Params params) {
 		Map<String, String> properties = new LinkedHashMap<>();
 		addArtifactSetProperties(path, params, properties);
@@ -201,10 +202,10 @@ public class OutHandler {
 		return new PathFilter(artifactSet.getInclude(), artifactSet.getExclude());
 	}
 
-	private void addBuildProperties(String buildNumber, Instant started, Source source,
+	private void addBuildProperties(BuildNumber buildNumber, Instant started, Source source,
 			Map<String, String> properties) {
 		properties.put("build.name", source.getBuildName());
-		properties.put("build.number", buildNumber);
+		properties.put("build.number", buildNumber.toString());
 		properties.put("build.timestamp", Long.toString(started.toEpochMilli()));
 	}
 
@@ -296,7 +297,7 @@ public class OutHandler {
 		};
 	}
 
-	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, String buildNumber,
+	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, BuildNumber buildNumber,
 			Instant started, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
 		List<DeployableArtifact> artifacts = batchedArtifacts.values().stream().flatMap(List::stream)
 				.collect(Collectors.toList());

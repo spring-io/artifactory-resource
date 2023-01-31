@@ -83,11 +83,13 @@ class ApplicationIT {
 		Instant started = Instant.now();
 		deployArtifact(repository, buildNumber, started, file);
 		addBuildRun(buildRuns, buildNumber, started);
-		addBuildRun(buildRuns, generateBuildNumber() + "-2", Instant.now());
+		addBuildRun(buildRuns, "other-" + generateBuildNumber(), Instant.now());
 		getBuildRuns(buildRuns, buildNumber);
 		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
-		List<BuildRun> limitedResults = getServer().buildRuns("my-build", 1).getAll();
+		List<BuildRun> limitedResults = getServer().buildRuns("my-build", 1).getAll(null);
 		assertThat(limitedResults).hasSize(1);
+		List<BuildRun> prefixedResults = getServer().buildRuns("my-build").getAll("other-");
+		assertThat(prefixedResults).hasSize(1);
 	}
 
 	private String generateBuildNumber() {
@@ -122,19 +124,19 @@ class ApplicationIT {
 	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Instant started) {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
-		artifactoryBuildRuns.add(buildNumber, new ContinuousIntegrationAgent("Concourse", null), started,
-				"ci.example.com", null, Collections.singletonList(modules));
+		artifactoryBuildRuns.add(BuildNumber.of(buildNumber), new ContinuousIntegrationAgent("Concourse", null),
+				started, "ci.example.com", null, Collections.singletonList(modules));
 	}
 
 	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber) {
-		List<BuildRun> runs = artifactoryBuildRuns.getAll();
+		List<BuildRun> runs = artifactoryBuildRuns.getAll(null);
 		assertThat(runs).hasSizeGreaterThan(1);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo(buildNumber);
 	}
 
 	private void downloadUsingBuildRun(ArtifactoryRepository artifactoryRepository,
 			ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, File expectedContent) {
-		List<DeployedArtifact> results = artifactoryBuildRuns.getDeployedArtifacts(buildNumber);
+		List<DeployedArtifact> results = artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of(buildNumber));
 		File folder = this.tempDir;
 		for (DeployedArtifact result : results) {
 			artifactoryRepository.download(result, folder, true);

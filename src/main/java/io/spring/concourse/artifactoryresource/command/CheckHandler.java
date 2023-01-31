@@ -54,7 +54,8 @@ public class CheckHandler {
 	}
 
 	private List<Version> getCurrentVersion(Source source) {
-		List<BuildRun> all = buildRuns(source).getAll();
+		String buildNumberPrefix = source.getBuildNumberPrefix();
+		List<BuildRun> all = buildRuns(source).getAll(buildNumberPrefix);
 		return getLatest(all).stream().map(this::asVersion).toList();
 	}
 
@@ -64,11 +65,12 @@ public class CheckHandler {
 
 	private List<BuildRun> getRunsStartedOnOrAfter(Source source, Version version) {
 		ArtifactoryBuildRuns buildRuns = buildRuns(source);
+		String buildNumberPrefix = source.getBuildNumberPrefix();
 		if (version.getStarted() != null) {
-			List<BuildRun> startedOnOrAfter = buildRuns.getStartedOnOrAfter(version.getStarted());
-			return (!startedOnOrAfter.isEmpty()) ? startedOnOrAfter : getLatest(buildRuns.getAll());
+			List<BuildRun> startedOnOrAfter = buildRuns.getStartedOnOrAfter(buildNumberPrefix, version.getStarted());
+			return (!startedOnOrAfter.isEmpty()) ? startedOnOrAfter : getLatest(buildRuns.getAll(buildNumberPrefix));
 		}
-		List<BuildRun> all = buildRuns.getAll();
+		List<BuildRun> all = buildRuns.getAll(buildNumberPrefix);
 		BuildRun versionRun = findFirstOrNull(all, (run) -> isVersionMatch(run, version));
 		Predicate<BuildRun> greaterThanOrEqualToVersionRun = (run) -> run.compareTo(versionRun) >= 0;
 		return (versionRun != null) ? all.stream().filter(greaterThanOrEqualToVersionRun).toList() : getLatest(all);

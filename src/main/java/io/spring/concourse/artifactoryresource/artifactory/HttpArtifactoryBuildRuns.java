@@ -36,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -67,10 +68,10 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
+	public void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
-		add(new BuildInfo(this.buildName, buildNumber, continuousIntegrationAgent, started, buildUri, properties,
-				modules));
+		add(new BuildInfo(this.buildName, buildNumber.toString(), continuousIntegrationAgent, started, buildUri,
+				properties, modules));
 	}
 
 	private void add(BuildInfo buildInfo) {
@@ -83,21 +84,24 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public List<BuildRun> getAll() {
-		return getBuildRuns(null);
+	public List<BuildRun> getAll(String buildNumberPrefix) {
+		return getBuildRuns(buildNumberPrefix, null);
 	}
 
 	@Override
-	public List<BuildRun> getStartedOnOrAfter(Instant timestamp) {
+	public List<BuildRun> getStartedOnOrAfter(String buildNumberPrefix, Instant timestamp) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
-		return getBuildRuns(timestamp);
+		return getBuildRuns(buildNumberPrefix, timestamp);
 	}
 
-	private List<BuildRun> getBuildRuns(Instant startedOnOrAfter) {
+	private List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
 		Json critera = Json.of("name", this.buildName);
 		if (startedOnOrAfter != null) {
 			String formattedStartTime = TIMESTAMP_FORMATTER.format(startedOnOrAfter.atOffset(ZoneOffset.UTC));
 			critera.and("started", Json.of("$gte", formattedStartTime));
+		}
+		if (StringUtils.hasText(buildNumberPrefix)) {
+			critera.and("number", Json.of("$match", buildNumberPrefix + "*"));
 		}
 		String query = "builds.find(%s)".formatted(critera);
 		if (this.limit != null && this.limit > 0) {
@@ -107,8 +111,8 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public String getRawBuildInfo(String buildNumber) {
-		Assert.hasText(buildNumber, "BuildNumber must not be empty");
+	public String getRawBuildInfo(BuildNumber buildNumber) {
+		Assert.notNull(buildNumber, "BuildNumber must not be null");
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
 				.path("api/build/{buildName}/{buildNumber}").buildAndExpand(this.buildName, buildNumber);
 		URI uri = uriComponents.encode().toUri();
@@ -116,7 +120,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public List<DeployedArtifact> getDeployedArtifacts(String buildNumber) {
+	public List<DeployedArtifact> getDeployedArtifacts(BuildNumber buildNumber) {
 		Assert.notNull(buildNumber, "Build number must not be null");
 		Json criteria = Json.of("@build.name", this.buildName).and("@build.number", buildNumber);
 		String query = "items.find(%s)".formatted(criteria);

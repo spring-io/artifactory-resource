@@ -45,22 +45,32 @@ public class Source {
 
 	private final String buildName;
 
+	private final String buildNumberPrefix;
+
 	private final Integer checkLimit;
 
 	@JsonIgnore
 	private final Proxy proxy;
 
+	public Source(String uri, String username, String password, String buildName) {
+		this(uri, username, password, buildName, null, null, null, null);
+	}
+
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri, @JsonProperty("username") String username,
 			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName,
+			@JsonProperty("build_number_prefix") String buildNumberPrefix,
 			@JsonProperty("check_limit") Integer checkLimit, @JsonProperty("proxy_host") String proxyHost,
 			@JsonProperty("proxy_port") Integer proxyPort) {
 		Assert.hasText(uri, "URI must not be empty");
 		Assert.hasText(buildName, "Build Name must not be empty");
+		Assert.isTrue(buildNumberPrefix == null || !buildNumberPrefix.contains("*"),
+				"Build number prefix must not contain '*'");
 		this.uri = uri;
 		this.username = username;
 		this.password = password;
 		this.buildName = buildName;
+		this.buildNumberPrefix = buildNumberPrefix;
 		this.checkLimit = checkLimit;
 		this.proxy = (StringUtils.hasText(proxyHost)) ? createProxy(proxyHost, proxyPort) : null;
 	}
@@ -84,6 +94,10 @@ public class Source {
 
 	public String getBuildName() {
 		return this.buildName;
+	}
+
+	public String getBuildNumberPrefix() {
+		return this.buildNumberPrefix;
 	}
 
 	public Integer getCheckLimit() {

@@ -43,7 +43,7 @@ public interface ArtifactoryBuildRuns {
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	default void add(String buildNumber, Instant started, String buildUri, Map<String, String> properties,
+	default void add(BuildNumber buildNumber, Instant started, String buildUri, Map<String, String> properties,
 			List<BuildModule> modules) {
 		add(buildNumber, null, started, buildUri, properties, modules);
 	}
@@ -57,28 +57,30 @@ public interface ArtifactoryBuildRuns {
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	void add(String buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
+	void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules);
 
 	/**
 	 * Return all previous build runs.
+	 * @param buildNumberPrefix an optional build number prefix
 	 * @return the build runs
 	 */
-	List<BuildRun> getAll();
+	List<BuildRun> getAll(String buildNumberPrefix);
 
 	/**
 	 * Return all builds started on or after the given time.
+	 * @param buildNumberPrefix an optional build number prefix
 	 * @param timestamp the started on or after timestamp
 	 * @return the build runs started after the time
 	 */
-	List<BuildRun> getStartedOnOrAfter(Instant timestamp);
+	List<BuildRun> getStartedOnOrAfter(String buildNumberPrefix, Instant timestamp);
 
 	/**
 	 * Return a string containing the build-info JSON as stored on the server.
 	 * @param buildNumber the build number
 	 * @return a string containing the build-info JSON
 	 */
-	String getRawBuildInfo(String buildNumber);
+	String getRawBuildInfo(BuildNumber buildNumber);
 
 	/**
 	 * Return all artifacts that were deployed for the specified build run.
@@ -87,7 +89,7 @@ public interface ArtifactoryBuildRuns {
 	 */
 	default List<DeployedArtifact> getDeployedArtifacts(BuildRun buildRun) {
 		Assert.notNull(buildRun, "BuildRun must not be null");
-		return getDeployedArtifacts(buildRun.getBuildNumber());
+		return getDeployedArtifacts(BuildNumber.of(buildRun.getBuildNumber()));
 	}
 
 	/**
@@ -95,6 +97,6 @@ public interface ArtifactoryBuildRuns {
 	 * @param buildNumber the build number
 	 * @return the deployed artifacts
 	 */
-	List<DeployedArtifact> getDeployedArtifacts(String buildNumber);
+	List<DeployedArtifact> getDeployedArtifacts(BuildNumber buildNumber);
 
 }

@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest;
 import io.spring.concourse.artifactoryresource.command.payload.InRequest.Params;
@@ -71,7 +72,7 @@ public class InHandler {
 	public InResponse handle(InRequest request, Directory directory) {
 		Source source = request.getSource();
 		Version version = request.getVersion();
-		String buildNumber = version.getBuildNumber();
+		BuildNumber buildNumber = BuildNumber.of(version.getBuildNumber());
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());

@@ -44,32 +44,32 @@ class SourceTests {
 
 	@Test
 	void createWhenUriIsEmptyThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("", "username", "password", "my-build", null, null, null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build"))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
 	void createWhenUsernameIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "", "password", "my-build", null, null, null);
+		new Source("https://repo.example.com", "", "password", "my-build");
 	}
 
 	@Test
 	void createWhenPasswordIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "username", "", "my-build", null, null, null);
+		new Source("https://repo.example.com", "username", "", "my-build");
 	}
 
 	@Test
 	void createWhenBuildNameIsEmptyThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", "", null, null, null))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new Source("https://repo.example.com", "username", "password", "", null, null, null, null))
 				.withMessage("Build Name must not be empty");
 	}
 
 	@Test
 	void createWhenHasProxyHostWithoutProxyPortThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Source("https://repo.example.com", "username",
-				"password", "my-build", null, "proxy.example.com", null)).withMessage("Proxy port must be provided");
+				"password", "my-build", null, null, "proxy.example.com", null))
+				.withMessage("Proxy port must be provided");
 	}
 
 	@Test
@@ -79,6 +79,7 @@ class SourceTests {
 		assertThat(source.getUsername()).isEqualTo("admin");
 		assertThat(source.getPassword()).isEqualTo("password");
 		assertThat(source.getBuildName()).isEqualTo("my-build");
+		assertThat(source.getBuildNumberPrefix()).isEqualTo("main-");
 		assertThat(source.getCheckLimit()).isEqualTo(1);
 	}
 

@@ -30,6 +30,7 @@ import io.spring.concourse.artifactoryresource.artifactory.Artifactory;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryBuildRuns;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository;
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
+import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
@@ -150,7 +151,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("2000"), any(), any(), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("2000")), any(), any(), any(), any());
 	}
 
 	@Test
@@ -159,7 +160,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), any(), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), any(), any(), any());
 		verifyNoInteractions(this.buildNumberGenerator);
 	}
 
@@ -237,8 +238,8 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), eq("https://ci.example.com/1234"), any(),
-				this.modulesCaptor.capture());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
+				any(), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -256,7 +257,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), eq("https://ci.example.com/1234"),
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
 				this.propertiesCaptor.capture(), any());
 		assertThat(this.propertiesCaptor.getValue()).containsExactly(entry("one", "value1"), entry("two", "value2"));
 	}
@@ -283,8 +284,8 @@ class OutHandlerTests {
 		checksumFiles.add(new File(directory.getSubDirectory("folder").getFile(), "foo.jar.sha512"));
 		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), eq("https://ci.example.com/1234"), any(),
-				this.modulesCaptor.capture());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
+				any(), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -323,8 +324,8 @@ class OutHandlerTests {
 		metadataFiles.add(new File(directory.getSubDirectory("folder").getFile(), metadataFile));
 		configureMockScanner(directory, metadataFiles);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq("1234"), any(), eq("https://ci.example.com/1234"), any(),
-				this.modulesCaptor.capture());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
+				any(), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		return buildModules;
 	}
@@ -410,7 +411,7 @@ class OutHandlerTests {
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			String buildProperties, boolean stripSnapshotTimestamps, boolean disableChecksumUploads,
 			List<ArtifactSet> artifactSet, int threads, String signingKey, String signingPassphrase) {
-		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", null, null, null),
+		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", buildProperties, stripSnapshotTimestamps, disableChecksumUploads,
 						artifactSet, threads, signingKey, signingPassphrase));
