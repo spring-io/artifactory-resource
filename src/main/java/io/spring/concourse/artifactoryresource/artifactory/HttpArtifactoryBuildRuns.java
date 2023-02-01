@@ -31,6 +31,8 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousInt
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactsResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.SearchQueryResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
@@ -52,6 +54,8 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
 			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
+	private static final Logger logger = LoggerFactory.getLogger(HttpArtifactoryBuildRuns.class);
+
 	private final RestTemplate restTemplate;
 
 	private final String uri;
@@ -70,6 +74,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
+		logger.debug("Adding {} from CI agent {}", buildNumber, continuousIntegrationAgent);
 		add(new BuildInfo(this.buildName, buildNumber.toString(), continuousIntegrationAgent, started, buildUri,
 				properties, modules));
 	}
@@ -95,6 +100,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	private List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
+		logger.debug("Getting build runs with prefix {} started on or after {}", buildNumberPrefix, startedOnOrAfter);
 		Json critera = Json.of("name", this.buildName);
 		if (startedOnOrAfter != null) {
 			String formattedStartTime = TIMESTAMP_FORMATTER.format(startedOnOrAfter.atOffset(ZoneOffset.UTC));
@@ -112,6 +118,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public String getRawBuildInfo(BuildNumber buildNumber) {
+		logger.debug("Getting raw build info for {}", buildNumber);
 		Assert.notNull(buildNumber, "BuildNumber must not be null");
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
 				.path("api/build/{buildName}/{buildNumber}").buildAndExpand(this.buildName, buildNumber);
@@ -121,6 +128,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public List<DeployedArtifact> getDeployedArtifacts(BuildNumber buildNumber) {
+		logger.debug("Getting deployed artifacts for {}", buildNumber);
 		Assert.notNull(buildNumber, "Build number must not be null");
 		Json criteria = Json.of("@build.name", this.buildName).and("@build.number", buildNumber);
 		String query = "items.find(%s)".formatted(criteria);
@@ -128,6 +136,7 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	private <T extends SearchQueryResponse<?>> T search(String query, Class<T> responseType) {
+		logger.debug("Searching with AQL {}", query);
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").build().encode().toUri();
 		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN).body(query);
 		return this.restTemplate.exchange(request, responseType).getBody();

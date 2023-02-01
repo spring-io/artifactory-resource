@@ -111,7 +111,7 @@ public class Source {
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName)
-				.append("checkLimit", this.checkLimit);
+				.append("buildNumberPrefix", this.buildNumberPrefix).append("checkLimit", this.checkLimit);
 		if (this.proxy != null) {
 			creator.append("proxy", this.proxy);
 		}

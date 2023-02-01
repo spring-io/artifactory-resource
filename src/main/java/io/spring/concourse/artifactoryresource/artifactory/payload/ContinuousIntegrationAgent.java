@@ -48,4 +48,9 @@ public class ContinuousIntegrationAgent {
 		return this.version;
 	}
 
+	@Override
+	public String toString() {
+		return this.name + ":" + this.version;
+	}
+
 }
