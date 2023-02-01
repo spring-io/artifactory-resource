@@ -12,8 +12,24 @@ From this directory, run:
 $ docker-compose up
 ----
 
-This should start containers for Concourse and Artifactory.
+This should start containers for Concourse and Artifactory as well as a Docker registry.
 You should find that Concourse is running at http://127.0.0.1:8080[127.0.0.1:8080] and Artifactory at http://127.0.0.1:8081/artifactory[127.0.0.1:8081/artifactory].
+The registry should be running on port 5000.
+
+
+=== Push artifactory-resource Image
+You need to push the artifactory-resource image into the container registry.
+If you want a recent CI build you can do the following:
+
+----
+$ docker pull springio/artifactory-resource:{version}
+$ docker tag springio/artifactory-resource:{version} localhost:5000/artifactory-resource
+$ docker push localhost:5000/artifactory-resource
+----
+
+You can also build the project locally and push the image.
+
+
 
 === Deploy the sample pipeline
 To deploy the sample pipeline first http://127.0.0.1:8080[download and install fly] then run the following:
@@ -26,10 +42,12 @@ $ fly --target sample sync
 You should now be able to deploy the pipeline with:
 
 ----
-$ fly --target sample set-pipeline -p sample -c simple/pipeline.yml -l params.yml
+$ fly --target sample set-pipeline -p sample -c simple/pipeline.yml
 ----
 
 If you go back to http://127.0.0.1:8080[127.0.0.1:8080] and login with `admin`/`admin` you should see the pipeline.
+
+
 
 === Unpause and trigger the job
 The newly deployed pipeline will be paused, so you'll either need to unpause it from the web UI or run:
@@ -43,6 +61,8 @@ When the pipeline is active, you can manually trigger the `build` job.
 ----
 $ fly --target sample trigger-job -j sample/build
 ----
+
+
 
 === Inspect Artifactory
 Once the job has finished you can http://127.0.0.1:8081/artifactory[go back to Artifactory] and login with `admin`/`password`.

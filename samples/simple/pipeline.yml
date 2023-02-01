@@ -1,7 +1,10 @@
 resource_types:
   - name: artifactory-resource
-    type: docker-image
-    source: {repository: springio/artifactory-resource, tag: ${nextVersion}}
+    type: registry-image
+    source:
+      repository: registry:5000/artifactory-resource
+      tag: latest
+      insecure: true
 
 resources:
   - name: git-repo
@@ -12,9 +15,9 @@ resources:
   - name: artifactory
     type: artifactory-resource
     source:
-      uri: ((sample-artifactory-uri))
-      username: ((sample-artifactory-username))
-      password: ((sample-artifactory-password))
+      uri: http://artifactory:8081/artifactory
+      username: admin
+      password: password
       build_name: test-build
 
 jobs:
@@ -27,8 +30,9 @@ jobs:
         params:
           repo: example-repo-local
           folder: test
-          build_uri: "((sample-concourse-uri))/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+          build_uri: "http://localhost:8080/artifactory/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
           build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+          debug: true
   - name: test
     plan:
       - get: artifactory
