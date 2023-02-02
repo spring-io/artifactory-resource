@@ -220,13 +220,13 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 		private boolean hasPrefix(BuildRun buildRun, String buildNumberPrefix) {
 			boolean result = !StringUtils.hasText(buildNumberPrefix)
 					|| buildRun.getBuildNumber().startsWith(buildNumberPrefix);
-			logger.debug("Checked if {} starts with {} [{}]", buildRun, buildNumberPrefix, result);
+			logger.trace("Checked if {} starts with {} [{}]", buildRun, buildNumberPrefix, result);
 			return result;
 		}
 
 		private boolean isStartedOnOrAfter(BuildRun buildRun, Instant startedOnOrAfter) {
 			boolean result = startedOnOrAfter == null || buildRun.getStarted().compareTo(startedOnOrAfter) >= 0;
-			logger.debug("Checked if {} was started on or after {} [{}]", buildRun, startedOnOrAfter, result);
+			logger.trace("Checked if {} was started on or after {} [{}]", buildRun, startedOnOrAfter, result);
 			return result;
 		}
 
