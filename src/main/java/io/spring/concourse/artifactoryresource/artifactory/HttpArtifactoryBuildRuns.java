@@ -41,7 +41,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -192,13 +191,8 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 			UriComponents uriComponents = UriComponentsBuilder.fromUriString(HttpArtifactoryBuildRuns.this.uri)
 					.path("api/build/{buildName}").buildAndExpand(HttpArtifactoryBuildRuns.this.buildName);
 			URI uri = uriComponents.encode().toUri();
-			try {
-				List<BuildRun> all = restTemplate.getForObject(uri, BuildRunsRestResponse.class).getBuildsRuns();
-				return filterAndLimit(all, buildNumberPrefix, startedOnOrAfter);
-			}
-			catch (HttpClientErrorException ex) {
-				return Collections.emptyList();
-			}
+			List<BuildRun> all = restTemplate.getForObject(uri, BuildRunsRestResponse.class).getBuildsRuns();
+			return filterAndLimit(all, buildNumberPrefix, startedOnOrAfter);
 		}
 
 		private List<BuildRun> filterAndLimit(List<BuildRun> all, String buildNumberPrefix, Instant startedOnOrAfter) {
