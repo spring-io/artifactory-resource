@@ -217,11 +217,16 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 		}
 
 		private boolean hasPrefix(BuildRun buildRun, String buildNumberPrefix) {
-			return !StringUtils.hasText(buildNumberPrefix) || buildRun.getBuildNumber().startsWith(buildNumberPrefix);
+			boolean result = !StringUtils.hasText(buildNumberPrefix)
+					|| buildRun.getBuildNumber().startsWith(buildNumberPrefix);
+			logger.debug("Checked if {} starts with {} [{}]", buildRun, buildNumberPrefix, result);
+			return result;
 		}
 
 		private boolean isStartedOnOrAfter(BuildRun buildRun, Instant startedOnOrAfter) {
-			return startedOnOrAfter == null || buildRun.getStarted().compareTo(startedOnOrAfter) >= 0;
+			boolean result = startedOnOrAfter == null || buildRun.getStarted().compareTo(startedOnOrAfter) >= 0;
+			logger.debug("Checked if {} was started on or after {} [{}]", buildRun, startedOnOrAfter, result);
+			return result;
 		}
 
 	}
