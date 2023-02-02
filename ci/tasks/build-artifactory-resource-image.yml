@@ -7,6 +7,8 @@ image_resource:
     password: ((docker-hub-password))
     repository: concourse/oci-build-task
     tag: '0.11.0'
+    registry_mirror:
+      host: ""
 inputs:
 - name: git-repo
 - name: built-artifact
