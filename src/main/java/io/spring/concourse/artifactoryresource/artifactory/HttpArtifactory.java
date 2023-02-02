@@ -51,12 +51,13 @@ public class HttpArtifactory implements Artifactory {
 	}
 
 	@Override
-	public ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay) {
+	public ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay,
+			Boolean admin) {
 		uri = (!uri.endsWith("/")) ? uri + '/' : uri;
 		RestTemplateBuilder restTemplateBuilder = this.restTemplateBuilder
 				.requestFactory(getRequestFactorySupplier(username, password, proxy))
 				.setConnectTimeout(Duration.ofMinutes(1)).setReadTimeout(Duration.ofMinutes(5));
-		return new HttpArtifactoryServer(uri, restTemplateBuilder, retryDelay);
+		return new HttpArtifactoryServer(restTemplateBuilder.build(), uri, retryDelay, admin);
 	}
 
 	private Supplier<ClientHttpRequestFactory> getRequestFactorySupplier(String username, String password,

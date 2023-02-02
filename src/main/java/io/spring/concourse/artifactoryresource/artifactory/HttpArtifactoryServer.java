@@ -16,10 +16,12 @@
 
 package io.spring.concourse.artifactoryresource.artifactory;
 
+import java.net.URI;
 import java.time.Duration;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Default {@link ArtifactoryServer} implementation communicating over HTTP.
@@ -35,10 +37,25 @@ public class HttpArtifactoryServer implements ArtifactoryServer {
 
 	private final Duration retryDelay;
 
-	public HttpArtifactoryServer(String uri, RestTemplateBuilder restTemplateBuilder, Duration retryDelay) {
+	private final boolean admin;
+
+	HttpArtifactoryServer(RestTemplate restTemplate, String uri, Duration retryDelay, Boolean admin) {
 		this.uri = uri;
-		this.restTemplate = restTemplateBuilder.build();
+		this.restTemplate = restTemplate;
 		this.retryDelay = retryDelay;
+		this.admin = (admin != null) ? admin : detectAdmin();
+	}
+
+	private boolean detectAdmin() {
+		// Check system/service_id which requires admin rights
+		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("api/system/service_id").build().encode().toUri();
+		try {
+			this.restTemplate.headForHeaders(uri);
+		}
+		catch (HttpClientErrorException.Forbidden ex) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -48,7 +65,11 @@ public class HttpArtifactoryServer implements ArtifactoryServer {
 
 	@Override
 	public ArtifactoryBuildRuns buildRuns(String buildName, Integer limit) {
-		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri, buildName, limit);
+		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri, buildName, limit, this.admin);
+	}
+
+	boolean isAdmin() {
+		return this.admin;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,21 @@ public interface Artifactory {
 	 * @param retryDelay the delay between retries
 	 * @return an {@link ArtifactoryServer}
 	 */
-	ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay);
+	default ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay) {
+		return server(uri, username, password, proxy, retryDelay, null);
+	}
+
+	/**
+	 * Return an {@link ArtifactoryServer} for the specified connection details.
+	 * @param uri the server URI
+	 * @param username the connection username
+	 * @param password the connection password
+	 * @param proxy the proxy to use or {@code null}
+	 * @param retryDelay the delay between retries
+	 * @param admin if the user has admin rights or {@code null} to detect
+	 * @return an {@link ArtifactoryServer}
+	 */
+	ArtifactoryServer server(String uri, String username, String password, Proxy proxy, Duration retryDelay,
+			Boolean admin);
 
 }

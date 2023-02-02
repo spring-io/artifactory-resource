@@ -26,25 +26,25 @@ import org.springframework.boot.test.json.JacksonTester;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BuildRunsResponse}.
+ * Tests for {@link BuildRunsSearchQueryResponse}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
 @JsonTest
-public class BuildRunsResponseTests {
+public class BuildRunsSearchQueryResponseTests {
 
 	@Autowired
-	private JacksonTester<BuildRunsResponse> json;
+	private JacksonTester<BuildRunsSearchQueryResponse> json;
 
 	@Test
 	public void readDeserializesJson() throws Exception {
-		BuildRunsResponse response = this.json.readObject("build-runs-response.json");
+		BuildRunsSearchQueryResponse response = this.json.readObject("build-runs-aql-response.json");
 		assertThat(response.getResults()).hasSize(2);
-		assertThat(response.getResults().get(0).getBuildNumber()).isEqualTo("1234");
+		assertThat(response.getResults().get(0).getBuildNumber()).isEqualTo("my-1234");
 		assertThat(response.getResults().get(0).getStarted())
 				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893Z"));
-		assertThat(response.getResults().get(1).getBuildNumber()).isEqualTo("5678");
+		assertThat(response.getResults().get(1).getBuildNumber()).isEqualTo("my-5678");
 		assertThat(response.getResults().get(1).getStarted())
 				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z"));
 	}

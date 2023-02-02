@@ -76,7 +76,7 @@ class ApplicationIT {
 
 	@Test
 	void integrationTest() throws Exception {
-		String buildNumber = generateBuildNumber();
+		String buildNumber = "main-" + generateBuildNumber();
 		File file = createLargeFile();
 		ArtifactoryRepository repository = getServer().repository("example-repo-local");
 		ArtifactoryBuildRuns buildRuns = getServer().buildRuns("my-build");
@@ -85,6 +85,7 @@ class ApplicationIT {
 		addBuildRun(buildRuns, buildNumber, started);
 		addBuildRun(buildRuns, "other-" + generateBuildNumber(), Instant.now());
 		getBuildRuns(buildRuns, buildNumber);
+		getBuildRuns(getServer(false).buildRuns("my-build"), buildNumber);
 		downloadUsingBuildRun(repository, buildRuns, buildNumber, file);
 		List<BuildRun> limitedResults = getServer().buildRuns("my-build", 1).getAll(null);
 		assertThat(limitedResults).hasSize(1);
@@ -129,8 +130,7 @@ class ApplicationIT {
 	}
 
 	private void getBuildRuns(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber) {
-		List<BuildRun> runs = artifactoryBuildRuns.getAll(null);
-		assertThat(runs).hasSizeGreaterThan(1);
+		List<BuildRun> runs = artifactoryBuildRuns.getAll("main-");
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo(buildNumber);
 	}
 
@@ -148,8 +148,12 @@ class ApplicationIT {
 	}
 
 	private ArtifactoryServer getServer() {
+		return getServer(null);
+	}
+
+	private ArtifactoryServer getServer(Boolean admin) {
 		String uri = "http://%s:%s/artifactory".formatted(container.getHost(), container.getFirstMappedPort());
-		return this.artifactory.server(uri, "admin", "password", null);
+		return this.artifactory.server(uri, "admin", "password", null, null, admin);
 	}
 
 }

@@ -18,8 +18,6 @@ package io.spring.concourse.artifactoryresource.artifactory.payload;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.concourse.artifactoryresource.jackson.JsonIsoDateFormat;
 
 import org.springframework.core.style.ToStringCreator;
@@ -38,8 +36,7 @@ public class BuildRun implements Comparable<BuildRun> {
 	@JsonIsoDateFormat
 	private final Instant started;
 
-	@JsonCreator
-	public BuildRun(@JsonProperty("build.number") String buildNumber, @JsonProperty("build.started") Instant started) {
+	public BuildRun(String buildNumber, Instant started) {
 		this.buildNumber = buildNumber;
 		this.started = started;
 	}

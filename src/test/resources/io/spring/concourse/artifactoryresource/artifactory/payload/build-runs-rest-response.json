@@ -1,0 +1,17 @@
+{
+	"uri": "http://localhost:8081/artifactory/api/build/my-build",
+	"buildsNumbers": [
+		{
+			"uri": "/my-1234",
+			"started": "2014-09-28T12:00:19.893+0000"
+		},
+		{
+			"uri": "/my-5678",
+			"started": "2014-09-30T12:00:19.893+0000"
+		},
+		{
+			"uri": "/other-5678",
+			"started": "2014-09-31T12:00:19.893+0000"
+		}
+	]
+}

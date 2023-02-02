@@ -33,7 +33,6 @@ import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtif
 import io.spring.concourse.artifactoryresource.util.ArtifactoryDateFormat;
 import org.json.JSONException;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -64,6 +63,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest(HttpArtifactory.class)
 class HttpArtifactoryBuildRunsTests {
 
+	private static final String URI = "https://repo.example.com";
+
 	@Autowired
 	private MockRestServiceServer server;
 
@@ -73,16 +74,6 @@ class HttpArtifactoryBuildRunsTests {
 	@Autowired
 	private Artifactory artifactory;
 
-	private ArtifactoryServer artifactoryServer;
-
-	private ArtifactoryBuildRuns artifactoryBuildRuns;
-
-	@BeforeEach
-	void setup() {
-		this.artifactoryServer = this.artifactory.server("https://repo.example.com", "admin", "password", null);
-		this.artifactoryBuildRuns = this.artifactoryServer.buildRuns("my-build");
-	}
-
 	@AfterEach
 	void tearDown() {
 		this.customizer.getExpectationManagers().clear();
@@ -90,6 +81,7 @@ class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	void addAddsBuildInfo() {
+		ArtifactoryBuildRuns buildRuns = buildRuns();
 		this.server.expect(requestTo("https://repo.example.com/api/build")).andExpect(method(HttpMethod.PUT))
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
@@ -101,55 +93,91 @@ class HttpArtifactoryBuildRunsTests {
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
-		this.artifactoryBuildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties,
-				modules);
+		buildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties, modules);
 		this.server.verify();
 	}
 
 	@Test
-	void getAllWhenBuildDoesNotExistReturnsEmptyList() {
+	void getAllWhenAdminAndBuildDoesNotExistReturnsEmptyList() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(withSuccess(
-						getResource("payload/build-runs-missing-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
+						getResource("payload/build-runs-aql-missing-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(0);
 	}
 
 	@Test
-	void getAllReturnsBuildRuns() {
-		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindAllBuildsQuery("my-build"))
-				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
-		assertThat(runs).hasSize(2);
-		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
-		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
+	void getAllWhenNonAdminAndBuildDoesNotExistReturnsEmptyList() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(false);
+		String url = "https://repo.example.com/api/build/my-build";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-missing-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
+		assertThat(runs).hasSize(0);
 	}
 
 	@Test
-	void getAllWhenHasLimitReturnsBuildRuns() {
-		this.artifactoryBuildRuns = this.artifactoryServer.buildRuns("my-build", 2);
+	void getAllWhenAdminReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andExpect(bodyWithContent(".limit(2)"))
-				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll(null);
+				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(
+						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
+		assertThat(runs).hasSize(2);
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-1234");
+		assertThat(runs.get(1).getBuildNumber()).isEqualTo("my-5678");
+	}
+
+	@Test
+	void getAllWhenNonAdminReturnsBuildRuns() {
+	}
+
+	@Test
+	void getAllWhenAdminAndHasLimitReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = artifactoryServer(true).buildRuns("my-build", 2);
+		String url = "https://repo.example.com/api/search/aql";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andExpect(bodyWithContent(".limit(2)")).andRespond(
+						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
 	}
 
 	@Test
-	void getAllWhenHasBuildNumberPrefixReturnsBuildRuns() {
+	void getAllWhenNonAdminAndHasLimitReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build", 2);
+		String url = "https://repo.example.com/api/build/my-build";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
+		assertThat(runs).hasSize(2);
+	}
+
+	@Test
+	void getAllWhenAdminAndHasBuildNumberPrefixReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithContent("\"number\" : {\"$match\" : \"my-*\"}"))
-				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getAll("my-");
+				.andExpect(bodyWithContent("\"number\" : {\"$match\" : \"my-*\"}")).andRespond(
+						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll("my-");
+		assertThat(runs).hasSize(2);
+	}
+
+	@Test
+	void getAllWhenNonAdminAndHasBuildNumberPrefixReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(false);
+		String url = "https://repo.example.com/api/build/my-build";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll("my-");
 		assertThat(runs).hasSize(2);
 	}
 
@@ -159,17 +187,31 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	void getStartedOnOrAfterReturnsBuilds() {
+	void getStartedOnOrAfterWhenAdminReturnsBuilds() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
 		String started = "2014-09-30T12:00:19.893Z";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started))
-				.andRespond(withSuccess(getResource("payload/build-runs-response.json"), MediaType.APPLICATION_JSON));
-		List<BuildRun> runs = this.artifactoryBuildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
+				.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started)).andRespond(
+						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
 		assertThat(runs).hasSize(2);
-		assertThat(runs.get(0).getBuildNumber()).isEqualTo("1234");
-		assertThat(runs.get(1).getBuildNumber()).isEqualTo("5678");
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-1234");
+		assertThat(runs.get(1).getBuildNumber()).isEqualTo("my-5678");
+	}
+
+	@Test
+	void getStartedOnOrAfterWhenNonAdminReturnsBuilds() {
+		ArtifactoryBuildRuns buildRuns = buildRuns(false);
+		String url = "https://repo.example.com/api/build/my-build";
+		String started = "2014-09-30T12:00:19.893Z";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
+		assertThat(runs).hasSize(2);
+		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-5678");
+		assertThat(runs.get(1).getBuildNumber()).isEqualTo("other-5678");
 	}
 
 	private RequestMatcher bodyWithFindBuildsStartedOnOrAfterQuery(String buildName, String started) {
@@ -179,21 +221,23 @@ class HttpArtifactoryBuildRunsTests {
 
 	@Test
 	void getRawBuildInfoReturnsBuildInfo() {
+		ArtifactoryBuildRuns buildRuns = buildRuns();
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
 				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
-		String buildInfo = this.artifactoryBuildRuns.getRawBuildInfo(BuildNumber.of("5678"));
+		String buildInfo = buildRuns.getRawBuildInfo(BuildNumber.of("5678"));
 		assertThat(buildInfo).isNotEmpty().contains("my-build");
 	}
 
 	@Test
 	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() {
+		ArtifactoryBuildRuns buildRuns = buildRuns();
 		String url = "https://repo.example.com/api/search/aql";
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
 				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
 				.andExpect(bodyWithFindItemsQuery("my-build", "1234"))
 				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
-		List<DeployedArtifact> artifacts = this.artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of("1234"));
+		List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(BuildNumber.of("1234"));
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.get(0).getModifiedBy()).isEqualTo("spring");
 		this.server.verify();
@@ -243,6 +287,18 @@ class HttpArtifactoryBuildRunsTests {
 
 	private Resource getResource(String path) {
 		return new ClassPathResource(path, getClass());
+	}
+
+	private ArtifactoryBuildRuns buildRuns() {
+		return buildRuns(false);
+	}
+
+	private ArtifactoryBuildRuns buildRuns(boolean admin) {
+		return artifactoryServer(admin).buildRuns("my-build");
+	}
+
+	private ArtifactoryServer artifactoryServer(boolean admin) {
+		return this.artifactory.server(URI, "admin", "password", null, null, admin);
 	}
 
 }

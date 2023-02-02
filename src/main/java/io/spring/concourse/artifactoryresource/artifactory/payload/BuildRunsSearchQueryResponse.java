@@ -16,18 +16,32 @@
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
 
+import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsSearchQueryResponse.AqlBuildRun;
+
 /**
- * A single response from an Artifactory Query Language request for deployed artifacts.
+ * A single response from an Artifactory Query Language request for build runs.
  *
- * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class DeployedArtifactsResponse extends SearchQueryResponse<DeployedArtifact> {
+public class BuildRunsSearchQueryResponse extends SearchQueryResponse<AqlBuildRun> {
 
-	public DeployedArtifactsResponse(List<DeployedArtifact> results, Range range) {
+	public BuildRunsSearchQueryResponse(List<AqlBuildRun> results, Range range) {
 		super(results, range);
+	}
+
+	public static class AqlBuildRun extends BuildRun {
+
+		@JsonCreator
+		public AqlBuildRun(@JsonProperty("build.number") String buildNumber,
+				@JsonProperty("build.started") Instant started) {
+			super(buildNumber, started);
+		}
+
 	}
 
 }

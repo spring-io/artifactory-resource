@@ -26,16 +26,16 @@ import org.springframework.boot.test.json.JacksonTester;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DeployedArtifactsResponse}.
+ * Tests for {@link DeployedArtifactsSearchQueryResponse}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
 @JsonTest
-public class DeployedArtifactsResponseTests {
+public class DeployedArtifactsSearchQueryResponseTests {
 
 	@Autowired
-	private JacksonTester<DeployedArtifactsResponse> json;
+	private JacksonTester<DeployedArtifactsSearchQueryResponse> json;
 
 	@Test
 	public void readDeserializesJson() throws Exception {

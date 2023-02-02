@@ -44,6 +44,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HttpArtifactoryTests {
 
+	/**
+	 *
+	 */
+	private static final String URI = "https://example.com";
+
 	private RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	private HttpArtifactory artifactory;
@@ -55,7 +60,7 @@ class HttpArtifactoryTests {
 
 	@Test
 	void serverWhenNoUsernameReturnsServer() {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null, null);
+		ArtifactoryServer server = this.artifactory.server(URI, null, null, null, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(restTemplate, "interceptors");
 		assertThat(interceptors.size()).isEqualTo(0);
@@ -63,7 +68,7 @@ class HttpArtifactoryTests {
 
 	@Test
 	void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password", null);
+		ArtifactoryServer server = this.artifactory.server(URI, "admin", "password", null, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
 				HttpMethod.GET);
@@ -73,7 +78,7 @@ class HttpArtifactoryTests {
 	@Test
 	void serverWithProxyReturnsServerWithProxy() throws Exception {
 		Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080));
-		ArtifactoryServer server = this.artifactory.server("https://example.com", "admin", "password", proxy);
+		ArtifactoryServer server = this.artifactory.server(URI, "admin", "password", proxy, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
 				HttpMethod.GET);
@@ -83,7 +88,7 @@ class HttpArtifactoryTests {
 
 	@Test // gh-50
 	void serverDoesNotBuffer() {
-		ArtifactoryServer server = this.artifactory.server("https://example.com", null, null, null);
+		ArtifactoryServer server = this.artifactory.server(URI, null, null, null, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
 				.getRequestFactory();

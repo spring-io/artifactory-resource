@@ -20,16 +20,18 @@ import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
-import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsRestResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRunsSearchQueryResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifact;
-import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactsResponse;
+import io.spring.concourse.artifactoryresource.artifactory.payload.DeployedArtifactsSearchQueryResponse;
 import io.spring.concourse.artifactoryresource.artifactory.payload.SearchQueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -49,7 +52,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
+public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
 			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
@@ -64,11 +67,16 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private final Integer limit;
 
-	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName, Integer limit) {
+	private final BuildRunsProvider buildRunsProvider;
+
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName, Integer limit,
+			boolean admin) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.buildName = buildName;
 		this.limit = limit;
+		this.buildRunsProvider = (!admin) ? new RestBuildRunsProvider()
+				: new ArtifactoryQueryLanguageBuildRunsProvider();
 	}
 
 	@Override
@@ -90,30 +98,13 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	@Override
 	public List<BuildRun> getAll(String buildNumberPrefix) {
-		return getBuildRuns(buildNumberPrefix, null);
+		return this.buildRunsProvider.getBuildRuns(buildNumberPrefix, null);
 	}
 
 	@Override
 	public List<BuildRun> getStartedOnOrAfter(String buildNumberPrefix, Instant timestamp) {
 		Assert.notNull(timestamp, "Timestamp must not be null");
-		return getBuildRuns(buildNumberPrefix, timestamp);
-	}
-
-	private List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
-		logger.debug("Getting build runs with prefix {} started on or after {}", buildNumberPrefix, startedOnOrAfter);
-		Json critera = Json.of("name", this.buildName);
-		if (startedOnOrAfter != null) {
-			String formattedStartTime = TIMESTAMP_FORMATTER.format(startedOnOrAfter.atOffset(ZoneOffset.UTC));
-			critera.and("started", Json.of("$gte", formattedStartTime));
-		}
-		if (StringUtils.hasText(buildNumberPrefix)) {
-			critera.and("number", Json.of("$match", buildNumberPrefix + "*"));
-		}
-		String query = "builds.find(%s)".formatted(critera);
-		if (this.limit != null && this.limit > 0) {
-			query += (".limit(%s)".formatted(this.limit));
-		}
-		return search(query, BuildRunsResponse.class).getResults();
+		return this.buildRunsProvider.getBuildRuns(buildNumberPrefix, timestamp);
 	}
 
 	@Override
@@ -132,14 +123,110 @@ public class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 		Assert.notNull(buildNumber, "Build number must not be null");
 		Json criteria = Json.of("@build.name", this.buildName).and("@build.number", buildNumber);
 		String query = "items.find(%s)".formatted(criteria);
-		return search(query, DeployedArtifactsResponse.class).getResults();
+		return search(query, DeployedArtifactsSearchQueryResponse.class).getResults();
 	}
 
-	private <T extends SearchQueryResponse<?>> T search(String query, Class<T> responseType) {
+	protected <T extends SearchQueryResponse<?>> T search(String query, Class<T> responseType) {
 		logger.debug("Searching with AQL {}", query);
 		URI uri = UriComponentsBuilder.fromUriString(this.uri).path("/api/search/aql").build().encode().toUri();
 		RequestEntity<String> request = RequestEntity.post(uri).contentType(MediaType.TEXT_PLAIN).body(query);
 		return this.restTemplate.exchange(request, responseType).getBody();
+	}
+
+	/**
+	 * Strategy interface used to provide build runs. Allows us to switch to an optimal
+	 * AQL implementation if the user has admin rights.
+	 */
+	private interface BuildRunsProvider {
+
+		/**
+		 * Get build runs.
+		 * @param buildNumberPrefix the build number prefix or {@code null}
+		 * @param startedOnOrAfter the started on or after date or {@code null}
+		 * @return a list of build runs
+		 */
+		List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter);
+
+	}
+
+	/**
+	 * {@link BuildRunsProvider} backed by AQL that can be used when the user is an admin.
+	 */
+	private class ArtifactoryQueryLanguageBuildRunsProvider implements BuildRunsProvider {
+
+		@Override
+		public List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
+			String buildName = HttpArtifactoryBuildRuns.this.buildName;
+			Integer limit = HttpArtifactoryBuildRuns.this.limit;
+			logger.debug("Using AQL to get build runs with prefix {} started on or after {}", buildNumberPrefix,
+					startedOnOrAfter);
+			Json critera = Json.of("name", buildName);
+			if (startedOnOrAfter != null) {
+				String formattedStartTime = TIMESTAMP_FORMATTER.format(startedOnOrAfter.atOffset(ZoneOffset.UTC));
+				critera.and("started", Json.of("$gte", formattedStartTime));
+			}
+			if (StringUtils.hasText(buildNumberPrefix)) {
+				critera.and("number", Json.of("$match", buildNumberPrefix + "*"));
+			}
+			String query = "builds.find(%s)".formatted(critera);
+			if (limit != null && limit > 0) {
+				query += (".limit(%s)".formatted(limit));
+			}
+			BuildRunsSearchQueryResponse response = search(query, BuildRunsSearchQueryResponse.class);
+			return Collections.unmodifiableList(response.getResults());
+		}
+
+	}
+
+	/**
+	 * {@link BuildRunsProvider} backed by the standard REST API that can be used when the
+	 * user is not an admin.
+	 */
+	private class RestBuildRunsProvider implements BuildRunsProvider {
+
+		@Override
+		public List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
+			logger.debug("Using REST call to get build runs with prefix {} started on or after {}", buildNumberPrefix,
+					startedOnOrAfter);
+			RestTemplate restTemplate = HttpArtifactoryBuildRuns.this.restTemplate;
+			UriComponents uriComponents = UriComponentsBuilder.fromUriString(HttpArtifactoryBuildRuns.this.uri)
+					.path("api/build/{buildName}").buildAndExpand(HttpArtifactoryBuildRuns.this.buildName);
+			URI uri = uriComponents.encode().toUri();
+			try {
+				List<BuildRun> all = restTemplate.getForObject(uri, BuildRunsRestResponse.class).getBuildsRuns();
+				return filterAndLimit(all, buildNumberPrefix, startedOnOrAfter);
+			}
+			catch (HttpClientErrorException ex) {
+				return Collections.emptyList();
+			}
+		}
+
+		private List<BuildRun> filterAndLimit(List<BuildRun> all, String buildNumberPrefix, Instant startedOnOrAfter) {
+			List<BuildRun> result = limit(all);
+			if (buildNumberPrefix == null && startedOnOrAfter == null) {
+				return result;
+			}
+			return result.stream().filter((buildRun) -> hasPrefix(buildRun, buildNumberPrefix))
+					.filter((buildRun) -> isStartedOnOrAfter(buildRun, startedOnOrAfter)).toList();
+		}
+
+		private List<BuildRun> limit(List<BuildRun> all) {
+			Integer limit = HttpArtifactoryBuildRuns.this.limit;
+			if (limit == null || limit <= 0) {
+				return all;
+			}
+			logger.debug("Limiting build runs to {}", limit);
+			return all.stream().sorted().limit(limit).toList();
+		}
+
+		private boolean hasPrefix(BuildRun buildRun, String buildNumberPrefix) {
+			return !StringUtils.hasText(buildNumberPrefix) || buildRun.getBuildNumber().startsWith(buildNumberPrefix);
+		}
+
+		private boolean isStartedOnOrAfter(BuildRun buildRun, Instant startedOnOrAfter) {
+			return startedOnOrAfter == null || buildRun.getStarted().compareTo(startedOnOrAfter) >= 0;
+		}
+
 	}
 
 	/**
