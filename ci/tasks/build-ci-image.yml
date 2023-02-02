@@ -3,10 +3,10 @@ platform: linux
 image_resource:
   type: registry-image
   source:
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
     repository: concourse/oci-build-task
     tag: '0.11.0'
-    registry_mirror:
-      host: ((docker-hub-mirror))
 inputs:
 - name: ci-images-git-repo
 outputs:

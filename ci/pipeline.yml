@@ -1,11 +1,3 @@
-anchors:
-  registry-image-resource-source: &registry-image-resource-source
-    username: ((docker-hub-username))
-    password: ((docker-hub-password))
-    registry_mirror:
-      host: ((docker-hub-mirror))
-  docker-hub-mirror-vars: &docker-hub-mirror-vars
-    docker-hub-mirror: ((docker-hub-mirror))
 resources:
 - name: git-repo
   type: git
@@ -27,15 +19,17 @@ resources:
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
     repository: springci/artifactory-resource-ci
     tag: main
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
 - name: artifactory-resource-image
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
     repository: springio/artifactory-resource
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
 - name: github-release
   type: github-release
   icon: briefcase-download
@@ -57,7 +51,6 @@ jobs:
       image: ci-image
     vars:
       ci-image-name: ci-image
-      <<: *docker-hub-mirror-vars
   - put: ci-image
     params:
       image: ci-image/image.tar
@@ -78,8 +71,6 @@ jobs:
   - task: build-artifactory-resource-image
     privileged: true
     file: git-repo/ci/tasks/build-artifactory-resource-image.yml
-    vars:
-      <<: *docker-hub-mirror-vars
     output_mapping:
       image: artifactory-resource-image
   - put: artifactory-resource-image
@@ -102,14 +93,10 @@ jobs:
   - task: build-artifactory-resource-image
     privileged: true
     file: git-repo/ci/tasks/build-artifactory-resource-image.yml
-    vars:
-      <<: *docker-hub-mirror-vars
     output_mapping:
       image: artifactory-resource-image
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
-    vars:
-      <<: *docker-hub-mirror-vars
   - put: git-repo
     params:
       repository: release-git-repo
