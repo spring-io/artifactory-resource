@@ -6,13 +6,6 @@ anchors:
       host: ((docker-hub-mirror))
   docker-hub-mirror-vars: &docker-hub-mirror-vars
     docker-hub-mirror: ((docker-hub-mirror))
-resource_types:
-- name: registry-image
-  type: registry-image
-  source:
-    <<: *registry-image-resource-source
-    repository: concourse/registry-image-resource
-    tag: 1.7.1
 resources:
 - name: git-repo
   type: git
