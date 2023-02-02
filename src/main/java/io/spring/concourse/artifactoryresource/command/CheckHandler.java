@@ -62,12 +62,17 @@ public class CheckHandler {
 		logger.debug("Getting current version");
 		String buildNumberPrefix = source.getBuildNumberPrefix();
 		List<BuildRun> all = buildRuns(source).getAll(buildNumberPrefix);
-		return getLatest(all).stream().map(this::asVersion).toList();
+		List<Version> latest = getLatest(all).stream().map(this::asVersion).toList();
+		logger.debug("Found latest version {}", latest);
+		return latest;
 	}
 
 	private List<Version> getNewVersions(Source source, Version version) {
 		logger.debug("Getting new versions");
-		return getRunsStartedOnOrAfter(source, version).stream().sorted().map(this::asVersion).toList();
+		List<Version> newVersions = getRunsStartedOnOrAfter(source, version).stream().sorted().map(this::asVersion)
+				.toList();
+		logger.debug("Found new versions {}", newVersions);
+		return newVersions;
 	}
 
 	private List<BuildRun> getRunsStartedOnOrAfter(Source source, Version version) {
