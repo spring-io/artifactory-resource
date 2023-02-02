@@ -131,6 +131,16 @@ Returns a list of associated `build_numbers` ordered by start date.
 
 If the `build_number_prefix` is configured on `source`, the results will be restricted to only build numbers starting with that prefix.
 
+[NOTE]
+----
+Check operations for users without admin permissions need to download information for all build runs.
+Depending on how many builds have run, this might be a significant amount of data.
+The `check_limit` setting also can only be applied after data has been transfered if the user is not an admin.
+
+If you configure your resource with an admin user, then Artifactory Query Language based queries are used which are much more efficient.
+----
+
+
 
 === `in`: Fetches build artifacts
 Fetches artifacts for the build run to the destination folder.
