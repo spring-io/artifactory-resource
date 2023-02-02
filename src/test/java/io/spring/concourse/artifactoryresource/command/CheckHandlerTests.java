@@ -105,7 +105,7 @@ class CheckHandlerTests {
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, VERSION2);
 		CheckResponse response = this.handler.handle(request);
-		assertThat(response.getVersions()).containsExactly(VERSION2, VERSION3, VERSION4);
+		assertThat(response.getVersions()).containsExactly(VERSION4, VERSION3, VERSION2);
 	}
 
 	@Test
@@ -147,7 +147,7 @@ class CheckHandlerTests {
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build");
 		CheckRequest request = new CheckRequest(source, new Version("2", null));
 		CheckResponse response = this.handler.handle(request);
-		assertThat(response.getVersions()).containsExactly(VERSION2, VERSION3, VERSION4);
+		assertThat(response.getVersions()).containsExactly(VERSION4, VERSION3, VERSION2);
 	}
 
 	@Test

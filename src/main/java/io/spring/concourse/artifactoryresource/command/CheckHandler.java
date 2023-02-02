@@ -17,6 +17,7 @@
 package io.spring.concourse.artifactoryresource.command;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -69,8 +70,8 @@ public class CheckHandler {
 
 	private List<Version> getNewVersions(Source source, Version version) {
 		logger.debug("Getting new versions");
-		List<Version> newVersions = getRunsStartedOnOrAfter(source, version).stream().sorted().map(this::asVersion)
-				.toList();
+		List<Version> newVersions = getRunsStartedOnOrAfter(source, version).stream().sorted(Comparator.reverseOrder())
+				.map(this::asVersion).toList();
 		logger.debug("Found new versions {}", newVersions);
 		return newVersions;
 	}

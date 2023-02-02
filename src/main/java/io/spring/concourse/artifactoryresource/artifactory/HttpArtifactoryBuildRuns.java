@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -213,7 +214,7 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 				return all;
 			}
 			logger.debug("Limiting build runs to {}", limit);
-			return all.stream().sorted().limit(limit).toList();
+			return all.stream().sorted(Comparator.reverseOrder()).limit(limit).toList();
 		}
 
 		private boolean hasPrefix(BuildRun buildRun, String buildNumberPrefix) {
