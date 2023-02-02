@@ -197,11 +197,14 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 		private List<BuildRun> filterAndLimit(List<BuildRun> all, String buildNumberPrefix, Instant startedOnOrAfter) {
 			List<BuildRun> result = limit(all);
+			logger.debug("Found {} build run candidates", result.size());
 			if (buildNumberPrefix == null && startedOnOrAfter == null) {
 				return result;
 			}
-			return result.stream().filter((buildRun) -> hasPrefix(buildRun, buildNumberPrefix))
+			result = result.stream().filter((buildRun) -> hasPrefix(buildRun, buildNumberPrefix))
 					.filter((buildRun) -> isStartedOnOrAfter(buildRun, startedOnOrAfter)).toList();
+			logger.debug("Returning {} build run results after filtering", result.size());
+			return result;
 		}
 
 		private List<BuildRun> limit(List<BuildRun> all) {
