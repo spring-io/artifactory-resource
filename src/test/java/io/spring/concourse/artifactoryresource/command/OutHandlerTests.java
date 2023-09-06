@@ -151,7 +151,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("2000")), any(), any(), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("2000")), any(), any(), any(), any(), any());
 	}
 
 	@Test
@@ -160,7 +160,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), any(), any(), any());
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), any(), any(), any(), any());
 		verifyNoInteractions(this.buildNumberGenerator);
 	}
 
@@ -239,7 +239,7 @@ class OutHandlerTests {
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
-				any(), this.modulesCaptor.capture());
+				any(), this.modulesCaptor.capture(), any());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -258,7 +258,7 @@ class OutHandlerTests {
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
-				this.propertiesCaptor.capture(), any());
+				this.propertiesCaptor.capture(), any(), any());
 		assertThat(this.propertiesCaptor.getValue()).containsExactly(entry("one", "value1"), entry("two", "value2"));
 	}
 
@@ -285,7 +285,7 @@ class OutHandlerTests {
 		configureMockScanner(directory, checksumFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
-				any(), this.modulesCaptor.capture());
+				any(), this.modulesCaptor.capture(), any());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		assertThat(buildModules).hasSize(1);
 		BuildModule buildModule = buildModules.get(0);
@@ -325,7 +325,7 @@ class OutHandlerTests {
 		configureMockScanner(directory, metadataFiles);
 		this.handler.handle(request, directory);
 		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
-				any(), this.modulesCaptor.capture());
+				any(), this.modulesCaptor.capture(), any());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
 		return buildModules;
 	}

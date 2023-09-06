@@ -48,6 +48,9 @@ public class BuildInfo {
 	@JsonProperty("agent")
 	private final ContinuousIntegrationAgent continuousIntegrationAgent;
 
+	@JsonProperty("buildAgent")
+	private final BuildAgent buildAgent;
+
 	@JsonIsoDateFormat
 	private final Instant started;
 
@@ -64,14 +67,15 @@ public class BuildInfo {
 	@JsonCreator
 	public BuildInfo(@JsonProperty("name") String buildName, @JsonProperty("number") String buildNumber,
 			@JsonProperty("agent") ContinuousIntegrationAgent continuousIntegrationAgent,
-			@JsonProperty("started") Instant started, @JsonProperty("url") String buildUri,
-			@JsonProperty("properties") Map<String, String> properties,
+			@JsonProperty("buildAgent") BuildAgent buildAgent, @JsonProperty("started") Instant started,
+			@JsonProperty("url") String buildUri, @JsonProperty("properties") Map<String, String> properties,
 			@JsonProperty("modules") List<BuildModule> modules) {
 		Assert.hasText(buildName, "BuildName must not be empty");
 		Assert.hasText(buildNumber, "BuildNumber must not be empty");
 		this.buildName = buildName;
 		this.buildNumber = buildNumber;
 		this.continuousIntegrationAgent = continuousIntegrationAgent;
+		this.buildAgent = buildAgent;
 		this.started = (started != null) ? started : Instant.now();
 		this.buildUri = buildUri;
 		this.properties = (properties != null) ? Collections.unmodifiableMap(new LinkedHashMap<>(properties))
@@ -90,6 +94,10 @@ public class BuildInfo {
 
 	public ContinuousIntegrationAgent getContinuousIntegrationAgent() {
 		return this.continuousIntegrationAgent;
+	}
+
+	public BuildAgent getBuildAgent() {
+		return this.buildAgent;
 	}
 
 	public Instant getStarted() {

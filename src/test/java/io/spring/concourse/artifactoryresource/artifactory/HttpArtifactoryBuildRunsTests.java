@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
@@ -86,6 +87,7 @@ class HttpArtifactoryBuildRunsTests {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
 		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
+		BuildAgent buildAgent = new BuildAgent("Concourse", "3.0.0");
 		BuildArtifact artifact = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
 				"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
@@ -93,7 +95,8 @@ class HttpArtifactoryBuildRunsTests {
 				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
-		buildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties, modules);
+		buildRuns.add(BuildNumber.of("5678"), agent, buildAgent, started, "https://ci.example.com", properties,
+				modules);
 		this.server.verify();
 	}
 

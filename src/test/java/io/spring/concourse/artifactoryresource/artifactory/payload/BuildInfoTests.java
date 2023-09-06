@@ -46,6 +46,8 @@ public class BuildInfoTests {
 
 	private static final ContinuousIntegrationAgent CI_AGENT = new ContinuousIntegrationAgent("Concourse", "3.0.0");
 
+	private static final BuildAgent BUILD_AGENT = new BuildAgent("Concourse", "3.0.0");
+
 	private static final Instant STARTED = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893123Z");
 
 	private static final String BUILD_URI = "https://ci.example.com";
@@ -63,28 +65,29 @@ public class BuildInfoTests {
 
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, BUILD_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
 				.withMessage("BuildName must not be empty");
 	}
 
 	@Test
 	public void createWhenBuildNumberIsEmptyThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, BUILD_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
 				.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test
 	public void createWhenModulesIsNullUsesEmptyList() {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, null);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, BUILD_AGENT, STARTED, BUILD_URI,
+				PROPERTIES, null);
 		assertThat(buildInfo.getModules()).isNotNull().isEmpty();
 	}
 
 	@Test
 	public void writeSerializesJson() throws Exception {
-		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES,
-				MODULES);
+		BuildInfo buildInfo = new BuildInfo(BUILD_NAME, BUILD_NUMBER, CI_AGENT, BUILD_AGENT, STARTED, BUILD_URI,
+				PROPERTIES, MODULES);
 		assertThat(this.json.write(buildInfo)).isEqualToJson("build-info.json");
 	}
 

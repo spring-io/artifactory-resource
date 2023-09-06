@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildInfo;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
@@ -80,11 +81,12 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	@Override
-	public void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
-			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
+	public void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent,
+			BuildAgent buildAgent, Instant started, String buildUri, Map<String, String> properties,
+			List<BuildModule> modules) {
 		logger.debug("Adding {} from CI agent {}", buildNumber, continuousIntegrationAgent);
-		add(new BuildInfo(this.buildName, buildNumber.toString(), continuousIntegrationAgent, started, buildUri,
-				properties, modules));
+		add(new BuildInfo(this.buildName, buildNumber.toString(), continuousIntegrationAgent, buildAgent, started,
+				buildUri, properties, modules));
 	}
 
 	private void add(BuildInfo buildInfo) {

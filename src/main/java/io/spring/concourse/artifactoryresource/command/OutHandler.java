@@ -42,6 +42,7 @@ import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryRepository
 import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
@@ -305,8 +306,9 @@ public class OutHandler {
 		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
 				.getBuildModules(artifacts);
 		Map<String, String> properties = loadProperties(params.getBuildProperties());
+		BuildAgent buildAgent = new BuildAgent("Concourse", "");
 		artifactoryServer.buildRuns(source.getBuildName()).add(buildNumber, started, params.getBuildUri(), properties,
-				modules);
+				modules, buildAgent);
 	}
 
 	private Map<String, String> loadProperties(String propertiesFile) {

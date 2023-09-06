@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
 import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
@@ -45,20 +46,27 @@ public interface ArtifactoryBuildRuns {
 	 */
 	default void add(BuildNumber buildNumber, Instant started, String buildUri, Map<String, String> properties,
 			List<BuildModule> modules) {
-		add(buildNumber, null, started, buildUri, properties, modules);
+		add(buildNumber, started, buildUri, properties, modules);
+	}
+
+	default void add(BuildNumber buildNumber, Instant started, String buildUri, Map<String, String> properties,
+			List<BuildModule> modules, BuildAgent buildAgent) {
+		add(buildNumber, new ContinuousIntegrationAgent("Concourse", ""), buildAgent, started, buildUri, properties,
+				modules);
 	}
 
 	/**
 	 * Add a new build run.
 	 * @param buildNumber the build number
 	 * @param continuousIntegrationAgent the CI Agent
+	 * @param buildAgent the build agent
 	 * @param started the time the build was started
 	 * @param buildUri the build URL
 	 * @param properties any build properties
 	 * @param modules the modules for the build run
 	 */
-	void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
-			String buildUri, Map<String, String> properties, List<BuildModule> modules);
+	void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, BuildAgent buildAgent,
+			Instant started, String buildUri, Map<String, String> properties, List<BuildModule> modules);
 
 	/**
 	 * Return all previous build runs.

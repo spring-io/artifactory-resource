@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import io.spring.concourse.artifactoryresource.artifactory.payload.BuildAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildRun;
@@ -125,7 +126,7 @@ class ApplicationIT {
 	private void addBuildRun(ArtifactoryBuildRuns artifactoryBuildRuns, String buildNumber, Instant started) {
 		BuildArtifact artifact = new BuildArtifact("test", "my-sha", "my-md5", "bar");
 		BuildModule modules = new BuildModule("foo-test", Collections.singletonList(artifact));
-		artifactoryBuildRuns.add(BuildNumber.of(buildNumber), new ContinuousIntegrationAgent("Concourse", null),
+		artifactoryBuildRuns.add(BuildNumber.of(buildNumber), new ContinuousIntegrationAgent("Concourse", null), new BuildAgent("Concourse", ""),
 				started, "ci.example.com", null, Collections.singletonList(modules));
 	}
 
