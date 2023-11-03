@@ -45,6 +45,8 @@ public class Source {
 
 	private final String buildName;
 
+	private final String project;
+
 	private final String buildNumberPrefix;
 
 	private final Integer checkLimit;
@@ -52,14 +54,14 @@ public class Source {
 	@JsonIgnore
 	private final Proxy proxy;
 
-	public Source(String uri, String username, String password, String buildName) {
-		this(uri, username, password, buildName, null, null, null, null);
+	public Source(String uri, String username, String password, String buildName, String project) {
+		this(uri, username, password, buildName, project, null, null, null, null);
 	}
 
 	@JsonCreator
 	public Source(@JsonProperty("uri") String uri, @JsonProperty("username") String username,
 			@JsonProperty("password") String password, @JsonProperty("build_name") String buildName,
-			@JsonProperty("build_number_prefix") String buildNumberPrefix,
+			@JsonProperty("project") String project, @JsonProperty("build_number_prefix") String buildNumberPrefix,
 			@JsonProperty("check_limit") Integer checkLimit, @JsonProperty("proxy_host") String proxyHost,
 			@JsonProperty("proxy_port") Integer proxyPort) {
 		Assert.hasText(uri, "URI must not be empty");
@@ -70,6 +72,7 @@ public class Source {
 		this.username = username;
 		this.password = password;
 		this.buildName = buildName;
+		this.project = project;
 		this.buildNumberPrefix = buildNumberPrefix;
 		this.checkLimit = checkLimit;
 		this.proxy = (StringUtils.hasText(proxyHost)) ? createProxy(proxyHost, proxyPort) : null;
@@ -94,6 +97,10 @@ public class Source {
 
 	public String getBuildName() {
 		return this.buildName;
+	}
+
+	public String getProject() {
+		return this.project;
 	}
 
 	public String getBuildNumberPrefix() {

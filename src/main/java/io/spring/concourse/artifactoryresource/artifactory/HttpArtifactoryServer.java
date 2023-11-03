@@ -64,8 +64,8 @@ public class HttpArtifactoryServer implements ArtifactoryServer {
 	}
 
 	@Override
-	public ArtifactoryBuildRuns buildRuns(String buildName, Integer limit) {
-		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri, buildName, limit, this.admin);
+	public ArtifactoryBuildRuns buildRuns(String buildName, String project, Integer limit) {
+		return new HttpArtifactoryBuildRuns(this.restTemplate, this.uri, buildName, project, limit, this.admin);
 	}
 
 	boolean isAdmin() {

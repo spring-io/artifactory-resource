@@ -39,7 +39,17 @@ public interface ArtifactoryServer {
 	 * @return the artifactory build runs
 	 */
 	default ArtifactoryBuildRuns buildRuns(String buildName) {
-		return buildRuns(buildName, null);
+		return buildRuns(buildName, null, null);
+	}
+
+	/**
+	 * Access specific builds runs from the server.
+	 * @param buildName the name of the build
+	 * @param project the project of the build
+	 * @return the artifactory build runs
+	 */
+	default ArtifactoryBuildRuns buildRuns(String buildName, String project) {
+		return buildRuns(buildName, project, null);
 	}
 
 	/**
@@ -48,6 +58,17 @@ public interface ArtifactoryServer {
 	 * @param limit the limit to the number of {@link BuildRun} items that can be returned
 	 * @return the artifactory build runs
 	 */
-	ArtifactoryBuildRuns buildRuns(String buildName, Integer limit);
+	default ArtifactoryBuildRuns buildRuns(String buildName, Integer limit) {
+		return buildRuns(buildName, null, limit);
+	}
+
+	/**
+	 * Access specific builds runs from the server.
+	 * @param buildName the name of the build
+	 * @param project the project of the build
+	 * @param limit the limit to the number of {@link BuildRun} items that can be returned
+	 * @return the artifactory build runs
+	 */
+	ArtifactoryBuildRuns buildRuns(String buildName, String project, Integer limit);
 
 }

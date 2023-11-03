@@ -36,6 +36,7 @@ resource_types:
 * `username`: *Required.* The artifactory username
 * `password`: *Required.* The artifactory password
 * `build_name`: *Required.* The name of the build
+* `project`: _Optional._ The name of the https://jfrog.com/help/r/jfrog-platform-administration-documentation/projects[project]
 * `build_number_prefix`: _Optional._ A prefix to apply to the build number and to limit results when checking
 * `check_limit`: _Optional._ The limit to the number of versions returned when performing a check
 * `proxy_host`: The fully qualified domain name of the HTTP proxy through which the artifactory server is reachable

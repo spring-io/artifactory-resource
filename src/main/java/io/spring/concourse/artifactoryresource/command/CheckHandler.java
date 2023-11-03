@@ -99,7 +99,9 @@ public class CheckHandler {
 	}
 
 	private ArtifactoryBuildRuns buildRuns(Source source) {
-		return artifactoryServer(source).buildRuns(source.getBuildName(), source.getCheckLimit());
+		ArtifactoryServer artifactoryServer = artifactoryServer(source);
+		System.out.println(System.identityHashCode(artifactoryServer));
+		return artifactoryServer.buildRuns(source.getBuildName(), source.getProject(), source.getCheckLimit());
 	}
 
 	private ArtifactoryServer artifactoryServer(Source source) {

@@ -44,31 +44,31 @@ class SourceTests {
 
 	@Test
 	void createWhenUriIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build"))
+		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build", null))
 				.withMessage("URI must not be empty");
 	}
 
 	@Test
 	void createWhenUsernameIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "", "password", "my-build");
+		new Source("https://repo.example.com", "", "password", "my-build", null);
 	}
 
 	@Test
 	void createWhenPasswordIsEmptyDoesNotThrowException() {
-		new Source("https://repo.example.com", "username", "", "my-build");
+		new Source("https://repo.example.com", "username", "", "my-build", null);
 	}
 
 	@Test
 	void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
-				() -> new Source("https://repo.example.com", "username", "password", "", null, null, null, null))
+				() -> new Source("https://repo.example.com", "username", "password", "", null, null, null, null, null))
 				.withMessage("Build Name must not be empty");
 	}
 
 	@Test
 	void createWhenHasProxyHostWithoutProxyPortThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Source("https://repo.example.com", "username",
-				"password", "my-build", null, null, "proxy.example.com", null))
+				"password", "my-build", null, null, null, "proxy.example.com", null))
 				.withMessage("Proxy port must be provided");
 	}
 

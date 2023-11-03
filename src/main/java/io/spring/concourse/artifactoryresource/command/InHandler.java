@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public class InHandler {
 		Params params = request.getParams();
 		DebugLogging.setEnabled(params.isDebug());
 		ArtifactoryServer artifactoryServer = getArtifactoryServer(request.getSource());
-		ArtifactoryBuildRuns buildRuns = artifactoryServer.buildRuns(source.getBuildName());
+		ArtifactoryBuildRuns buildRuns = artifactoryServer.buildRuns(source.getBuildName(), source.getProject());
 		if (params.isDownloadArtifacts()) {
 			List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(buildNumber);
 			console.log("Downloading build {} artifacts from {} using {} thread(s)", buildNumber, source.getUri(),

@@ -87,7 +87,7 @@ class InHandlerTests {
 		this.deployedArtifacts = createDeployedArtifacts();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
 				.willReturn(this.artifactoryServer);
-		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
+		given(this.artifactoryServer.buildRuns("my-build", "my-project")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
 		given(this.artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of("1234")))
 				.willReturn(this.deployedArtifacts);
@@ -190,7 +190,8 @@ class InHandlerTests {
 
 	private InRequest createRequest(boolean generateMavenMetadata, boolean saveBuildInfo, boolean downloadArtifacts,
 			boolean downloadChecksums, int threads) {
-		InRequest request = new InRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
+		InRequest request = new InRequest(
+				new Source("https://ci.example.com", "admin", "password", "my-build", "my-project"),
 				new Version("1234", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")),
 				new Params(false, generateMavenMetadata, saveBuildInfo, downloadArtifacts, downloadChecksums, threads));
 		return request;

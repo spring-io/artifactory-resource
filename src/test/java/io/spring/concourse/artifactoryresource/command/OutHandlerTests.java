@@ -121,7 +121,7 @@ class OutHandlerTests {
 		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
 				.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
-		given(this.artifactoryServer.buildRuns("my-build")).willReturn(this.artifactoryBuildRuns);
+		given(this.artifactoryServer.buildRuns(eq("my-build"), (String) any())).willReturn(this.artifactoryBuildRuns);
 		given(this.moduleLayouts.getBuildModulesGenerator(anyString())).willReturn(new MockBuildModulesGenerator());
 		this.handler = new OutHandler(this.artifactory, this.buildNumberGenerator, this.moduleLayouts,
 				this.directoryScanner);
@@ -238,6 +238,23 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
+		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
+				any(), this.modulesCaptor.capture());
+		List<BuildModule> buildModules = this.modulesCaptor.getValue();
+		assertThat(buildModules).hasSize(1);
+		BuildModule buildModule = buildModules.get(0);
+		assertThat(buildModule.getArtifacts()).hasSize(1);
+		assertThat(buildModule.getArtifacts().get(0).getName()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
+		assertThat(buildModule.getId()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
+	}
+
+	@Test
+	void handleAddsProjectBuildRun() throws Exception {
+		OutRequest request = createRequest("my-project", "1234");
+		Directory directory = createDirectory();
+		configureMockScanner(directory);
+		this.handler.handle(request, directory);
+		verify(this.artifactoryServer).buildRuns("my-build", "my-project");
 		verify(this.artifactoryBuildRuns).add(eq(BuildNumber.of("1234")), any(), eq("https://ci.example.com/1234"),
 				any(), this.modulesCaptor.capture());
 		List<BuildModule> buildModules = this.modulesCaptor.getValue();
@@ -394,24 +411,46 @@ class OutHandlerTests {
 	}
 
 	private OutRequest createRequest(String buildNumber) {
-		return createRequest(buildNumber, null, null);
+		return createRequest(null, buildNumber, null, null);
+	}
+
+	private OutRequest createRequest(String project, String buildNumber) {
+		return createRequest(project, buildNumber, null, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude) {
-		return createRequest(buildNumber, include, exclude, false, false, null, 1);
+		return createRequest(null, buildNumber, include, exclude, false, false, null, 1);
+	}
+
+	private OutRequest createRequest(String project, String buildNumber, List<String> include, List<String> exclude) {
+		return createRequest(project, buildNumber, include, exclude, false, false, null, 1);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet,
 			int threads) {
-		return createRequest(buildNumber, include, exclude, null, stripSnapshotTimestamps, disableChecksumUploads,
+		return createRequest(null, buildNumber, include, exclude, null, stripSnapshotTimestamps, disableChecksumUploads,
 				artifactSet, threads, null, null);
+	}
+
+	private OutRequest createRequest(String project, String buildNumber, List<String> include, List<String> exclude,
+			boolean stripSnapshotTimestamps, boolean disableChecksumUploads, List<ArtifactSet> artifactSet,
+			int threads) {
+		return createRequest(project, buildNumber, include, exclude, null, stripSnapshotTimestamps,
+				disableChecksumUploads, artifactSet, threads, null, null);
 	}
 
 	private OutRequest createRequest(String buildNumber, List<String> include, List<String> exclude,
 			String buildProperties, boolean stripSnapshotTimestamps, boolean disableChecksumUploads,
 			List<ArtifactSet> artifactSet, int threads, String signingKey, String signingPassphrase) {
-		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build"),
+		return createRequest(null, buildNumber, include, exclude, buildProperties, stripSnapshotTimestamps,
+				disableChecksumUploads, artifactSet, threads, signingKey, signingPassphrase);
+	}
+
+	private OutRequest createRequest(String project, String buildNumber, List<String> include, List<String> exclude,
+			String buildProperties, boolean stripSnapshotTimestamps, boolean disableChecksumUploads,
+			List<ArtifactSet> artifactSet, int threads, String signingKey, String signingPassphrase) {
+		return new OutRequest(new Source("https://ci.example.com", "admin", "password", "my-build", project),
 				new Params(false, "libs-snapshot-local", buildNumber, "folder", include, exclude, "mock",
 						"https://ci.example.com/1234", buildProperties, stripSnapshotTimestamps, disableChecksumUploads,
 						artifactSet, threads, signingKey, signingPassphrase));

@@ -65,15 +65,18 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private final String buildName;
 
+	private final String project;
+
 	private final Integer limit;
 
 	private final BuildRunsProvider buildRunsProvider;
 
-	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName, Integer limit,
-			boolean admin) {
+	public HttpArtifactoryBuildRuns(RestTemplate restTemplate, String uri, String buildName, String project,
+			Integer limit, boolean admin) {
 		this.restTemplate = restTemplate;
 		this.uri = uri;
 		this.buildName = buildName;
+		this.project = project;
 		this.limit = limit;
 		this.buildRunsProvider = (!admin) ? new RestBuildRunsProvider()
 				: new ArtifactoryQueryLanguageBuildRunsProvider();
@@ -88,7 +91,11 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	}
 
 	private void add(BuildInfo buildInfo) {
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path("api/build").build();
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(this.uri).path("api/build");
+		if (this.project != null) {
+			builder = builder.queryParam("project", this.project);
+		}
+		UriComponents uriComponents = builder.build();
 		URI uri = uriComponents.encode().toUri();
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri).contentType(MediaType.APPLICATION_JSON)
 				.body(buildInfo);
@@ -189,8 +196,12 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 			logger.debug("Using REST call to get build runs with prefix {} started on or after {}", buildNumberPrefix,
 					startedOnOrAfter);
 			RestTemplate restTemplate = HttpArtifactoryBuildRuns.this.restTemplate;
-			UriComponents uriComponents = UriComponentsBuilder.fromUriString(HttpArtifactoryBuildRuns.this.uri)
-					.path("api/build/{buildName}").buildAndExpand(HttpArtifactoryBuildRuns.this.buildName);
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(HttpArtifactoryBuildRuns.this.uri)
+					.path("api/build/{buildName}");
+			if (HttpArtifactoryBuildRuns.this.project != null) {
+				builder = builder.queryParam("project", HttpArtifactoryBuildRuns.this.project);
+			}
+			UriComponents uriComponents = builder.buildAndExpand(HttpArtifactoryBuildRuns.this.buildName);
 			URI uri = uriComponents.encode().toUri();
 			List<BuildRun> all = restTemplate.getForObject(uri, BuildRunsRestResponse.class).getBuildsRuns();
 			return filterAndLimit(all, buildNumberPrefix, startedOnOrAfter);

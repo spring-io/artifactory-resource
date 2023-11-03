@@ -98,6 +98,24 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
+	void addWithProjectAddsBuildInfo() {
+		ArtifactoryBuildRuns buildRuns = buildRuns("my-project");
+		this.server.expect(requestTo("https://repo.example.com/api/build?project=my-project"))
+				.andExpect(method(HttpMethod.PUT)).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
+		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
+		BuildArtifact artifact = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
+				"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
+		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
+		List<BuildModule> modules = Collections
+				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
+		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
+		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
+		buildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties, modules);
+		this.server.verify();
+	}
+
+	@Test
 	void getAllWhenAdminAndBuildDoesNotExistReturnsEmptyList() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
@@ -134,10 +152,6 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
-	void getAllWhenNonAdminReturnsBuildRuns() {
-	}
-
-	@Test
 	void getAllWhenAdminAndHasLimitReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer(true).buildRuns("my-build", 2);
 		String url = "https://repo.example.com/api/search/aql";
@@ -147,6 +161,26 @@ class HttpArtifactoryBuildRunsTests {
 						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
+	}
+
+	@Test
+	void getAllWhenNonAdminReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build");
+		String url = "https://repo.example.com/api/build/my-build";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
+		assertThat(runs).hasSize(3);
+	}
+
+	@Test
+	void getAllWithProjectWhenNonAdminReturnsBuildRuns() {
+		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build", "my-project");
+		String url = "https://repo.example.com/api/build/my-build?project=my-project";
+		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
+				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		List<BuildRun> runs = buildRuns.getAll(null);
+		assertThat(runs).hasSize(3);
 	}
 
 	@Test
@@ -278,7 +312,7 @@ class HttpArtifactoryBuildRunsTests {
 
 	private void assertJson(String actualJson, String expectedJson) throws AssertionError {
 		try {
-			JSONAssert.assertEquals(expectedJson, actualJson, false);
+			JSONAssert.assertEquals(expectedJson, actualJson, true);
 		}
 		catch (JSONException ex) {
 			throw new AssertionError(ex.getMessage(), ex);
@@ -293,8 +327,16 @@ class HttpArtifactoryBuildRunsTests {
 		return buildRuns(false);
 	}
 
+	private ArtifactoryBuildRuns buildRuns(String project) {
+		return buildRuns(false, project);
+	}
+
 	private ArtifactoryBuildRuns buildRuns(boolean admin) {
 		return artifactoryServer(admin).buildRuns("my-build");
+	}
+
+	private ArtifactoryBuildRuns buildRuns(boolean admin, String project) {
+		return artifactoryServer(admin).buildRuns("my-build", project);
 	}
 
 	private ArtifactoryServer artifactoryServer(boolean admin) {
