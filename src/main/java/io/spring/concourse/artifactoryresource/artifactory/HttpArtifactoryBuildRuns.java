@@ -85,7 +85,7 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	@Override
 	public void add(BuildNumber buildNumber, ContinuousIntegrationAgent continuousIntegrationAgent, Instant started,
 			String buildUri, Map<String, String> properties, List<BuildModule> modules) {
-		logger.debug("Adding {} from CI agent {}", buildNumber, continuousIntegrationAgent);
+		logger.debug("Adding {} to from CI agent {}", buildNumber, continuousIntegrationAgent);
 		add(new BuildInfo(this.buildName, buildNumber.toString(), continuousIntegrationAgent, started, buildUri,
 				properties, modules));
 	}
@@ -93,10 +93,12 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	private void add(BuildInfo buildInfo) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(this.uri).path("api/build");
 		if (this.project != null) {
+			logger.debug("Publishing to project {}", this.project);
 			builder = builder.queryParam("project", this.project);
 		}
 		UriComponents uriComponents = builder.build();
 		URI uri = uriComponents.encode().toUri();
+		logger.info("Publishing build info to {}", uri);
 		RequestEntity<BuildInfo> request = RequestEntity.put(uri).contentType(MediaType.APPLICATION_JSON)
 				.body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
