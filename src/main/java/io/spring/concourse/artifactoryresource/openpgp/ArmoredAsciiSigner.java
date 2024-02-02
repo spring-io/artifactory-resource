@@ -171,8 +171,7 @@ public final class ArmoredAsciiSigner {
 	public void sign(InputStream source, OutputStream destination) throws IOException {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(destination, "Destination must not be null");
-		try (ArmoredOutputStream armoredOutputStream = new ArmoredOutputStream(destination)) {
-			armoredOutputStream.setHeader(ArmoredOutputStream.VERSION_HDR, null);
+		try (ArmoredOutputStream armoredOutputStream = ArmoredOutputStream.builder().build(destination)) {
 			sign(source, armoredOutputStream);
 		}
 		catch (PGPException ex) {
