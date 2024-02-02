@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package io.spring.concourse.artifactoryresource.artifactory.payload;
+
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,6 +35,10 @@ public class ContinuousIntegrationAgent {
 
 	private final String version;
 
+	public ContinuousIntegrationAgent() {
+		this("Concourse", null);
+	}
+
 	@JsonCreator
 	public ContinuousIntegrationAgent(@JsonProperty("name") String name, @JsonProperty("version") String version) {
 		Assert.hasText(name, "Name must not be empty");
@@ -49,8 +55,28 @@ public class ContinuousIntegrationAgent {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ContinuousIntegrationAgent other = (ContinuousIntegrationAgent) obj;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.version, other.version);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.name, this.version);
+	}
+
+	@Override
 	public String toString() {
-		return this.name + ":" + this.version;
+		return this.name + ":" + ((this.version != null) ? this.version : "unknown");
 	}
 
 }

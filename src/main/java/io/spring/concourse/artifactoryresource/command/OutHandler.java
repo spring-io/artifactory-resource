@@ -43,6 +43,7 @@ import io.spring.concourse.artifactoryresource.artifactory.ArtifactoryServer;
 import io.spring.concourse.artifactoryresource.artifactory.BuildNumber;
 import io.spring.concourse.artifactoryresource.artifactory.DeployOption;
 import io.spring.concourse.artifactoryresource.artifactory.payload.BuildModule;
+import io.spring.concourse.artifactoryresource.artifactory.payload.ContinuousIntegrationAgent;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableArtifact;
 import io.spring.concourse.artifactoryresource.artifactory.payload.DeployableFileArtifact;
 import io.spring.concourse.artifactoryresource.command.payload.OutRequest;
@@ -309,7 +310,7 @@ public class OutHandler {
 			.getBuildModules(artifacts);
 		Map<String, String> properties = loadProperties(params.getBuildProperties());
 		artifactoryServer.buildRuns(source.getBuildName(), source.getProject())
-			.add(buildNumber, null, started, params.getBuildUri(), properties, modules);
+			.add(buildNumber, new ContinuousIntegrationAgent(), started, params.getBuildUri(), properties, modules);
 	}
 
 	private Map<String, String> loadProperties(String propertiesFile) {
