@@ -163,7 +163,7 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	/**
 	 * {@link BuildRunsProvider} backed by AQL that can be used when the user is an admin.
 	 */
-	private class ArtifactoryQueryLanguageBuildRunsProvider implements BuildRunsProvider {
+	private final class ArtifactoryQueryLanguageBuildRunsProvider implements BuildRunsProvider {
 
 		@Override
 		public List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
@@ -193,7 +193,7 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	 * {@link BuildRunsProvider} backed by the standard REST API that can be used when the
 	 * user is not an admin.
 	 */
-	private class RestBuildRunsProvider implements BuildRunsProvider {
+	private final class RestBuildRunsProvider implements BuildRunsProvider {
 
 		@Override
 		public List<BuildRun> getBuildRuns(String buildNumberPrefix, Instant startedOnOrAfter) {
