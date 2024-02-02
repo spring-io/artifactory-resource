@@ -1,7 +1,7 @@
 FROM ubuntu:focal-20210713
 
 ARG root=.
-ARG jar=target/artifactory-resource.jar
+ARG jar=build/libs/artifactory-resource.jar
 
 COPY ${root}/assets/ /opt/resource/
 COPY ${jar} /artifact/artifactory-resource.jar

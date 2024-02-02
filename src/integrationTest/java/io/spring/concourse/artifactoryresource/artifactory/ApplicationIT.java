@@ -65,8 +65,8 @@ class ApplicationIT {
 
 	@Container
 	static GenericContainer<?> container = new GenericContainer<>("docker.bintray.io/jfrog/artifactory-oss:7.12.10")
-			.waitingFor(Wait.forHttp("/artifactory/api/system/ping").withStartupTimeout(Duration.ofMinutes(15)))
-			.withExposedPorts(8081);
+		.waitingFor(Wait.forHttp("/artifactory/api/system/ping").withStartupTimeout(Duration.ofMinutes(15)))
+		.withExposedPorts(8081);
 
 	@TempDir
 	File tempDir;

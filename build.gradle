@@ -1,0 +1,80 @@
+plugins {
+	id "checkstyle"
+	id "io.spring.javaformat" version "$javaFormatVersion"
+	id "java"
+	id "org.springframework.boot" version "3.2.2"
+}
+
+repositories {
+	mavenCentral()
+}
+
+java {
+	sourceCompatibility = '17'
+}
+
+checkstyle {
+	toolVersion = "10.13.0"
+}
+
+def integrationTest = sourceSets.create("integrationTest") {
+	compileClasspath += sourceSets.main.output
+	runtimeClasspath += sourceSets.main.output
+}
+
+configurations {
+	checkstyle {
+		resolutionStrategy.capabilitiesResolution.withCapability("com.google.collections:google-collections") {
+			select("com.google.guava:guava:0")
+		}
+	}
+	integrationTestImplementation {
+		extendsFrom(testImplementation)
+	}
+}
+
+dependencies {
+	checkstyle("com.puppycrawl.tools:checkstyle:${checkstyle.toolVersion}")
+	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
+
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+
+	implementation("org.apache.maven:maven-repository-metadata:3.5.0")
+	implementation("org.bouncycastle:bcpg-jdk18on:1.77")
+	implementation("org.springframework:spring-web")
+	implementation("org.springframework.boot:spring-boot-starter-json")
+
+	integrationTestImplementation("org.testcontainers:junit-jupiter")
+	integrationTestImplementation("org.testcontainers:testcontainers")
+
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.xmlunit:xmlunit-core")
+}
+
+tasks.withType(Test) {
+	useJUnitPlatform()
+}
+
+tasks.named("jar") {
+	enabled = false;
+}
+
+tasks.named("bootJar") {
+	archiveVersion = ""
+}
+
+tasks.register('integrationTest', Test) {
+	description = "Runs integration tests"
+	group = "verification"
+	testClassesDirs = integrationTest.output.classesDirs
+	classpath = integrationTest.runtimeClasspath
+	shouldRunAfter(tasks.named('test'))
+}
+
+tasks.named("check") {
+	dependsOn(tasks.named("integrationTest"))
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs = ["-parameters", "-Xlint:all"]
+}
