@@ -309,7 +309,7 @@ public class OutHandler {
 			.getBuildModules(artifacts);
 		Map<String, String> properties = loadProperties(params.getBuildProperties());
 		artifactoryServer.buildRuns(source.getBuildName(), source.getProject())
-			.add(buildNumber, started, params.getBuildUri(), properties, modules);
+			.add(buildNumber, null, started, params.getBuildUri(), properties, modules);
 	}
 
 	private Map<String, String> loadProperties(String propertiesFile) {
