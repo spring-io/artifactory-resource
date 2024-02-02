@@ -5,6 +5,9 @@
 		"name": "Concourse",
 		"version": "3.0.0"
 	},
+	"buildAgent": {
+		"name": "Artifactory Resource"
+	},
 	"started": "2014-09-30T12:00:19.893Z",
 	"url": "https://ci.example.com",
 	"properties": {
