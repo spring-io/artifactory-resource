@@ -17,6 +17,6 @@ ENV JAVA_HOME /opt/openjdk
 ENV PATH $JAVA_HOME/bin:$PATH
 RUN mkdir -p /opt/openjdk && \
     cd /opt/openjdk && \
-    curl -L https://github.com/bell-sw/Liberica/releases/download/17.0.6+10/bellsoft-jdk17.0.6+10-linux-amd64.tar.gz | tar xz --strip-components=1
+    curl -L https://github.com/bell-sw/Liberica/releases/download/17.0.10+13/bellsoft-jdk17.0.10+13-linux-amd64.tar.gz | tar xz --strip-components=1
 
 RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out
