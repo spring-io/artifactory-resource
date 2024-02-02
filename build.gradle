@@ -31,6 +31,9 @@ configurations {
 	integrationTestImplementation {
 		extendsFrom(testImplementation)
 	}
+	integrationTestRuntimeOnly {
+		extendsFrom(testRuntimeOnly)
+	}
 }
 
 dependencies {
@@ -49,6 +52,8 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.xmlunit:xmlunit-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType(Test) {
