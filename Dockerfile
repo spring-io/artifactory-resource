@@ -1,4 +1,4 @@
-FROM ubuntu:focal-20210713
+FROM ubuntu:jammy-20240111
 
 ARG root=.
 ARG jar=build/libs/artifactory-resource.jar
