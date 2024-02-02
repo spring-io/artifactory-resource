@@ -12,8 +12,8 @@ nextVersion=$( bump_version_number $snapshotVersion)
 echo "Releasing $releaseVersion (next version will be $nextVersion)"
 sed -i "s/version=$snapshotVersion/version=$releaseVersion/" gradle.properties
 sed -i 's/\(artifactory-resource.*tag\:\ \).*\(\}\)/\1${releaseVersion}\2/' samples/simple/pipeline.yml > /dev/null
-git config user.name "Spring Buildmaster" > /dev/null
-git config user.email "buildmaster@springframework.org" > /dev/null
+git config user.name "Spring Builds" > /dev/null
+git config user.email "spring-builds@users.noreply.github.com" > /dev/null
 git add gradle.properties > /dev/null
 git commit -m"Release v$releaseVersion" > /dev/null
 git tag -a "v$releaseVersion" -m"Release v$releaseVersion" > /dev/null
