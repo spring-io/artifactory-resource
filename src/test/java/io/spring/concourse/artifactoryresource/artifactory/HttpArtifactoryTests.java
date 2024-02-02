@@ -69,8 +69,8 @@ class HttpArtifactoryTests {
 	void serverWithCredentialsReturnsServerWithCredentials() throws Exception {
 		ArtifactoryServer server = this.artifactory.server(URI, "admin", "password", null, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
-		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
-				HttpMethod.GET);
+		ClientHttpRequest request = restTemplate.getRequestFactory()
+			.createRequest(new URI("http://localhost"), HttpMethod.GET);
 		assertThat(request.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
 	}
 
@@ -79,8 +79,8 @@ class HttpArtifactoryTests {
 		Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080));
 		ArtifactoryServer server = this.artifactory.server(URI, "admin", "password", proxy, null, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
-		ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI("http://localhost"),
-				HttpMethod.GET);
+		ClientHttpRequest request = restTemplate.getRequestFactory()
+			.createRequest(new URI("http://localhost"), HttpMethod.GET);
 		HttpURLConnection connection = (HttpURLConnection) ReflectionTestUtils.getField(request, "connection");
 		assertThat(connection.usingProxy()).isTrue();
 	}

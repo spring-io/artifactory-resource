@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ class VersionTests {
 	@Test
 	void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new Version("", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")))
-				.withMessage("Build Number must not be empty");
+			.isThrownBy(() -> new Version("", ArtifactoryDateFormat.parse("2014-01-20T12:01:02.003Z")))
+			.withMessage("Build Number must not be empty");
 	}
 
 	@Test

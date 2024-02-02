@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,26 +51,29 @@ class OutRequestTests {
 	@Test
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(null, this.params))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWhenParamsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest(this.source, null))
-				.withMessage("Params must not be null");
+			.withMessage("Params must not be null");
 	}
 
 	@Test
 	void createParamsWhenFolderIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local",
-				"1234", "", null, null, null, null, null, null, null, null, null, null, null))
-				.withMessage("Folder must not be empty");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new OutRequest.Params(false, "libs-snapshot-local", "1234", "", null, null, null, null,
+					null, null, null, null, null, null, null))
+			.withMessage("Folder must not be empty");
 	}
 
 	@Test
 	void createParamsWhenRepoIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null,
-				null, null, null, null, null, null, null, null, null, null)).withMessage("Repo must not be empty");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new OutRequest.Params(false, "", "1234", "folder", null, null, null, null, null, null,
+					null, null, null, null, null))
+			.withMessage("Repo must not be empty");
 	}
 
 	@Test
@@ -96,8 +99,9 @@ class OutRequestTests {
 		assertThat(artifactSet).hasSize(1);
 		assertThat(artifactSet.get(0).getInclude()).containsExactly("**/*.zip");
 		assertThat(artifactSet.get(0).getExclude()).containsExactly("**/foo.zip");
-		assertThat(artifactSet.get(0).getProperties()).hasSize(2).containsEntry("zip-type", "docs")
-				.containsEntry("zip-deployed", "false");
+		assertThat(artifactSet.get(0).getProperties()).hasSize(2)
+			.containsEntry("zip-type", "docs")
+			.containsEntry("zip-deployed", "false");
 	}
 
 	@Test
@@ -117,7 +121,7 @@ class OutRequestTests {
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getProxy())
-				.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
+			.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
 		assertThat(request.getParams().getBuildNumber()).isEqualTo("1234");
 		assertThat(request.getParams().getRepo()).isEqualTo("libs-snapshot-local");
 		assertThat(request.getParams().getFolder()).isEqualTo("dist");

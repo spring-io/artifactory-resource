@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,9 +100,12 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 
 	@Override
 	public int compareTo(MavenCoordinates o) {
-		return Comparator.comparing(MavenCoordinates::getGroupId).thenComparing(MavenCoordinates::getArtifactId)
-				.thenComparing(MavenCoordinates::getVersion).thenComparing(MavenCoordinates::getExtension)
-				.thenComparing(MavenCoordinates::getClassifier).compare(this, o);
+		return Comparator.comparing(MavenCoordinates::getGroupId)
+			.thenComparing(MavenCoordinates::getArtifactId)
+			.thenComparing(MavenCoordinates::getVersion)
+			.thenComparing(MavenCoordinates::getExtension)
+			.thenComparing(MavenCoordinates::getClassifier)
+			.compare(this, o);
 	}
 
 	public static MavenCoordinates fromPath(String path) {
@@ -139,7 +142,7 @@ public final class MavenCoordinates implements Comparable<MavenCoordinates> {
 				classifier = stripDash(classifier);
 			}
 			String snapshotVersion = (classifier.isEmpty() ? snapshotVersionAndClassifier : snapshotVersionAndClassifier
-					.substring(0, snapshotVersionAndClassifier.length() - classifier.length() - 1));
+				.substring(0, snapshotVersionAndClassifier.length() - classifier.length() - 1));
 			return new MavenCoordinates(groupId, artifactId, version, classifier, extension, snapshotVersion);
 		}
 		catch (Exception ex) {

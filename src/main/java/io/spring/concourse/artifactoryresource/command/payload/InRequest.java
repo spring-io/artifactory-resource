@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,10 @@ public class InRequest {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("source", this.source).append("version", this.version)
-				.append("params", this.params).toString();
+		return new ToStringCreator(this).append("source", this.source)
+			.append("version", this.version)
+			.append("params", this.params)
+			.toString();
 	}
 
 	/**
@@ -127,8 +129,11 @@ public class InRequest {
 		@Override
 		public String toString() {
 			return new ToStringCreator(this).append("generateMavenMetadata", this.generateMavenMetadata)
-					.append("saveBuildInfo", this.saveBuildInfo).append("downloadArtifacts", this.downloadArtifacts)
-					.append("downloadChecksums", this.downloadChecksums).append("threads", this.threads).toString();
+				.append("saveBuildInfo", this.saveBuildInfo)
+				.append("downloadArtifacts", this.downloadArtifacts)
+				.append("downloadChecksums", this.downloadChecksums)
+				.append("threads", this.threads)
+				.toString();
 		}
 
 	}

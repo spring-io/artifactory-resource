@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class CommandProcessorTests {
 	void runWhenNoArgumentThrowsException() {
 		CommandProcessor processor = new CommandProcessor(Collections.singletonList(mock(Command.class)));
 		assertThatIllegalStateException().isThrownBy(() -> processor.run(new DefaultApplicationArguments(NO_ARGS)))
-				.withMessage("No command argument specified");
+			.withMessage("No command argument specified");
 	}
 
 	@Test

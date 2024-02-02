@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,10 +64,10 @@ class MavenCoordinatesTests {
 	@Test // gh-5
 	void fromPathWhenIsBadThrowsNiceException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> MavenCoordinates.fromPath("org/springframework/cloud/skipper/acceptance/app/"
-						+ "skipper-server-with-drivers/maven-metadata-local.xml"))
-				.withMessageContaining("Unable to parse maven coordinates from path")
-				.withStackTraceContaining("Name 'maven-metadata-local.xml' does not start with artifact ID 'app'");
+			.isThrownBy(() -> MavenCoordinates.fromPath("org/springframework/cloud/skipper/acceptance/app/"
+					+ "skipper-server-with-drivers/maven-metadata-local.xml"))
+			.withMessageContaining("Unable to parse maven coordinates from path")
+			.withStackTraceContaining("Name 'maven-metadata-local.xml' does not start with artifact ID 'app'");
 	}
 
 }

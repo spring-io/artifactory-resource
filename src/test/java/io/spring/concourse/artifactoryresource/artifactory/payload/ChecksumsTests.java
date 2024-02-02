@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,25 +36,25 @@ public class ChecksumsTests {
 	@Test
 	public void createWhenSha1IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums("", MD5))
-				.withMessage("SHA1 must not be empty");
+			.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	public void createWhenMd5IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums(SHA1, ""))
-				.withMessage("MD5 must not be empty");
+			.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	public void createWhenSha1IsIncorrectLengthThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums("0", MD5))
-				.withMessage("SHA1 must be 40 characters long");
+			.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
 	public void createWhenMd5IsIncorrectLengthThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Checksums(SHA1, "0"))
-				.withMessage("MD5 must be 32 characters long");
+			.withMessage("MD5 must be 32 characters long");
 	}
 
 	@Test

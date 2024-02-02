@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,15 +82,17 @@ class HttpArtifactoryBuildRunsTests {
 	@Test
 	void addAddsBuildInfo() {
 		ArtifactoryBuildRuns buildRuns = buildRuns();
-		this.server.expect(requestTo("https://repo.example.com/api/build")).andExpect(method(HttpMethod.PUT))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
+		this.server.expect(requestTo("https://repo.example.com/api/build"))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonContent(getResource("payload/build-info.json")))
+			.andRespond(withSuccess());
 		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
 		BuildArtifact artifact = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
 				"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
 		List<BuildModule> modules = Collections
-				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
+			.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
 		buildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties, modules);
@@ -101,14 +103,16 @@ class HttpArtifactoryBuildRunsTests {
 	void addWithProjectAddsBuildInfo() {
 		ArtifactoryBuildRuns buildRuns = buildRuns("my-project");
 		this.server.expect(requestTo("https://repo.example.com/api/build?project=my-project"))
-				.andExpect(method(HttpMethod.PUT)).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonContent(getResource("payload/build-info.json"))).andRespond(withSuccess());
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonContent(getResource("payload/build-info.json")))
+			.andRespond(withSuccess());
 		ContinuousIntegrationAgent agent = new ContinuousIntegrationAgent("Concourse", "3.0.0");
 		BuildArtifact artifact = new BuildArtifact("jar", "a9993e364706816aba3e25717850c26c9cd0d89d",
 				"900150983cd24fb0d6963f7d28e17f72", "foo.jar");
 		List<BuildArtifact> artifacts = Collections.singletonList(artifact);
 		List<BuildModule> modules = Collections
-				.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
+			.singletonList(new BuildModule("com.example.module:my-module:1.0.0-SNAPSHOT", artifacts));
 		Instant started = ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z");
 		Map<String, String> properties = Collections.singletonMap("made-by", "concourse");
 		buildRuns.add(BuildNumber.of("5678"), agent, started, "https://ci.example.com", properties, modules);
@@ -119,10 +123,12 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenAdminAndBuildDoesNotExistReturnsEmptyList() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(withSuccess(
-						getResource("payload/build-runs-aql-missing-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithFindAllBuildsQuery("my-build"))
+			.andRespond(withSuccess(getResource("payload/build-runs-aql-missing-response.json"),
+					MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(0);
 	}
@@ -131,8 +137,10 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenNonAdminAndBuildDoesNotExistReturnsEmptyList() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(false);
 		String url = "https://repo.example.com/api/build/my-build";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-missing-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-missing-response.json"),
+					MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(0);
 	}
@@ -141,10 +149,11 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenAdminReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andRespond(
-						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithFindAllBuildsQuery("my-build"))
+			.andRespond(withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-1234");
@@ -155,10 +164,12 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenAdminAndHasLimitReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer(true).buildRuns("my-build", 2);
 		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindAllBuildsQuery("my-build")).andExpect(bodyWithContent(".limit(2)")).andRespond(
-						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithFindAllBuildsQuery("my-build"))
+			.andExpect(bodyWithContent(".limit(2)"))
+			.andRespond(withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
 	}
@@ -167,8 +178,9 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenNonAdminReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build");
 		String url = "https://repo.example.com/api/build/my-build";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(3);
 	}
@@ -177,8 +189,9 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWithProjectWhenNonAdminReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build", "my-project");
 		String url = "https://repo.example.com/api/build/my-build?project=my-project";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(3);
 	}
@@ -187,8 +200,9 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenNonAdminAndHasLimitReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = artifactoryServer(false).buildRuns("my-build", 2);
 		String url = "https://repo.example.com/api/build/my-build";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll(null);
 		assertThat(runs).hasSize(2);
 	}
@@ -197,10 +211,11 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenAdminAndHasBuildNumberPrefixReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithContent("\"number\" : {\"$match\" : \"my-*\"}")).andRespond(
-						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithContent("\"number\" : {\"$match\" : \"my-*\"}"))
+			.andRespond(withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll("my-");
 		assertThat(runs).hasSize(2);
 	}
@@ -209,8 +224,9 @@ class HttpArtifactoryBuildRunsTests {
 	void getAllWhenNonAdminAndHasBuildNumberPrefixReturnsBuildRuns() {
 		ArtifactoryBuildRuns buildRuns = buildRuns(false);
 		String url = "https://repo.example.com/api/build/my-build";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getAll("my-");
 		assertThat(runs).hasSize(2);
 	}
@@ -225,10 +241,11 @@ class HttpArtifactoryBuildRunsTests {
 		ArtifactoryBuildRuns buildRuns = buildRuns(true);
 		String url = "https://repo.example.com/api/search/aql";
 		String started = "2014-09-30T12:00:19.893Z";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started)).andRespond(
-						withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithFindBuildsStartedOnOrAfterQuery("my-build", started))
+			.andRespond(withSuccess(getResource("payload/build-runs-aql-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-1234");
@@ -240,8 +257,9 @@ class HttpArtifactoryBuildRunsTests {
 		ArtifactoryBuildRuns buildRuns = buildRuns(false);
 		String url = "https://repo.example.com/api/build/my-build";
 		String started = "2014-09-30T12:00:19.893Z";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(
-				withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-runs-rest-response.json"), MediaType.APPLICATION_JSON));
 		List<BuildRun> runs = buildRuns.getStartedOnOrAfter(null, ArtifactoryDateFormat.parse(started));
 		assertThat(runs).hasSize(2);
 		assertThat(runs.get(0).getBuildNumber()).isEqualTo("my-5678");
@@ -257,8 +275,8 @@ class HttpArtifactoryBuildRunsTests {
 	void getRawBuildInfoReturnsBuildInfo() {
 		ArtifactoryBuildRuns buildRuns = buildRuns();
 		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
 		String buildInfo = buildRuns.getRawBuildInfo(BuildNumber.of("5678"));
 		assertThat(buildInfo).isNotEmpty().contains("my-build");
 	}
@@ -267,10 +285,11 @@ class HttpArtifactoryBuildRunsTests {
 	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() {
 		ArtifactoryBuildRuns buildRuns = buildRuns();
 		String url = "https://repo.example.com/api/search/aql";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-				.andExpect(bodyWithFindItemsQuery("my-build", "1234"))
-				.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
+			.andExpect(bodyWithFindItemsQuery("my-build", "1234"))
+			.andRespond(withSuccess(getResource("payload/deployed-artifacts.json"), MediaType.APPLICATION_JSON));
 		List<DeployedArtifact> artifacts = buildRuns.getDeployedArtifacts(BuildNumber.of("1234"));
 		assertThat(artifacts).hasSize(1);
 		assertThat(artifacts.get(0).getModifiedBy()).isEqualTo("spring");
@@ -305,7 +324,7 @@ class HttpArtifactoryBuildRunsTests {
 		return (request) -> {
 			String actualJson = ((MockClientHttpRequest) request).getBodyAsString();
 			String expectedJson = FileCopyUtils
-					.copyToString(new InputStreamReader(expected.getInputStream(), Charset.forName("UTF-8")));
+				.copyToString(new InputStreamReader(expected.getInputStream(), Charset.forName("UTF-8")));
 			assertJson(actualJson, expectedJson);
 		};
 	}

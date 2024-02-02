@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,10 @@ public class Source {
 
 	@Override
 	public String toString() {
-		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri).append("buildName", this.buildName)
-				.append("buildNumberPrefix", this.buildNumberPrefix).append("checkLimit", this.checkLimit);
+		ToStringCreator creator = new ToStringCreator(this).append("uri", this.uri)
+			.append("buildName", this.buildName)
+			.append("buildNumberPrefix", this.buildNumberPrefix)
+			.append("checkLimit", this.checkLimit);
 		if (this.proxy != null) {
 			creator.append("proxy", this.proxy);
 		}

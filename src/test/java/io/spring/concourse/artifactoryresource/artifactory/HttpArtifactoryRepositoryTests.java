@@ -83,8 +83,8 @@ class HttpArtifactoryRepositoryTests {
 	@BeforeEach
 	void setup() {
 		this.artifactoryRepository = this.artifactory
-				.server("https://repo.example.com", "admin", "password", null, Duration.ofMillis(10), false)
-				.repository("libs-snapshot-local");
+			.server("https://repo.example.com", "admin", "password", null, Duration.ofMillis(10), false)
+			.repository("libs-snapshot-local");
 	}
 
 	@AfterEach
@@ -96,12 +96,14 @@ class HttpArtifactoryRepositoryTests {
 	void deployUploadsTheDeployableArtifact() {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		this.server.expect(requestTo(url)).andExpect(header("Content-Length", Long.toString(artifact.getSize())))
-				.andRespond(withSuccess());
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(header("X-Checksum-Deploy", "true"))
+			.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+			.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		this.server.expect(requestTo(url))
+			.andExpect(header("Content-Length", Long.toString(artifact.getSize())))
+			.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
@@ -122,9 +124,11 @@ class HttpArtifactoryRepositoryTests {
 	void deployWhenChecksumMatchesDoesNotUpload() {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1())).andRespond(withSuccess());
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(header("X-Checksum-Deploy", "true"))
+			.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+			.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
@@ -133,12 +137,15 @@ class HttpArtifactoryRepositoryTests {
 	void deployWhenChecksumUploadFailsWithHttpClientErrorExceptionUploads() {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Deploy", "true"))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andRespond(withStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE));
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1())).andRespond(withSuccess());
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(header("X-Checksum-Deploy", "true"))
+			.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+			.andRespond(withStatus(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+			.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
@@ -147,8 +154,10 @@ class HttpArtifactoryRepositoryTests {
 	void deployWhenSmallFileDoesNotUseChecksum() {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", "foo".getBytes());
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
-				.andRespond(withSuccess());
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(noChecksumHeader())
+			.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
@@ -157,8 +166,10 @@ class HttpArtifactoryRepositoryTests {
 	void deployWhenNoChecksumUploadOptionFileDoesNotUseChecksum() {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT)).andExpect(noChecksumHeader())
-				.andRespond(withSuccess());
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.PUT))
+			.andExpect(noChecksumHeader())
+			.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact, DeployOption.DISABLE_CHECKSUM_UPLOADS);
 		this.server.verify();
 	}
@@ -171,8 +182,8 @@ class HttpArtifactoryRepositoryTests {
 	@Test
 	void deployWhenFlaky400AndLaterAttemptsFailThrowsException() {
 		assertThatExceptionOfType(RuntimeException.class)
-				.isThrownBy(() -> deployWhenFlaky(true, HttpStatus.BAD_REQUEST))
-				.withMessageStartingWith("Error deploying artifact");
+			.isThrownBy(() -> deployWhenFlaky(true, HttpStatus.BAD_REQUEST))
+			.withMessageStartingWith("Error deploying artifact");
 	}
 
 	@Test
@@ -183,7 +194,7 @@ class HttpArtifactoryRepositoryTests {
 	@Test
 	void deployWhenFlaky404AndLaterAttemptsFailThrowsException() {
 		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> deployWhenFlaky(true, HttpStatus.NOT_FOUND))
-				.withMessageStartingWith("Error deploying artifact");
+			.withMessageStartingWith("Error deploying artifact");
 	}
 
 	@Test
@@ -194,8 +205,8 @@ class HttpArtifactoryRepositoryTests {
 	@Test
 	void deployWhenFlakySocketExceptionAndLaterAttemptsFailThrowsException() {
 		assertThatExceptionOfType(RuntimeException.class)
-				.isThrownBy(() -> deployWhenFlaky(true, withException(new SocketException())))
-				.withMessageStartingWith("Error deploying artifact");
+			.isThrownBy(() -> deployWhenFlaky(true, withException(new SocketException())))
+			.withMessageStartingWith("Error deploying artifact");
 	}
 
 	private void deployWhenFlaky(boolean fail, HttpStatus flakyStatus) {
@@ -206,10 +217,11 @@ class HttpArtifactoryRepositoryTests {
 		DeployableArtifact artifact = new DeployableByteArrayArtifact("/foo/bar.jar", BYTES);
 		String url = "https://repo.example.com/libs-snapshot-local/foo/bar.jar";
 		try {
-			this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
-					.andExpect(header("X-Checksum-Deploy", "true"))
-					.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-					.andRespond(withStatus(HttpStatus.NOT_FOUND));
+			this.server.expect(requestTo(url))
+				.andExpect(method(HttpMethod.PUT))
+				.andExpect(header("X-Checksum-Deploy", "true"))
+				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 			this.server.expect(requestTo(url)).andRespond(failResponse);
 			this.server.expect(requestTo(url)).andRespond(failResponse);
 			this.server.expect(requestTo(url)).andRespond(fail ? failResponse : withStatus(HttpStatus.OK));
@@ -274,13 +286,15 @@ class HttpArtifactoryRepositoryTests {
 	}
 
 	private void expectFileDownload(String url) {
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(new ByteArrayResource(new byte[] {}), MediaType.APPLICATION_OCTET_STREAM));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(new ByteArrayResource(new byte[] {}), MediaType.APPLICATION_OCTET_STREAM));
 	}
 
 	private void expectFile404(String url) {
-		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.GET))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
+		this.server.expect(requestTo(url))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withStatus(HttpStatus.NOT_FOUND));
 	}
 
 }

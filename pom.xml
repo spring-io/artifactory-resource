@@ -13,7 +13,7 @@
 	<properties>
 		<revision>0.0.19-SNAPSHOT</revision>
 		<java.version>17</java.version>
-		<spring-javaformat.version>0.0.35</spring-javaformat.version>
+		<spring-javaformat.version>0.0.41</spring-javaformat.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->

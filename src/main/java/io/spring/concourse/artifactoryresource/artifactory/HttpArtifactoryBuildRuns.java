@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 
 	private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpArtifactoryBuildRuns.class);
 
@@ -99,8 +99,9 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 		UriComponents uriComponents = builder.build();
 		URI uri = uriComponents.encode().toUri();
 		logger.info("Publishing build info to {}", uri);
-		RequestEntity<BuildInfo> request = RequestEntity.put(uri).contentType(MediaType.APPLICATION_JSON)
-				.body(buildInfo);
+		RequestEntity<BuildInfo> request = RequestEntity.put(uri)
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(buildInfo);
 		ResponseEntity<Void> exchange = this.restTemplate.exchange(request, Void.class);
 		exchange.getBody();
 	}
@@ -121,7 +122,8 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 		logger.debug("Getting raw build info for {}", buildNumber);
 		Assert.notNull(buildNumber, "BuildNumber must not be null");
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
-				.path("api/build/{buildName}/{buildNumber}").buildAndExpand(this.buildName, buildNumber);
+			.path("api/build/{buildName}/{buildNumber}")
+			.buildAndExpand(this.buildName, buildNumber);
 		URI uri = uriComponents.encode().toUri();
 		return this.restTemplate.getForObject(uri, String.class);
 	}
@@ -199,7 +201,7 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 					startedOnOrAfter);
 			RestTemplate restTemplate = HttpArtifactoryBuildRuns.this.restTemplate;
 			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(HttpArtifactoryBuildRuns.this.uri)
-					.path("api/build/{buildName}");
+				.path("api/build/{buildName}");
 			if (HttpArtifactoryBuildRuns.this.project != null) {
 				builder = builder.queryParam("project", HttpArtifactoryBuildRuns.this.project);
 			}
@@ -215,8 +217,10 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 			if (buildNumberPrefix == null && startedOnOrAfter == null) {
 				return result;
 			}
-			result = result.stream().filter((buildRun) -> hasPrefix(buildRun, buildNumberPrefix))
-					.filter((buildRun) -> isStartedOnOrAfter(buildRun, startedOnOrAfter)).toList();
+			result = result.stream()
+				.filter((buildRun) -> hasPrefix(buildRun, buildNumberPrefix))
+				.filter((buildRun) -> isStartedOnOrAfter(buildRun, startedOnOrAfter))
+				.toList();
 			logger.debug("Returning {} build run results after filtering", result.size());
 			return result;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,10 +82,10 @@ import org.springframework.util.StringUtils;
 public class OutHandler {
 
 	private static final Set<String> CHECKSUM_FILE_EXTENSIONS = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList(".md5", ".sha1", ".sha256", ".sha512")));
+		.unmodifiableSet(new HashSet<>(Arrays.asList(".md5", ".sha1", ".sha256", ".sha512")));
 
 	private static final Set<String> METADATA_FILES = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
+		.unmodifiableSet(new HashSet<>(Arrays.asList("maven-metadata.xml", "maven-metadata-local.xml")));
 
 	private static final DeployOption[] NO_DEPLOY_OPTIONS = {};
 
@@ -159,7 +159,8 @@ public class OutHandler {
 		Directory root = directory.getSubDirectory(params.getFolder());
 		logger.debug("Getting deployable artifacts from {}", root);
 		FileSet fileSet = this.directoryScanner.scan(root, params.getInclude(), params.getExclude())
-				.filter(getChecksumFilter()).filter(getMetadataFilter(params));
+			.filter(getChecksumFilter())
+			.filter(getMetadataFilter(params));
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = new LinkedMultiValueMap<>();
 		Set<String> paths = new HashSet<>();
 		fileSet.batchedByCategory().forEach((category, files) -> {
@@ -299,14 +300,16 @@ public class OutHandler {
 
 	private void addBuildRun(ArtifactoryServer artifactoryServer, Source source, Params params, BuildNumber buildNumber,
 			Instant started, MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
-		List<DeployableArtifact> artifacts = batchedArtifacts.values().stream().flatMap(List::stream)
-				.collect(Collectors.toList());
+		List<DeployableArtifact> artifacts = batchedArtifacts.values()
+			.stream()
+			.flatMap(List::stream)
+			.collect(Collectors.toList());
 		logger.debug("Adding build run {}", buildNumber);
 		List<BuildModule> modules = this.moduleLayouts.getBuildModulesGenerator(params.getModuleLayout())
-				.getBuildModules(artifacts);
+			.getBuildModules(artifacts);
 		Map<String, String> properties = loadProperties(params.getBuildProperties());
-		artifactoryServer.buildRuns(source.getBuildName(), source.getProject()).add(buildNumber, started,
-				params.getBuildUri(), properties, modules);
+		artifactoryServer.buildRuns(source.getBuildName(), source.getProject())
+			.add(buildNumber, started, params.getBuildUri(), properties, modules);
 	}
 
 	private Map<String, String> loadProperties(String propertiesFile) {

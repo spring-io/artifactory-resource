@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,8 +120,10 @@ public final class FileSet implements Iterable<File> {
 	}
 
 	private static Optional<String> findRoot(List<File> files) {
-		return files.stream().filter(FileSet::isRootCandidate).map(FileSet::getNameWithoutExtension)
-				.reduce(FileSet::getShortest);
+		return files.stream()
+			.filter(FileSet::isRootCandidate)
+			.map(FileSet::getNameWithoutExtension)
+			.reduce(FileSet::getShortest);
 	}
 
 	private static boolean isRootCandidate(File file) {

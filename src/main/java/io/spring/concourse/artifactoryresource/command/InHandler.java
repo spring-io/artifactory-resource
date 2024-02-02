@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,10 +124,14 @@ public class InHandler {
 			File destination, boolean downloadChecksums, int threads) {
 		ExecutorService executor = Executors.newFixedThreadPool(threads);
 		try {
-			CompletableFuture.allOf(artifactsByRepo.values().stream().flatMap((artifacts) -> artifacts.stream())
+			CompletableFuture
+				.allOf(artifactsByRepo.values()
+					.stream()
+					.flatMap((artifacts) -> artifacts.stream())
 					.map((artifact) -> CompletableFuture.runAsync(() -> download(artifactoryServer, destination,
 							downloadChecksums, artifact.getRepo(), artifact), executor))
-					.toArray(CompletableFuture[]::new)).get();
+					.toArray(CompletableFuture[]::new))
+				.get();
 		}
 		catch (ExecutionException ex) {
 			throw new RuntimeException(ex);
@@ -143,8 +147,9 @@ public class InHandler {
 	private void download(ArtifactoryServer artifactoryServer, File destination, boolean downloadChecksums, String repo,
 			DeployedArtifact artifact) {
 		console.log("Downloading {}/{} from {}", artifact.getPath(), artifact.getName(), repo);
-		artifactoryServer.repository(repo).download(artifact, destination,
-				downloadChecksums && !DeployableArtifactsSigner.isSignatureFile(artifact.getName()));
+		artifactoryServer.repository(repo)
+			.download(artifact, destination,
+					downloadChecksums && !DeployableArtifactsSigner.isSignatureFile(artifact.getName()));
 	}
 
 }

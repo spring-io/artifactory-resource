@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class DeployableArtifactsSignerTests {
 	@BeforeEach
 	void setup() throws IOException {
 		ArmoredAsciiSigner signer = ArmoredAsciiSigner
-				.get(ArmoredAsciiSigner.class.getResourceAsStream("test-private.txt"), "password");
+			.get(ArmoredAsciiSigner.class.getResourceAsStream("test-private.txt"), "password");
 		this.properties = Collections.singletonMap("test", "param");
 		this.signer = new DeployableArtifactsSigner(signer, this.properties);
 	}
@@ -59,7 +59,7 @@ class DeployableArtifactsSignerTests {
 		MultiValueMap<Category, DeployableArtifact> batchedArtifacts = new LinkedMultiValueMap<>();
 		batchedArtifacts.add(Category.SIGNATURE, new DeployableByteArrayArtifact("/file.asc", new byte[0]));
 		assertThatIllegalStateException().isThrownBy(() -> this.signer.sign(batchedArtifacts))
-				.withMessage("Files must not already be signed");
+			.withMessage("Files must not already be signed");
 	}
 
 	@Test
@@ -73,7 +73,8 @@ class DeployableArtifactsSignerTests {
 		DeployableArtifact signatureResource = signed.getFirst(Category.SIGNATURE);
 		assertThat(signatureResource.getPath()).isEqualTo("/com/example/myapp.jar.asc");
 		assertThat(FileCopyUtils.copyToByteArray(signatureResource.getContent().getInputStream()))
-				.asString(StandardCharsets.UTF_8).contains("PGP SIGNATURE");
+			.asString(StandardCharsets.UTF_8)
+			.contains("PGP SIGNATURE");
 		assertThat(signatureResource.getSize()).isGreaterThan(10);
 		assertThat(signatureResource.getProperties()).isEqualTo(this.properties);
 		assertThat(signatureResource.getChecksums()).isNotNull();

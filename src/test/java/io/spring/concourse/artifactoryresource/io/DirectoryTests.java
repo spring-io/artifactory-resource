@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,27 +43,27 @@ class DirectoryTests {
 	@Test
 	void createWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((String) null))
-				.withMessage("File must not be null");
+			.withMessage("File must not be null");
 	}
 
 	@Test
 	void createWhenFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Directory((File) null))
-				.withMessage("File must not be null");
+			.withMessage("File must not be null");
 	}
 
 	@Test
 	void createWhenFileDoesNotExistThrowsException() {
 		this.tempDir.delete();
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(this.tempDir))
-				.withMessageContaining("does not exist");
+			.withMessageContaining("does not exist");
 	}
 
 	@Test
 	void createWhenFileIsNotDirectoryThrowsException() throws Exception {
 		File file = File.createTempFile("test", "", this.tempDir);
 		assertThatIllegalStateException().isThrownBy(() -> new Directory(file))
-				.withMessageContaining("is not a directory");
+			.withMessageContaining("is not a directory");
 	}
 
 	@Test

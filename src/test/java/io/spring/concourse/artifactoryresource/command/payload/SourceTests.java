@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class SourceTests {
 	@Test
 	void createWhenUriIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Source("", "username", "password", "my-build", null))
-				.withMessage("URI must not be empty");
+			.withMessage("URI must not be empty");
 	}
 
 	@Test
@@ -62,14 +62,15 @@ class SourceTests {
 	void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new Source("https://repo.example.com", "username", "password", "", null, null, null, null, null))
-				.withMessage("Build Name must not be empty");
+			.withMessage("Build Name must not be empty");
 	}
 
 	@Test
 	void createWhenHasProxyHostWithoutProxyPortThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Source("https://repo.example.com", "username",
-				"password", "my-build", null, null, null, "proxy.example.com", null))
-				.withMessage("Proxy port must be provided");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new Source("https://repo.example.com", "username", "password", "my-build", null, null,
+					null, "proxy.example.com", null))
+			.withMessage("Proxy port must be provided");
 	}
 
 	@Test

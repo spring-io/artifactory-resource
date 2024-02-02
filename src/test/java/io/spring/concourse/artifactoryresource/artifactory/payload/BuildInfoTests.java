@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,15 +64,15 @@ public class BuildInfoTests {
 	@Test
 	public void createWhenBuildNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
-				.withMessage("BuildName must not be empty");
+			.isThrownBy(() -> new BuildInfo("", BUILD_NUMBER, CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
+			.withMessage("BuildName must not be empty");
 	}
 
 	@Test
 	public void createWhenBuildNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
-				.withMessage("BuildNumber must not be empty");
+			.isThrownBy(() -> new BuildInfo(BUILD_NAME, "", CI_AGENT, STARTED, BUILD_URI, PROPERTIES, MODULES))
+			.withMessage("BuildNumber must not be empty");
 	}
 
 	@Test

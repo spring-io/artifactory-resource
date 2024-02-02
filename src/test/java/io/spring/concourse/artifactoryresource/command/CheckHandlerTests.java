@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ class CheckHandlerTests {
 	@BeforeEach
 	void setup() {
 		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
-				.willReturn(this.artifactoryServer);
+			.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns(eq("my-build"), any(), any())).willReturn(this.artifactoryBuildRuns);
 		this.handler = new CheckHandler(this.artifactory);
 	}
@@ -101,7 +101,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentRespondsWithListOfVersions() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION2.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project");
 		CheckRequest request = new CheckRequest(source, VERSION2);
 		CheckResponse response = this.handler.handle(request);
@@ -111,7 +111,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentAndLatestRespondsWithListOfVersions() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project");
 		CheckRequest request = new CheckRequest(source, VERSION4);
 		CheckResponse response = this.handler.handle(request);
@@ -121,7 +121,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentButRemovedFromArtifactoryRespondsWithLatest() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
-				.willReturn(Collections.emptyList());
+			.willReturn(Collections.emptyList());
 		given(this.artifactoryBuildRuns.getAll(null)).willReturn(List.of(CheckHandlerTests.RUN3));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project");
 		CheckRequest request = new CheckRequest(source, VERSION4);
@@ -132,7 +132,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenVersionIsPresentButAllHaveBeenRemovedFromArtifactoryReturnsEmptyList() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION4.getStarted()))
-				.willReturn(Collections.emptyList());
+			.willReturn(Collections.emptyList());
 		given(this.artifactoryBuildRuns.getAll(null)).willReturn(Collections.emptyList());
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project");
 		CheckRequest request = new CheckRequest(source, VERSION4);
@@ -163,7 +163,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenLegacyVersionIsPresentButRemovedFromArtifactoryRespondsWithLatest() {
 		given(this.artifactoryBuildRuns.getAll(null))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN1));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN1));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project");
 		CheckRequest request = new CheckRequest(source, new Version("4", null));
 		CheckResponse response = this.handler.handle(request);
@@ -182,7 +182,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenHasCheckLimitLimitsResults() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION2.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, null, 123, null,
 				null);
 		CheckRequest request = new CheckRequest(source, VERSION4);
@@ -193,7 +193,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenHasProjectAndCheckLimitLimitsResults() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter(null, VERSION2.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project", null, 123,
 				null, null);
 		CheckRequest request = new CheckRequest(source, VERSION4);
@@ -204,7 +204,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenHasCheckLimitAndBuildPrefixLimitsResults() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter("main-", VERSION2.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", null, "main-", 123, null,
 				null);
 		CheckRequest request = new CheckRequest(source, VERSION4);
@@ -215,7 +215,7 @@ class CheckHandlerTests {
 	@Test
 	void handleWhenHasCheckLimitBuildPrefixAndProjectLimitsResults() {
 		given(this.artifactoryBuildRuns.getStartedOnOrAfter("main-", VERSION2.getStarted()))
-				.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
+			.willReturn(List.of(CheckHandlerTests.RUN3, CheckHandlerTests.RUN2, CheckHandlerTests.RUN4));
 		Source source = new Source("https://ci.example.com", "admin", "password", "my-build", "my-project", "main-",
 				123, null, null);
 		CheckRequest request = new CheckRequest(source, VERSION4);

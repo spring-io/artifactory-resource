@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,11 @@ public class CommandProcessor implements ApplicationRunner {
 		logger.debug("Processing command {}", nonOptionArgs);
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		String request = nonOptionArgs.get(0);
-		this.commands.stream().filter((c) -> c.getName().equals(request)).findFirst()
-				.orElseThrow(() -> new IllegalStateException("Unknown command '" + request + "'")).run(args);
+		this.commands.stream()
+			.filter((c) -> c.getName().equals(request))
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Unknown command '" + request + "'"))
+			.run(args);
 	}
 
 }

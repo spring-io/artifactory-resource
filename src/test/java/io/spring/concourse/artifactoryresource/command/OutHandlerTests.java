@@ -119,7 +119,7 @@ class OutHandlerTests {
 	@BeforeEach
 	void setup() {
 		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
-				.willReturn(this.artifactoryServer);
+			.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
 		given(this.artifactoryServer.buildRuns(eq("my-build"), (String) any())).willReturn(this.artifactoryBuildRuns);
 		given(this.moduleLayouts.getBuildModulesGenerator(anyString())).willReturn(new MockBuildModulesGenerator());
@@ -132,7 +132,7 @@ class OutHandlerTests {
 		OutRequest request = createRequest("1234");
 		Directory directory = new Directory(this.tempDir);
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, directory))
-				.withMessage("No artifacts found in empty directory");
+			.withMessage("No artifacts found in empty directory");
 	}
 
 	@Test
@@ -141,7 +141,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of());
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, directory))
-				.withMessage("No artifacts found to deploy");
+			.withMessage("No artifacts found to deploy");
 	}
 
 	@Test
@@ -174,7 +174,8 @@ class OutHandlerTests {
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
-				.containsEntry("build.number", "1234").containsKey("build.timestamp");
+			.containsEntry("build.number", "1234")
+			.containsKey("build.timestamp");
 		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
 	}
 
@@ -211,7 +212,7 @@ class OutHandlerTests {
 		}
 		for (int i = 6; i < 12; i++) {
 			assertThat(values.get(i).getPath())
-					.matches((path) -> path.endsWith("-javadoc.jar") || path.endsWith("-sources.jar"));
+				.matches((path) -> path.endsWith("-javadoc.jar") || path.endsWith("-sources.jar"));
 		}
 	}
 
@@ -357,7 +358,8 @@ class OutHandlerTests {
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/1.0.0.BUILD-SNAPSHOT/foo-1.0.0.BUILD-SNAPSHOT.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
-				.containsEntry("build.number", "1234").containsKey("build.timestamp");
+			.containsEntry("build.number", "1234")
+			.containsKey("build.timestamp");
 	}
 
 	@Test
@@ -371,7 +373,8 @@ class OutHandlerTests {
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/1.0.0.BUILD-SNAPSHOT/foo-1.0.0.BUILD-SNAPSHOT.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
-				.containsEntry("build.number", "1234").containsKey("build.timestamp");
+			.containsEntry("build.number", "1234")
+			.containsKey("build.timestamp");
 	}
 
 	@Test
@@ -401,10 +404,14 @@ class OutHandlerTests {
 		DeployableArtifact deployedAsc = this.artifactCaptor.getAllValues().get(1);
 		assertThat(deployedJar.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 		assertThat(deployedJar.getProperties()).containsEntry("build.name", "my-build")
-				.containsEntry("build.number", "1234").containsEntry("extra", "test").containsKey("build.timestamp");
+			.containsEntry("build.number", "1234")
+			.containsEntry("extra", "test")
+			.containsKey("build.timestamp");
 		assertThat(deployedAsc.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar.asc");
 		assertThat(deployedAsc.getProperties()).containsEntry("build.name", "my-build")
-				.containsEntry("build.number", "1234").containsKey("build.timestamp").doesNotContainKey("extra");
+			.containsEntry("build.number", "1234")
+			.containsKey("build.timestamp")
+			.doesNotContainKey("extra");
 		assertThat(this.optionsCaptor.getAllValues()).isEmpty();
 	}
 

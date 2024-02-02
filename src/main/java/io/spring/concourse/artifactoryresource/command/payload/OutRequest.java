@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,14 +195,18 @@ public class OutRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("buildNumber", this.buildNumber).append("folder", this.folder)
-					.append("include", this.include).append("exclude", this.exclude)
-					.append("moduleLayout", this.moduleLayout).append("buildUri", this.buildUri)
-					.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
-					.append("artifactSet", this.artifactSet).append("threads", this.threads)
-					.append("signingKey", (StringUtils.hasText(this.signingKey)) ? "<set>" : "<not set>")
-					.append("signingPassphrase", (StringUtils.hasText(this.signingPassphrase)) ? "<set>" : "<not set>")
-					.toString();
+			return new ToStringCreator(this).append("buildNumber", this.buildNumber)
+				.append("folder", this.folder)
+				.append("include", this.include)
+				.append("exclude", this.exclude)
+				.append("moduleLayout", this.moduleLayout)
+				.append("buildUri", this.buildUri)
+				.append("stripSnapshotTimestamps", this.stripSnapshotTimestamps)
+				.append("artifactSet", this.artifactSet)
+				.append("threads", this.threads)
+				.append("signingKey", (StringUtils.hasText(this.signingKey)) ? "<set>" : "<not set>")
+				.append("signingPassphrase", (StringUtils.hasText(this.signingPassphrase)) ? "<set>" : "<not set>")
+				.toString();
 		}
 
 	}
@@ -243,8 +247,10 @@ public class OutRequest {
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("include", this.include).append("exclude", this.exclude)
-					.append("properties", this.properties).toString();
+			return new ToStringCreator(this).append("include", this.include)
+				.append("exclude", this.exclude)
+				.append("properties", this.properties)
+				.toString();
 		}
 
 	}

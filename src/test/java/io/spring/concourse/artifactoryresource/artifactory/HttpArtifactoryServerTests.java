@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,8 @@ class HttpArtifactoryServerTests {
 	void whenAdminIsNullAndIsAdmingDetectsAdminTrue() {
 		RestTemplate restTemplate = this.restTemplateBuilder.build();
 		this.server.expect(requestTo("https://repo.example.com/api/system/service_id"))
-				.andExpect(method(HttpMethod.HEAD)).andRespond(withSuccess());
+			.andExpect(method(HttpMethod.HEAD))
+			.andRespond(withSuccess());
 		HttpArtifactoryServer artifactoryServer = artifactoryServer(restTemplate, null);
 		assertThat(artifactoryServer.isAdmin()).isTrue();
 		this.server.verify();
@@ -81,7 +82,8 @@ class HttpArtifactoryServerTests {
 	void whenAdminIsNullAndIsNotAdmingDetectsAdminFalse() {
 		RestTemplate restTemplate = this.restTemplateBuilder.build();
 		this.server.expect(requestTo("https://repo.example.com/api/system/service_id"))
-				.andExpect(method(HttpMethod.HEAD)).andRespond(withForbiddenRequest());
+			.andExpect(method(HttpMethod.HEAD))
+			.andRespond(withForbiddenRequest());
 		HttpArtifactoryServer artifactoryServer = artifactoryServer(restTemplate, null);
 		assertThat(artifactoryServer.isAdmin()).isFalse();
 		this.server.verify();

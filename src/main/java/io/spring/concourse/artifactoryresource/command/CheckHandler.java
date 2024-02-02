@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,10 @@ public class CheckHandler {
 
 	private List<Version> getNewVersions(Source source, Version version) {
 		logger.debug("Getting new versions");
-		List<Version> newVersions = getRunsStartedOnOrAfter(source, version).stream().sorted(Comparator.reverseOrder())
-				.map(this::asVersion).toList();
+		List<Version> newVersions = getRunsStartedOnOrAfter(source, version).stream()
+			.sorted(Comparator.reverseOrder())
+			.map(this::asVersion)
+			.toList();
 		logger.debug("Found new versions {}", newVersions);
 		return newVersions;
 	}

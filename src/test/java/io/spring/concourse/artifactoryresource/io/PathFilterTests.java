@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ class PathFilterTests {
 	@Test
 	void createWhenIncludeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PathFilter(null, Collections.emptyList()))
-				.withMessage("Include must not be null");
+			.withMessage("Include must not be null");
 	}
 
 	@Test
 	void createWhenExcludeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PathFilter(Collections.emptyList(), null))
-				.withMessage("Exclude must not be null");
+			.withMessage("Exclude must not be null");
 	}
 
 	@Test
@@ -68,7 +68,8 @@ class PathFilterTests {
 		PathFilter filter = new PathFilter(Collections.singletonList("/**/spring-boot-docs-*.zip"),
 				Collections.emptyList());
 		assertThat(filter.isMatch("/org/springframework/boot/spring-boot-docs/"
-				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip")).isTrue();
+				+ "2.0.0.BUILD-SNAPSHOT/spring-boot-docs-2.0.0.BUILD-20170920.065551-1.zip"))
+			.isTrue();
 	}
 
 	@Test

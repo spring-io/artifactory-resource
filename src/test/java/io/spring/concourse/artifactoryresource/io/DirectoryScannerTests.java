@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ class DirectoryScannerTests {
 	void scanWhenNoIncludeExcludeReturnsAllFiles() throws Exception {
 		Directory directory = createFiles();
 		FileSet files = this.scanner.scan(directory, Collections.emptyList(), Collections.emptyList());
-		assertThat(files).extracting((f) -> relativePath(directory, f)).containsExactly("/bar/bar.jar", "/bar/bar.pom",
-				"/baz/baz.jar", "/baz/baz.pom");
+		assertThat(files).extracting((f) -> relativePath(directory, f))
+			.containsExactly("/bar/bar.jar", "/bar/bar.pom", "/baz/baz.jar", "/baz/baz.pom");
 	}
 
 	@Test

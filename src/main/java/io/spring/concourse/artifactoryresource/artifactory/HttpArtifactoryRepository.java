@@ -113,7 +113,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 			try {
 				attempt++;
 				RequestEntity<Resource> request = deployRequest(artifact).contentLength(artifact.getSize())
-						.body(artifact.getContent());
+					.body(artifact.getContent());
 				this.restTemplate.exchange(request, Void.class);
 				return;
 			}
@@ -152,12 +152,17 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private BodyBuilder deployRequest(DeployableArtifact artifact) {
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
-				.path(artifact.getPath()).path(buildMatrixParams(artifact.getProperties())).build();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
+			.path(this.repositoryName)
+			.path(artifact.getPath())
+			.path(buildMatrixParams(artifact.getProperties()))
+			.build();
 		URI uri = uriComponents.encode().toUri();
 		Checksums checksums = artifact.getChecksums();
-		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.header("X-Checksum-Sha1", checksums.getSha1()).header("X-Checksum-Md5", checksums.getMd5());
+		return RequestEntity.put(uri)
+			.contentType(MediaType.APPLICATION_OCTET_STREAM)
+			.header("X-Checksum-Sha1", checksums.getSha1())
+			.header("X-Checksum-Md5", checksums.getMd5());
 	}
 
 	private String buildMatrixParams(Map<String, String> matrixParams) {
@@ -187,8 +192,10 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 	}
 
 	private void getFile(String path, File destination) {
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri).path(this.repositoryName)
-				.path("/" + path).build();
+		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
+			.path(this.repositoryName)
+			.path("/" + path)
+			.build();
 		URI uri = uriComponents.encode().toUri();
 		this.restTemplate.execute(uri, HttpMethod.GET, null, getResponseExtractor(path, destination));
 	}

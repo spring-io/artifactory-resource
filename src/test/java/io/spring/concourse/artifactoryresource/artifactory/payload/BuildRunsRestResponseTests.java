@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,10 @@ class BuildRunsRestResponseTests {
 		assertThat(response.getBuildsRuns()).hasSize(3);
 		assertThat(response.getBuildsRuns().get(0).getBuildNumber()).isEqualTo("my-1234");
 		assertThat(response.getBuildsRuns().get(0).getStarted())
-				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893Z"));
+			.isEqualTo(ArtifactoryDateFormat.parse("2014-09-28T12:00:19.893Z"));
 		assertThat(response.getBuildsRuns().get(1).getBuildNumber()).isEqualTo("my-5678");
 		assertThat(response.getBuildsRuns().get(1).getStarted())
-				.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z"));
+			.isEqualTo(ArtifactoryDateFormat.parse("2014-09-30T12:00:19.893Z"));
 	}
 
 }

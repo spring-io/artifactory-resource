@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class MavenMetadataGenerator {
 	private static final List<String> POM_PATTERN = Collections.unmodifiableList(Collections.singletonList("**/*.pom"));
 
 	private static final Set<String> IGNORED_EXTENSIONS = Collections
-			.unmodifiableSet(new LinkedHashSet<>(Arrays.asList("asc", "sha", "md5")));
+		.unmodifiableSet(new LinkedHashSet<>(Arrays.asList("asc", "sha", "md5")));
 
 	private final DirectoryScanner scanner;
 
@@ -103,8 +103,11 @@ public class MavenMetadataGenerator {
 	}
 
 	private List<SnapshotVersion> getSnapshotVersionMetadata(List<MavenCoordinates> coordinates) {
-		return coordinates.stream().filter(MavenCoordinates::isSnapshotVersion).sorted()
-				.map(this::asSnapshotVersionMetadata).collect(Collectors.toCollection(ArrayList::new));
+		return coordinates.stream()
+			.filter(MavenCoordinates::isSnapshotVersion)
+			.sorted()
+			.map(this::asSnapshotVersionMetadata)
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	private SnapshotVersion asSnapshotVersionMetadata(MavenCoordinates coordinates) {

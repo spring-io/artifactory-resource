@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,11 @@ class DeployableArtifactsSigner {
 	MultiValueMap<Category, DeployableArtifact> sign(MultiValueMap<Category, DeployableArtifact> batchedArtifacts) {
 		Assert.state(CollectionUtils.isEmpty(batchedArtifacts.get(Category.SIGNATURE)),
 				"Files must not already be signed");
-		List<DeployableArtifact> signed = batchedArtifacts.values().stream().flatMap(List::stream)
-				.map(SignedDeployableArtifact::new).collect(Collectors.toList());
+		List<DeployableArtifact> signed = batchedArtifacts.values()
+			.stream()
+			.flatMap(List::stream)
+			.map(SignedDeployableArtifact::new)
+			.collect(Collectors.toList());
 		LinkedMultiValueMap<Category, DeployableArtifact> batchedAndSigned = new LinkedMultiValueMap<>(
 				batchedArtifacts);
 		batchedAndSigned.put(Category.SIGNATURE, signed);

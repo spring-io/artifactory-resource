@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,25 +48,25 @@ public class BuildArtifactTests {
 	@Test
 	public void createWhenTypeIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact("", SHA1, MD5, NAME))
-				.withMessage("Type must not be empty");
+			.withMessage("Type must not be empty");
 	}
 
 	@Test
 	public void createWhenSha1IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, "", MD5, NAME))
-				.withMessage("SHA1 must not be empty");
+			.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	public void createWhenMd5IsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, "", NAME))
-				.withMessage("MD5 must not be empty");
+			.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	public void createWhenNameIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BuildArtifact(TYPE, SHA1, MD5, ""))
-				.withMessage("Name must not be empty");
+			.withMessage("Name must not be empty");
 	}
 
 	@Test

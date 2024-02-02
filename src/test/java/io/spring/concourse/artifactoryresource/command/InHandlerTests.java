@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,11 +86,11 @@ class InHandlerTests {
 	void setup() {
 		this.deployedArtifacts = createDeployedArtifacts();
 		given(this.artifactory.server("https://ci.example.com", "admin", "password", null))
-				.willReturn(this.artifactoryServer);
+			.willReturn(this.artifactoryServer);
 		given(this.artifactoryServer.buildRuns("my-build", "my-project")).willReturn(this.artifactoryBuildRuns);
 		given(this.artifactoryServer.repository("libs-snapshot-local")).willReturn(this.artifactoryRepository);
 		given(this.artifactoryBuildRuns.getDeployedArtifacts(BuildNumber.of("1234")))
-				.willReturn(this.deployedArtifacts);
+			.willReturn(this.deployedArtifacts);
 		given(this.artifactoryBuildRuns.getRawBuildInfo(BuildNumber.of("1234"))).willReturn(BUILD_INFO_JSON);
 		this.handler = new InHandler(this.artifactory, this.mavenMetadataGenerator);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ class InRequestTests {
 	@Test
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(null, this.version, this.params))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InRequest(this.source, null, this.params))
-				.withMessage("Version must not be null");
+			.withMessage("Version must not be null");
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class InRequestTests {
 		assertThat(request.getSource().getUsername()).isEqualTo("admin");
 		assertThat(request.getSource().getPassword()).isEqualTo("password");
 		assertThat(request.getSource().getProxy())
-				.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
+			.isEqualTo(new Proxy(Type.HTTP, new InetSocketAddress("proxy.example.com", 8080)));
 		assertThat(request.getVersion().getBuildNumber()).isEqualTo("5678");
 	}
 

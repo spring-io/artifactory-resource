@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,12 +119,12 @@ public final class ArmoredAsciiSigner {
 
 	private PBESecretKeyDecryptor getDecryptorFactory(String passphrase) throws PGPException {
 		return new JcePBESecretKeyDecryptorBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME)
-				.build(passphrase.toCharArray());
+			.build(passphrase.toCharArray());
 	}
 
 	private JcaPGPContentSignerBuilder getContentSigner(int signingAlgorithm) {
 		return new JcaPGPContentSignerBuilder(signingAlgorithm, HashAlgorithmTags.SHA256)
-				.setProvider(BouncyCastleProvider.PROVIDER_NAME);
+			.setProvider(BouncyCastleProvider.PROVIDER_NAME);
 	}
 
 	/**

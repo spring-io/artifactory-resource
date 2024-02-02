@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,13 @@ class BuildNumberTests {
 	@Test
 	void ofWhenNumberIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildNumber.of(null))
-				.withMessage("Build number must not be empty");
+			.withMessage("Build number must not be empty");
 	}
 
 	@Test
 	void ofWhenNumberIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildNumber.of(""))
-				.withMessage("Build number must not be empty");
+			.withMessage("Build number must not be empty");
 	}
 
 	@Test

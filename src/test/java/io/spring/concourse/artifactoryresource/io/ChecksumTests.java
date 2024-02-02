@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,27 +55,27 @@ class ChecksumTests {
 	@Test
 	void validateWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.SHA1.validate(null))
-				.withMessage("SHA1 must not be empty");
+			.withMessage("SHA1 must not be empty");
 	}
 
 	@Test
 	void validateWhenEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Checksum.MD5.validate(""))
-				.withMessage("MD5 must not be empty");
+			.withMessage("MD5 must not be empty");
 	}
 
 	@Test
 	void validateWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
-				.withMessage("SHA1 must be 40 characters long");
+			.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89d1"))
+			.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test
 	void validateWhenTooShortThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
-				.withMessage("SHA1 must be 40 characters long");
+			.isThrownBy(() -> Checksum.SHA1.validate("a9993e364706816aba3e25717850c26c9cd0d89"))
+			.withMessage("SHA1 must be 40 characters long");
 	}
 
 	@Test

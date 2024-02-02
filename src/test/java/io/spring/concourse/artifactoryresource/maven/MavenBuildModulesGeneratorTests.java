@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,14 @@ class MavenBuildModulesGeneratorTests {
 		assertThat(buildModules).hasSize(2);
 		assertThat(buildModules.get(0).getId()).isEqualTo("com.example:foo:1.0.0");
 		assertThat(buildModules.get(0).getArtifacts()).extracting(BuildArtifact::getName)
-				.containsExactly("foo-1.0.0.pom", "foo-1.0.0.jar", "foo-1.0.0-sources.jar");
-		assertThat(buildModules.get(0).getArtifacts()).extracting(BuildArtifact::getType).containsExactly("pom", "jar",
-				"java-source-jar");
+			.containsExactly("foo-1.0.0.pom", "foo-1.0.0.jar", "foo-1.0.0-sources.jar");
+		assertThat(buildModules.get(0).getArtifacts()).extracting(BuildArtifact::getType)
+			.containsExactly("pom", "jar", "java-source-jar");
 		assertThat(buildModules.get(1).getId()).isEqualTo("com.example:bar:1.0.0");
 		assertThat(buildModules.get(1).getArtifacts()).extracting(BuildArtifact::getName)
-				.containsExactly("bar-1.0.0.pom", "bar-1.0.0.jar", "bar-1.0.0-sources.jar");
-		assertThat(buildModules.get(1).getArtifacts()).extracting(BuildArtifact::getType).containsExactly("pom", "jar",
-				"java-source-jar");
+			.containsExactly("bar-1.0.0.pom", "bar-1.0.0.jar", "bar-1.0.0-sources.jar");
+		assertThat(buildModules.get(1).getArtifacts()).extracting(BuildArtifact::getType)
+			.containsExactly("pom", "jar", "java-source-jar");
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class MavenBuildModulesGeneratorTests {
 		deployableArtifacts.add(artifact("/com/example/foo/1.0.0/foo-1.0.0.sha"));
 		List<BuildModule> buildModules = this.generator.getBuildModules(deployableArtifacts);
 		assertThat(buildModules.get(0).getArtifacts()).extracting(BuildArtifact::getName)
-				.containsExactly("foo-1.0.0.pom", "foo-1.0.0.asc");
+			.containsExactly("foo-1.0.0.pom", "foo-1.0.0.asc");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ class FileSetTests {
 	@Test
 	void ofWhenArrayIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FileSet.of((File[]) null))
-				.withMessage("Files must not be null");
+			.withMessage("Files must not be null");
 	}
 
 	@Test
 	void ofWhenListIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FileSet.of((List<File>) null))
-				.withMessage("Files must not be null");
+			.withMessage("Files must not be null");
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class FileSetTests {
 	@Test
 	void ofWhenIdenticalPathAndExceptionOrdersOnName() {
 		assertThat(fileSetOf("foo/bar.jar", "foo/bar-a.jar", "foo/bar-b.jar"))
-				.satisfies(filesNamed("bar.jar", "bar-a.jar", "bar-b.jar"));
+			.satisfies(filesNamed("bar.jar", "bar-a.jar", "bar-b.jar"));
 	}
 
 	@Test
@@ -150,20 +150,20 @@ class FileSetTests {
 		FileSet fileSet = fileSetOf(names).filter(this::filter);
 		MultiValueMap<Category, File> batched = fileSet.batchedByCategory();
 		assertThat((Iterable<File>) batched.get(Category.PRIMARY))
-				.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.jar",
-						"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1.jar",
-						"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1.jar"));
+			.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.jar",
+					"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1.jar",
+					"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1.jar"));
 		assertThat((Iterable<File>) batched.get(Category.POM))
-				.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.pom",
-						"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1.pom",
-						"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1.pom"));
+			.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1.pom",
+					"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1.pom",
+					"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1.pom"));
 		assertThat(batched.get(Category.MAVEN_METADATA)).isNull();
 		assertThat((Iterable<File>) batched.get(Category.ADDITIONAL))
-				.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-javadoc.jar",
-						"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-sources.jar",
-						"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1-javadoc.jar",
-						"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1-sources.jar",
-						"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1-sources.jar"));
+			.satisfies(filesNamed("spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-javadoc.jar",
+					"spring-boot-actuator-autoconfigure-2.0.0.BUILD-20171030.171822-1-sources.jar",
+					"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1-javadoc.jar",
+					"spring-boot-actuator-2.0.0.BUILD-20171030.171543-1-sources.jar",
+					"spring-boot-starter-actuator-2.0.0.BUILD-20171030.172553-1-sources.jar"));
 	}
 
 	@Test

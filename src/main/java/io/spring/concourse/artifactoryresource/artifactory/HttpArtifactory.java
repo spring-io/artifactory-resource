@@ -55,8 +55,9 @@ public class HttpArtifactory implements Artifactory {
 			Boolean admin) {
 		uri = (!uri.endsWith("/")) ? uri + '/' : uri;
 		RestTemplateBuilder restTemplateBuilder = this.restTemplateBuilder
-				.requestFactory(getRequestFactorySupplier(username, password, proxy))
-				.setConnectTimeout(Duration.ofMinutes(1)).setReadTimeout(Duration.ofMinutes(5));
+			.requestFactory(getRequestFactorySupplier(username, password, proxy))
+			.setConnectTimeout(Duration.ofMinutes(1))
+			.setReadTimeout(Duration.ofMinutes(5));
 		return new HttpArtifactoryServer(restTemplateBuilder.build(), uri, retryDelay, admin);
 	}
 
@@ -101,8 +102,9 @@ public class HttpArtifactory implements Artifactory {
 				protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
 						ClientHttpRequestFactory requestFactory) throws IOException {
 					ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
-					request.getHeaders().setBasicAuth(BasicAuthClientHttpRequestFactorySupplier.this.username,
-							BasicAuthClientHttpRequestFactorySupplier.this.password);
+					request.getHeaders()
+						.setBasicAuth(BasicAuthClientHttpRequestFactorySupplier.this.username,
+								BasicAuthClientHttpRequestFactorySupplier.this.password);
 					return request;
 				}
 

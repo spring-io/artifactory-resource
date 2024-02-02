@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class BuildNumberGeneratorTests {
 	@Test
 	void generateBuildNumberUsesFormattedInstant() {
 		Instant fixedInstant = LocalDateTime.parse("2011-12-03T10:15:30+00:00", DateTimeFormatter.ISO_DATE_TIME)
-				.toInstant(ZoneOffset.UTC);
+			.toInstant(ZoneOffset.UTC);
 		Clock clock = Clock.fixed(fixedInstant, ZoneOffset.UTC);
 		String buildNumber = new BuildNumberGenerator(clock).generateBuildNumber();
 		assertThat(buildNumber).isEqualTo("2011-12-03.101530000000000");
