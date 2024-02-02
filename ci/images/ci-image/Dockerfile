@@ -1,4 +1,4 @@
-FROM ubuntu:focal-20210119
+FROM ubuntu:jammy-20240111
 
 ADD setup.sh /setup.sh
 ADD get-docker-url.sh /get-docker-url.sh
