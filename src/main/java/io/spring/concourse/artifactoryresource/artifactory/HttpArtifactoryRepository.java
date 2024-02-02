@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,8 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 		while (true) {
 			try {
 				attempt++;
-				RequestEntity<Resource> request = deployRequest(artifact).body(artifact.getContent());
+				RequestEntity<Resource> request = deployRequest(artifact).contentLength(artifact.getSize())
+						.body(artifact.getContent());
 				this.restTemplate.exchange(request, Void.class);
 				return;
 			}
@@ -155,7 +156,7 @@ public class HttpArtifactoryRepository implements ArtifactoryRepository {
 				.path(artifact.getPath()).path(buildMatrixParams(artifact.getProperties())).build();
 		URI uri = uriComponents.encode().toUri();
 		Checksums checksums = artifact.getChecksums();
-		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM).contentLength(artifact.getSize())
+		return RequestEntity.put(uri).contentType(MediaType.APPLICATION_OCTET_STREAM)
 				.header("X-Checksum-Sha1", checksums.getSha1()).header("X-Checksum-Md5", checksums.getMd5());
 	}
 

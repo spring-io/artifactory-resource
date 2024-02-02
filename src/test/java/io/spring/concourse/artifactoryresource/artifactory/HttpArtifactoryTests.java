@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -84,16 +83,6 @@ class HttpArtifactoryTests {
 				HttpMethod.GET);
 		HttpURLConnection connection = (HttpURLConnection) ReflectionTestUtils.getField(request, "connection");
 		assertThat(connection.usingProxy()).isTrue();
-	}
-
-	@Test // gh-50
-	void serverDoesNotBuffer() {
-		ArtifactoryServer server = this.artifactory.server(URI, null, null, null, null, false);
-		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(server, "restTemplate");
-		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
-				.getRequestFactory();
-		assertThat(ReflectionTestUtils.getField(requestFactory, "bufferRequestBody")).isEqualTo(Boolean.FALSE);
-		assertThat(ReflectionTestUtils.getField(requestFactory, "outputStreaming")).isEqualTo(Boolean.TRUE);
 	}
 
 }

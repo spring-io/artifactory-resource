@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture(), this.optionsCaptor.capture());
+		verify(this.artifactoryRepository).deploy(this.artifactCaptor.capture(), eq(new DeployOption[0]));
 		DeployableArtifact deployed = this.artifactCaptor.getValue();
 		assertThat(deployed.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");
 		assertThat(deployed.getProperties()).containsEntry("build.name", "my-build")
@@ -201,8 +201,7 @@ class OutHandlerTests {
 		createEmptyFiles(files);
 		given(this.directoryScanner.scan(any(), any(), any())).willReturn(FileSet.of(files));
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository, times(12)).deploy(this.artifactCaptor.capture(),
-				this.optionsCaptor.capture());
+		verify(this.artifactoryRepository, times(12)).deploy(this.artifactCaptor.capture(), new DeployOption[0]);
 		List<DeployableArtifact> values = this.artifactCaptor.getAllValues();
 		for (int i = 0; i < 3; i++) {
 			assertThat(values.get(i).getPath()).doesNotContain("javadoc", "sources").endsWith(".jar");
@@ -397,8 +396,7 @@ class OutHandlerTests {
 		Directory directory = createDirectory();
 		configureMockScanner(directory);
 		this.handler.handle(request, directory);
-		verify(this.artifactoryRepository, times(2)).deploy(this.artifactCaptor.capture(),
-				this.optionsCaptor.capture());
+		verify(this.artifactoryRepository, times(2)).deploy(this.artifactCaptor.capture(), eq(new DeployOption[0]));
 		DeployableArtifact deployedJar = this.artifactCaptor.getAllValues().get(0);
 		DeployableArtifact deployedAsc = this.artifactCaptor.getAllValues().get(1);
 		assertThat(deployedJar.getPath()).isEqualTo("/com/example/foo/0.0.1/foo-0.0.1.jar");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 the original author or authors.
+ * Copyright 2017-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,9 +99,9 @@ class HttpArtifactoryRepositoryTests {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 				.andExpect(header("X-Checksum-Deploy", "true"))
 				.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-				.andExpect(header("content-length", String.valueOf(artifact.getSize())))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		this.server.expect(requestTo(url)).andRespond(withSuccess());
+		this.server.expect(requestTo(url)).andExpect(header("Content-Length", Long.toString(artifact.getSize())))
+				.andRespond(withSuccess());
 		this.artifactoryRepository.deploy(artifact);
 		this.server.verify();
 	}
@@ -209,7 +209,6 @@ class HttpArtifactoryRepositoryTests {
 			this.server.expect(requestTo(url)).andExpect(method(HttpMethod.PUT))
 					.andExpect(header("X-Checksum-Deploy", "true"))
 					.andExpect(header("X-Checksum-Sha1", artifact.getChecksums().getSha1()))
-					.andExpect(header("content-length", String.valueOf(artifact.getSize())))
 					.andRespond(withStatus(HttpStatus.NOT_FOUND));
 			this.server.expect(requestTo(url)).andRespond(failResponse);
 			this.server.expect(requestTo(url)).andRespond(failResponse);
