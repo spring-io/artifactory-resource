@@ -282,6 +282,16 @@ class HttpArtifactoryBuildRunsTests {
 	}
 
 	@Test
+	void getRawBuildInfoWithProjectReturnsBuildInfo() {
+		ArtifactoryBuildRuns buildRuns = buildRuns("my-project");
+		this.server.expect(requestTo("https://repo.example.com/api/build/my-build/5678?project=my-project"))
+			.andExpect(method(HttpMethod.GET))
+			.andRespond(withSuccess(getResource("payload/build-info.json"), MediaType.APPLICATION_JSON));
+		String buildInfo = buildRuns.getRawBuildInfo(BuildNumber.of("5678"));
+		assertThat(buildInfo).isNotEmpty().contains("my-build");
+	}
+
+	@Test
 	void fetchAllFetchesArtifactsCorrespondingToBuildAndRepo() {
 		ArtifactoryBuildRuns buildRuns = buildRuns();
 		String url = "https://repo.example.com/api/search/aql";
