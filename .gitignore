@@ -3,6 +3,7 @@ build/
 .classpath
 .project
 .settings/
+bin/
 *.iml
 *.ipr
 *.iws
