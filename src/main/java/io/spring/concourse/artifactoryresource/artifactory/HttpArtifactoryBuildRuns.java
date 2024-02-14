@@ -122,9 +122,13 @@ public final class HttpArtifactoryBuildRuns implements ArtifactoryBuildRuns {
 	public String getRawBuildInfo(BuildNumber buildNumber) {
 		logger.debug("Getting raw build info for {}", buildNumber);
 		Assert.notNull(buildNumber, "BuildNumber must not be null");
-		UriComponents uriComponents = UriComponentsBuilder.fromUriString(this.uri)
-			.path("api/build/{buildName}/{buildNumber}")
-			.buildAndExpand(this.buildName, buildNumber);
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(this.uri)
+			.path("api/build/{buildName}/{buildNumber}");
+		if (this.project != null) {
+			logger.debug("Getting from project {}", this.project);
+			builder = builder.queryParam("project", this.project);
+		}
+		UriComponents uriComponents = builder.buildAndExpand(this.buildName, buildNumber);
 		URI uri = uriComponents.encode().toUri();
 		return this.restTemplate.getForObject(uri, String.class);
 	}
