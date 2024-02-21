@@ -17,7 +17,7 @@ git config user.email "spring-builds@users.noreply.github.com" > /dev/null
 git add gradle.properties > /dev/null
 git commit -m"Release v$releaseVersion" > /dev/null
 git tag -a "v$releaseVersion" -m"Release v$releaseVersion" > /dev/null
-build
+./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon build
 echo "Setting next development version (v$nextVersion)"
 git reset --hard HEAD^ > /dev/null
 sed -i "s/version=$snapshotVersion/version=$nextVersion/" gradle.properties
