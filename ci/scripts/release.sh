@@ -31,5 +31,5 @@ git add samples/simple/pipeline.yml > /dev/null
 git commit -m"Next development version (v$nextVersion)" > /dev/null
 popd > /dev/null
 
-cp git-repo/build/libs/artifactory-resource.jar built-artifact/
+cp release-git-repo/build/libs/artifactory-resource.jar built-artifact/
 echo $releaseVersion > built-artifact/version
