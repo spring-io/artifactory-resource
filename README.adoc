@@ -2,6 +2,8 @@
 :artifactory-resource-release-version: ${releaseVersion}
 :artifactory-resource-snapshot-version: ${nextVersion}
 
+NOTE: This repository is no longer under active development as Spring projects are migrating to GitHub Actions.
+
 A https://concourse.ci/[Concourse] resource to deploy and retrieve artifacts from a https://www.jfrog.com/artifactory/[JFrog Artifactory] server.
 
 
